@@ -1,0 +1,30 @@
+﻿using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AMJNReportSystem.Application.Models.RequestModels.Reports
+{
+    public class ReportRequest
+    {
+        public Guid ReporterId { get; set; }
+        public Guid SubmissionWindowId { get; set; }
+        public IList<SectionReportRequest> SectionReports { get; set; }
+    }
+
+    public class SectionReportRequest
+    {
+        public Guid ReportTypeSectionId { get; set; }
+        public string ReportTypeSectionName { get; set; } = null!;
+        public IList<SectionDataRequest> SectionData { get; set; }
+    }
+
+    public class SectionDataRequest
+    {
+        public Guid QuestionId { get; set; }
+        public string QuestionText { get; set; } = null!;
+        public string? QuestionResponse { get; set; }
+    }
+}

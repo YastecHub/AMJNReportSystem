@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+	  <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
+	  <PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" Version="0.6.3" />
+	  <PackageReference Include="NSwag.AspNetCore" Version="14.1.0" />
+	  <PackageReference Include="NSwag.Generation" Version="14.1.0" />
+	  <PackageReference Include="NSwag.Generation.AspNetCore" Version="14.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\AMJNReportSystem.Application\AMJNReportSystem.Application.csproj" />
+    <ProjectReference Include="..\AMJNReportSystem.Persistence\AMJNReportSystem.Persistence.csproj" />
+  </ItemGroup>
+
+</Project>
