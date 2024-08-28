@@ -1,14 +1,12 @@
-﻿using AMJNReportSystem.Application.Models;
-using AMJNReportSystem.Application.Wrapper;
-using Domain.Entities;
+﻿using AMJNReportSystem.Domain.Entities;
 using System.Linq.Expressions;
 
 namespace AMJNReportSystem.Application.Abstractions.Repositories
 {
     public interface IReportDataSectionRepository
     {
-        Task<ReportDataSection> AddAsync(ReportDataSection reportDataSection);
-        Task<ReportDataSection> UpdateAsync(ReportDataSection reportDataSection);
-        Task<ReportDataSection> GetReportDataSection(Expression<Func<ReportDataSection, bool>> expression);
+        Task<ReportSection> AddAsync(ReportSection reportSection);
+        Task<ReportSection> UpdateAsync(ReportSection reportSection);
+        Task<ReportSection> GetReportDataSection(Expression<Func<ReportSection, bool>> expression);
     }
 }

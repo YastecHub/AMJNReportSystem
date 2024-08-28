@@ -1,4 +1,4 @@
-using Application.Wrapper;
+using AMJNReportSystem.Application.Wrapper;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 

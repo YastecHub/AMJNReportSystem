@@ -7,13 +7,7 @@ namespace AMJNReportSystem.Domain.Enums
         [Description("Muqam Report Type")]
         MuqamReportType = 1,
 
-        [Description("Dila Report Type")]
-        DilaReportType,
-
-        [Description("Zone Report Type")]
-        ZoneReportType,
-
-        [Description("Qaid Report Type")]
-        QaidReportType
+        [Description("Circuit Report Type")]
+        CircuitReportType,
     }
 }

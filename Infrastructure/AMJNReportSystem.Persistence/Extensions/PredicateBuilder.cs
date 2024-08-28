@@ -1,6 +1,4 @@
-using Application.Models;
-using Application.Wrapper;
-using System.Collections;
+using AMJNReportSystem.Application.Models;
 using System.Linq.Expressions;
 
 namespace AMJNReportSystem.Persistence.Extensions

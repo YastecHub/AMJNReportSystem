@@ -5,13 +5,7 @@ using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
-using Domain.Entities;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -59,7 +53,7 @@ namespace AMJNReportSystem.Application.Services
                         EndDate = submissionWindow.EndingDate,
                         StartDate = submissionWindow.StartingDate,
                         Id = submissionWindow.Id,
-                        ReportTypeName = submissionWindow.ReportType.Name,
+                        ReportTypeName = submissionWindow.ReportType.Description,
                         ReportTypeId = submissionWindow.ReportType.Id
                     };
                     listOfCurrentSubmissionWindow.Add(currentSubmissionWindow);
@@ -74,7 +68,7 @@ namespace AMJNReportSystem.Application.Services
                         EndDate = submissionWindow.EndingDate,
                         StartDate = submissionWindow.StartingDate,
                         Id = submissionWindow.Id,
-                        ReportTypeName = submissionWindow.ReportType.Name,
+                        ReportTypeName = submissionWindow.ReportType.Description,
                         ReportTypeId = submissionWindow.ReportType.Id
                     };
                     listOfCurrentSubmissionWindow.Add(previousSubmissionWindow);

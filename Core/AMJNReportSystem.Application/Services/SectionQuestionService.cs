@@ -3,7 +3,7 @@ using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Wrapper;
-using Domain.Entities;
+using AMJNReportSystem.Domain.Entities;
 using Mapster;
 using System.Collections.Generic;
 using static System.Collections.Specialized.BitVector32;
@@ -13,10 +13,10 @@ namespace AMJNReportSystem.Application.Services
     public class SectionQuestionService : ISectionQuestionService
     {
         private readonly IQuestionRepository _questionRepository;
-        private readonly ISectionRepository _sectionRepository;
+        private readonly IReportTypeSectionRepository _sectionRepository;
         private readonly IReportTypeRepository _reportTypeRepository;
 
-        public SectionQuestionService(IQuestionRepository questionRepository, ISectionRepository sectionRepository, IReportTypeRepository reportTypeRepository)
+        public SectionQuestionService(IQuestionRepository questionRepository, IReportTypeSectionRepository sectionRepository, IReportTypeRepository reportTypeRepository)
         {
             _questionRepository = questionRepository;
             _sectionRepository = sectionRepository;
@@ -45,25 +45,25 @@ namespace AMJNReportSystem.Application.Services
         public async Task<Result<ReportQuestionsModel>> GetReportTypeQuestions(Guid reportTypeId)
         {
             var reportType = await _reportTypeRepository.GetReportTypeById(reportTypeId);
-            var sections = await _sectionRepository.GetSectionsByReportType(reportTypeId);
+            var sections = await _sectionRepository.GetReportTypeSectionById(reportTypeId);
 
             var response = new ReportQuestionsModel
             {
                 ReportTypeId = reportTypeId,
-                ReportTypeName = reportType.Name,
+                ReportTypeName = reportType.Description,
                 Sections = new List<Sections>()
             };
 
-            foreach (var section in sections)
-            {
-                var sectionQuestions = await ReportSectionQuestions(section.Id);
-                response.Sections.Add(new Sections
-                {
-                    SectionId = section.Id,
-                    Title = section.Name,
-                    Questions = sectionQuestions
-                });
-            }
+            //foreach (var section in sections)
+            //{
+            //    var sectionQuestions = await ReportSectionQuestions(section.Id);
+            //    response.Sections.Add(new Sections
+            //    {
+            //        SectionId = section.Id,
+            //        Title = section.Name,
+            //        Questions = sectionQuestions
+            //    });
+            //}
             return await Result<ReportQuestionsModel>.SuccessAsync(response, "Successfully retrieved question");
         }
 
@@ -101,7 +101,7 @@ namespace AMJNReportSystem.Application.Services
             var question = await _questionRepository.GetQuestionById(questionId);
             if (question is null)
                 return await Result<bool>.FailAsync("Input question Id not found");
-            question.isActive = state;
+            question.IsActive = state;
             await _questionRepository.UpdateQuestion(question);
             return await Result<bool>.SuccessAsync("Question Activeness state updated");
 
@@ -112,7 +112,6 @@ namespace AMJNReportSystem.Application.Services
             var question = await _questionRepository.GetQuestion(x => x.Id == questionId);
 
             if (question is null) return await Result<bool>.FailAsync("Question with provided Id not found");
-            question.Points = point;
             await _questionRepository.UpdateQuestion(question);
             return await Result<bool>.SuccessAsync("Successfully retrieved question");
         }
@@ -122,7 +121,7 @@ namespace AMJNReportSystem.Application.Services
             var question = await _questionRepository.GetQuestion(x => x.Id == questionId);
 
             if (question is null) return await Result<bool>.FailAsync("Question with provided Id not found");
-            question.Text = text;
+            question.QuestionName = text;
             await _questionRepository.UpdateQuestion(question);
             return await Result<bool>.SuccessAsync("Successfully retrieved question");
         }

@@ -1,6 +1,6 @@
 
-using Application.Identity.Users;
-using Application.Identity.Users.Password;
+using AMJNReportSystem.Application.Identity.Users;
+using AMJNReportSystem.Application.Identity.Users.Password;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 using System.Security.Claims;

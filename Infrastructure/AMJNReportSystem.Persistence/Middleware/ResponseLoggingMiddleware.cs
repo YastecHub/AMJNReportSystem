@@ -1,4 +1,4 @@
-using Application.Interfaces;
+using AMJNReportSystem.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using Serilog.Context;

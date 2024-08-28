@@ -1,4 +1,4 @@
-using Application.Interfaces;
+using AMJNReportSystem.Application.Interfaces;
 using System.Security.Claims;
 
 namespace AMJNReportSystem.Persistence.Auth

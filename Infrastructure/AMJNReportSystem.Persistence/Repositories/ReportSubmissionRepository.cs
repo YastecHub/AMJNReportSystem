@@ -1,10 +1,10 @@
 ﻿using AMJNReportSystem.Persistence.Context;
 using AMJNReportSystem.Persistence.Extensions;
-using Application.Abstractions.Repositories;
-using Application.Models;
-using Application.Models.ResponseModels;
-using Application.Wrapper;
-using Domain.Entities;
+using AMJNReportSystem.Application.Abstractions.Repositories;
+using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Models.ResponseModels;
+using AMJNReportSystem.Application.Wrapper;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -52,7 +52,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<bool> Exist(string reportSubmissionName)
         {
-            var reportSub = await _context.ReportSubmissions.AnyAsync(x => x.Name == reportSubmissionName);
+            var reportSub = await _context.ReportSubmissions.AnyAsync(x => x.ReportTag.ToString() == "");
             return reportSub;
         }
     }

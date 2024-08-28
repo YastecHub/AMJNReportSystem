@@ -1,9 +1,6 @@
-﻿using Application.Abstractions.Services;
-using Application.Models;
-using Application.Models.RequestModels;
-using Application.Models.RequestModels.Reports;
+﻿using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Models.RequestModels.Reports;
 using Microsoft.AspNetCore.Mvc;
-using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {

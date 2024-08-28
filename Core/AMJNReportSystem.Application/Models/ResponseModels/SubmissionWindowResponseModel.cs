@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using AMJNReportSystem.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

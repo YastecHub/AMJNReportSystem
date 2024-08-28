@@ -1,10 +1,6 @@
-﻿using Application.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using AMJNReportSystem.Application.Abstractions;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Persistence.Encryption
 {

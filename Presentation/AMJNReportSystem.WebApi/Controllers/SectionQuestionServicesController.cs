@@ -1,6 +1,6 @@
-﻿using Application.Abstractions.Services;
-using Application.Models.RequestModels;
-using Application.Services;
+﻿using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 

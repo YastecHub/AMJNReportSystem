@@ -1,11 +1,9 @@
-﻿using Application.Abstractions.Services;
-using Application.Models;
-using Application.Models.RequestModels;
-using Application.Services;
-using Domain.Entities;
+﻿using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using static System.Collections.Specialized.BitVector32;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {

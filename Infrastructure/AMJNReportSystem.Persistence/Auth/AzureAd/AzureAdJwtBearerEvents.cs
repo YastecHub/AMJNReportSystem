@@ -1,6 +1,6 @@
 ﻿
-using Application.Exceptions;
-using Application.Identity.Users;
+using AMJNReportSystem.Application.Exceptions;
+using AMJNReportSystem.Application.Identity.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

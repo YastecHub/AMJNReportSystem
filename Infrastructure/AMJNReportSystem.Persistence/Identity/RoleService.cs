@@ -1,8 +1,8 @@
 using AMJNReportSystem.Persistence.Context;
-using Application.Authorization;
-using Application.Exceptions;
-using Application.Identity.Roles;
-using Application.Interfaces;
+using AMJNReportSystem.Application.Authorization;
+using AMJNReportSystem.Application.Exceptions;
+using AMJNReportSystem.Application.Identity.Roles;
+using AMJNReportSystem.Application.Interfaces;
 using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

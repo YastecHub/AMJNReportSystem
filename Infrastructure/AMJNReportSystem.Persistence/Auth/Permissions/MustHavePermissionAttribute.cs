@@ -1,4 +1,4 @@
-using Application.Authorization;
+using AMJNReportSystem.Application.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AMJNReportSystem.Persistence.Auth.Permissions

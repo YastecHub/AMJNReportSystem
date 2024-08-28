@@ -1,13 +1,8 @@
-﻿using AMJNReportSystem.Persistence.Context;
-using Application.Abstractions.Repositories;
-using Domain.Entities;
+﻿using AMJNReportSystem.Domain.Entities;
+using AMJNReportSystem.Persistence.Context;
+using AMJNReportSystem.Application.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {

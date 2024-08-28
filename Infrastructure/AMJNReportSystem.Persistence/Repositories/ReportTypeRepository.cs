@@ -1,7 +1,7 @@
 ﻿using AMJNReportSystem.Persistence.Context;
-using Application.Abstractions.Repositories;
-using Domain.Entities;
-using Domain.Enums;
+using AMJNReportSystem.Application.Abstractions.Repositories;
+using AMJNReportSystem.Domain.Entities;
+using AMJNReportSystem.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Repositories
@@ -23,7 +23,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<bool> Exist(string reportTypeName)
         {
-            var reportType = await _context.ReportTypes.AnyAsync(r => r.Name == reportTypeName);
+            var reportType = await _context.ReportTypes.AnyAsync(r => r.Title == reportTypeName);
             return reportType;
         }
 
@@ -35,7 +35,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<IList<ReportType>> GetQaidReports()
         {
-            var report = await _context.ReportTypes.Where(r => r.ReportTag == ReportTag.QaidReportType).ToListAsync();
+            var report = await _context.ReportTypes.Where(r => r.Title == "").ToListAsync();
             return report;
         }
 

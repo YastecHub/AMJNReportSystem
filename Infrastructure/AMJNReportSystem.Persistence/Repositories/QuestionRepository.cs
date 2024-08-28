@@ -1,14 +1,8 @@
-﻿using AMJNReportSystem.Persistence.Context;
-using Application.Abstractions.Repositories;
-using Domain.Entities;
+﻿using AMJNReportSystem.Application.Abstractions.Repositories;
+using AMJNReportSystem.Persistence.Context;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -51,7 +45,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<IList<Question>> GetQuestions(Expression<Func<Question, bool>> expression)
         {
-            var questions = await _context.Questions.Include(x => x.Section).Where(expression).ToListAsync();
+            var questions = await _context.Questions.Include(x => x.ReportSection).Where(expression).ToListAsync();
             return questions;
         }
 

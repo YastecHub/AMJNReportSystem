@@ -1,5 +1,5 @@
-﻿using Application.Exceptions;
-using Application.Identity.Users.Password;
+﻿using AMJNReportSystem.Application.Exceptions;
+using AMJNReportSystem.Application.Identity.Users.Password;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace AMJNReportSystem.Persistence.Identity

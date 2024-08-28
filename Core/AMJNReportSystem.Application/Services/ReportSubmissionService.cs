@@ -4,7 +4,7 @@ using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
-using Domain.Entities;
+using AMJNReportSystem.Domain.Entities;
 using Mapster;
 
 namespace AMJNReportSystem.Application.Services
@@ -24,11 +24,11 @@ namespace AMJNReportSystem.Application.Services
         {
             if (request is null) return await Result<bool>.FailAsync("report submission not found.");
             var reportType = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
-            var reportSubmissionName = $"{reportType?.Name}_{request.Year}_{request.Month}";
+            var reportSubmissionName = $"{reportType?.Title}_{request.Year}_{request.Month}";
             var reportSubmissionChecker = await _reportSubmissionRepository.Exist(reportSubmissionName);
             if (reportSubmissionChecker) return await Result<bool>.FailAsync("Submission date already exit");
             var submission = request.Adapt<ReportSubmission>();
-            submission.Name = reportSubmissionName;
+            submission.ReportType.Title = reportSubmissionName;
             await _reportSubmissionRepository.AddReportSubmissionAsync(submission);
             return await Result<bool>.SuccessAsync("Report submission successfully added");
         }

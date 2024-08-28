@@ -1,6 +1,4 @@
-
-
-using Application.Wrapper;
+using AMJNReportSystem.Application.Wrapper;
 
 namespace AMJNReportSystem.Persistence.Converters
 {

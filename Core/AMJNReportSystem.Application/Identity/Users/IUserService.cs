@@ -1,7 +1,6 @@
 using AMJNReportSystem.Application.Identity.Users.Password;
 using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Models;
-using AMJNReportSystem.Application.Wrapper;
 using System.Security.Claims;
 
 namespace AMJNReportSystem.Application.Identity.Users

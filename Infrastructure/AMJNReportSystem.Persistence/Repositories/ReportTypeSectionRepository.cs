@@ -1,6 +1,6 @@
 ﻿using AMJNReportSystem.Persistence.Context;
-using Application.Abstractions.Repositories;
-using Domain.Entities;
+using AMJNReportSystem.Application.Abstractions.Repositories;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -14,35 +14,35 @@ namespace AMJNReportSystem.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<bool> CreateReportTypeSection(ReportTypeSection reportTypeSection)
+        public async Task<bool> CreateReportTypeSection(ReportSection reportTypeSection)
         {
             await _context.AddAsync(reportTypeSection);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UpdateReportTypeSection(ReportTypeSection reportTypeSection)
+        public Task<ReportSection> GetReportTypeSection(Expression<Func<ReportSection, bool>> expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ReportSection> GetReportTypeSectionById(Guid id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IList<ReportSection>> GetReportTypeSections(Expression<Func<ReportSection, bool>> expression)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateReportTypeSection(ReportSection reportTypeSection)
         {
             _context.Update(reportTypeSection);
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<IList<ReportTypeSection>> GetReportTypeSections(Expression<Func<ReportTypeSection, bool>> expression)
-        {
-            return await _context.ReportTypeSections.Where(expression).ToListAsync();
-        }
-
-        public async Task<ReportTypeSection> GetReportTypeSection(Expression<Func<ReportTypeSection, bool>> expression)
-        {
-            var result = await _context.ReportTypeSections.FirstOrDefaultAsync(expression);
-            return result;
-        }
-
-        public async Task<ReportTypeSection> GetReportTypeSectionById(Guid id)
-        {
-            var result = await _context.ReportTypeSections.SingleOrDefaultAsync(r => r.Id == id);
-            return result;
-        }
+       
     }
 }

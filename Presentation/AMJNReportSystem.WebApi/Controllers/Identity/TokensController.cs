@@ -1,5 +1,5 @@
 
-using Application.Identity.Tokens;
+using AMJNReportSystem.Application.Identity.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;

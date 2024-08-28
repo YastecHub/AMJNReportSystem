@@ -1,10 +1,10 @@
-using Application.Authorization;
-using Application.Identity.Users;
-using Application.Identity.Users.Password;
+using AMJNReportSystem.Application.Authorization;
+using AMJNReportSystem.Application.Identity.Users;
+using AMJNReportSystem.Application.Identity.Users.Password;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using Persistence.Auth.Permissions;
+using AMJNReportSystem.Persistence.Auth.Permissions;
 
 namespace AMJNReportSystem.WebApi.Controllers.Identity
 {
@@ -107,6 +107,6 @@ namespace AMJNReportSystem.WebApi.Controllers.Identity
             return _userService.ResetPasswordAsync(request);
         }
 
-        private string GetOriginFromRequest() => $"{Request.Scheme}://{Request.AMJNReportSystem.WebApi.Value}{Request.PathBase.Value}";
+        private string GetOriginFromRequest() => $"{Request.Scheme}://{Request.Host}{Request.PathBase.Value}";
     }
 }

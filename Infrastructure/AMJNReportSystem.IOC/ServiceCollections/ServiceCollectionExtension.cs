@@ -1,12 +1,12 @@
 ﻿
-using Application.Abstractions;
-using Application.Abstractions.Repositories;
-using Application.Abstractions.Services;
-using Application.Identity.Roles;
-using Application.Identity.Tokens;
-using Application.Identity.Users;
-using Application.Interfaces;
-using Application.Services;
+using AMJNReportSystem.Application.Abstractions;
+using AMJNReportSystem.Application.Abstractions.Repositories;
+using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Identity.Roles;
+using AMJNReportSystem.Application.Identity.Tokens;
+using AMJNReportSystem.Application.Identity.Users;
+using AMJNReportSystem.Application.Interfaces;
+using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -18,21 +18,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NJsonSchema.Generation.TypeMappers;
 using NSwag;
 using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
-using Persistence.Auth;
-using Persistence.Auth.Jwt;
-using Persistence.Auth.Permissions;
-using Persistence.Common.Services;
-using Persistence.Context;
-using Persistence.Encryption;
-using Persistence.Identity;
-using Persistence.Middleware;
-using Persistence.OpenApi;
-using Persistence.Repositories;
-using Persistence.SecurityHeaders;
+using AMJNReportSystem.Persistence.Auth;
+using AMJNReportSystem.Persistence.Auth.Jwt;
+using AMJNReportSystem.Persistence.Auth.Permissions;
+using AMJNReportSystem.Persistence.Common.Services;
+using AMJNReportSystem.Persistence.Context;
+using AMJNReportSystem.Persistence.Encryption;
+using AMJNReportSystem.Persistence.Identity;
+using AMJNReportSystem.Persistence.Middleware;
+using AMJNReportSystem.Persistence.OpenApi;
+using AMJNReportSystem.Persistence.Repositories;
+using AMJNReportSystem.Persistence.SecurityHeaders;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
@@ -45,10 +44,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSubmissionRepository, ReportSubmissionRepository>()
                 .AddScoped<IReportTypeRepository, ReportTypeRepository>()
                 .AddScoped<IReportTypeSectionRepository, ReportTypeSectionRepository>()
-                .AddScoped<IReportRepository, ReportRepository>()
-                .AddScoped<IReportDataSectionRepository, ReportDataSectionRepository>()
-                .AddScoped<IQuestionRepository, QuestionRepository>()
-                .AddScoped<ISectionRepository, SectionRepository>();
+                .AddScoped<IQuestionRepository, QuestionRepository>();
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
@@ -57,8 +53,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IEncryptionService, EncryptionService>()
                 .AddScoped<ISectionQuestionService, SectionQuestionService>()
                 .AddScoped<IReportService, ReportService>()
-                .AddScoped<IReportTypeService, ReportTypeService>()
-                .AddScoped<IReportTypeSectionService, ReportTypeSectionService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IReportSubmissionService, ReportSubmissionService>()
                 .AddScoped<IRoleService, RoleService>()
@@ -323,18 +317,18 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                     document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
                     document.OperationProcessors.Add(new SwaggerGlobalAuthProcessor());
 
-                    document.TypeMappers.Add(new PrimitiveTypeMapper(typeof(TimeSpan), schema =>
-                    {
-                        schema.Type = NJsonSchema.JsonObjectType.String;
-                        schema.IsNullableRaw = true;
-                        schema.Pattern = @"^([0-9]{1}|(?:0[0-9]|1[0-9]|2[0-3])+):([0-5]?[0-9])(?::([0-5]?[0-9])(?:.(\d{1,9}))?)?$";
-                        schema.Example = "02:00:00";
-                    }));
+                    //document.TypeMappers.Add(new PrimitiveTypeMapper(typeof(TimeSpan), schema =>
+                    //{
+                    //    schema.Type = NJsonSchema.JsonObjectType.String;
+                    //    schema.IsNullableRaw = true;
+                    //    schema.Pattern = @"^([0-9]{1}|(?:0[0-9]|1[0-9]|2[0-3])+):([0-5]?[0-9])(?::([0-5]?[0-9])(?:.(\d{1,9}))?)?$";
+                    //    schema.Example = "02:00:00";
+                    //}));
 
                     document.OperationProcessors.Add(new SwaggerHeaderAttributeProcessor());
 
                     var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
-                    document.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+                    //document.SchemaProcessors.Add(fluentValidationSchemaProcessor);
                 });
             }
 
@@ -346,7 +340,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
             if (config.GetValue<bool>("SwaggerSettings:Enable"))
             {
                 app.UseOpenApi();
-                app.UseSwaggerUi3(options =>
+                app.UseSwaggerUi(options =>
                 {
                     options.DefaultModelsExpandDepth = -1;
                     options.DocExpansion = "none";

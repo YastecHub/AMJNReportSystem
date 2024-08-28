@@ -1,5 +1,5 @@
-﻿using Application.Authorization;
-using Application.Exceptions;
+﻿using AMJNReportSystem.Application.Exceptions;
+using AMJNReportSystem.Application.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Identity

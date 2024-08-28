@@ -1,5 +1,5 @@
 using AMJNReportSystem.Persistence.Common;
-using Application.Exceptions;
+using AMJNReportSystem.Application.Exceptions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using System.Text;

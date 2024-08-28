@@ -1,7 +1,7 @@
 ﻿using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
-using Domain.Entities;
+using AMJNReportSystem.Domain.Entities;
 using System.Linq.Expressions;
 
 namespace AMJNReportSystem.Application.Abstractions.Repositories

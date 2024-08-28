@@ -1,10 +1,10 @@
 using AMJNReportSystem.Gateway.Extensions;
-using Application;
-using Application.Models;
-using Application.Wrapper;
-using Domain.Entities;
+using AMJNReportSystem.Application;
+using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Wrapper;
 using Microsoft.Extensions.Configuration;
 using System.Net;
+using AMJNReportSystem.Domain.Entities;
 
 namespace AMJNReportSystem.Gateway.Implementations
 {

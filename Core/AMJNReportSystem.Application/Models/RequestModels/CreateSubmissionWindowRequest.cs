@@ -1,4 +1,4 @@
-﻿using Domain.Enums;
+﻿using AMJNReportSystem.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;

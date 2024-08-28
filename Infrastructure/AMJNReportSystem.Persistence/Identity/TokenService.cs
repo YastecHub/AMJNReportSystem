@@ -1,8 +1,8 @@
+using AMJNReportSystem.Application.Authorization;
+using AMJNReportSystem.Application.Exceptions;
+using AMJNReportSystem.Application.Identity.Tokens;
 using AMJNReportSystem.Persistence.Auth;
 using AMJNReportSystem.Persistence.Auth.Jwt;
-using Application.Authorization;
-using Application.Exceptions;
-using Application.Identity.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
