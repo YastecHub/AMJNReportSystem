@@ -107,7 +107,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ReportTypeSectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReportSectionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReportReportSectionName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),

@@ -200,7 +200,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Property<Guid>("ReportId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("ReportSectionName")
+                    b.Property<string>("ReportReportSectionName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

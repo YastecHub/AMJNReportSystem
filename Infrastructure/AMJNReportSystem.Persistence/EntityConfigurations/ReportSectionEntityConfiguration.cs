@@ -10,8 +10,8 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
         {
             builder.HasKey(t => t.Id);
 
-            builder.HasIndex(u => u.SectionName).IsUnique();
-            builder.HasIndex(u => u.SectionValue).IsUnique();
+            builder.HasIndex(u => u.ReportSectionName).IsUnique();
+            builder.HasIndex(u => u.ReportSectionValue).IsUnique();
         }
     } 
 }

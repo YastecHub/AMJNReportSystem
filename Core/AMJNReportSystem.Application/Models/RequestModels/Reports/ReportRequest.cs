@@ -10,7 +10,7 @@
     public class SectionReportRequest
     {
         public Guid ReportTypeSectionId { get; set; }
-        public string ReportTypeSectionName { get; set; } = null!;
+        public string ReportTypeReportSectionName { get; set; } = null!;
         public IList<SectionDataRequest> SectionData { get; set; }
     }
 

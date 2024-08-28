@@ -43,7 +43,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
             return services
                 .AddScoped<IReportSubmissionRepository, ReportSubmissionRepository>()
                 .AddScoped<IReportTypeRepository, ReportTypeRepository>()
-                .AddScoped<IReportTypeSectionRepository, ReportTypeSectionRepository>()
+                .AddScoped<IReportTypeSectionRepository, ReportSectionRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>();
         }
 
