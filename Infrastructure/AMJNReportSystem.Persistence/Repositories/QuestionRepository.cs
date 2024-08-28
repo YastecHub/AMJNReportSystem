@@ -30,9 +30,9 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         }
 
-        public async Task<Question> GetQuestionAsync(Expression<Func<Question, bool>> expression)
+		public async Task<Question> GetQuestionAsync(Expression<Func<Question, bool>> expression)
         {
-            var question = await _context.Questions.SingleOrDefaultAsync(expression);
+            var question = await _context.Questions.FirstOrDefaultAsync(expression);
             return question;
         }
 
@@ -46,12 +46,6 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<IList<Question>> GetQuestions(Expression<Func<Question, bool>> expression)
         {
             var questions = await _context.Questions.Include(x => x.ReportSection).Where(expression).ToListAsync();
-            return questions;
-        }
-
-        public async Task<Question> GetQuestion(Expression<Func<Question, bool>> expression)
-        {
-            var questions = await _context.Questions.FirstOrDefaultAsync(expression);
             return questions;
         }
 
