@@ -24,6 +24,7 @@ namespace AMJNReportSystem.Application.Services
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.Name,
+                    ReportSectionValue = request.Value,
                     Description = request.Description,
                     ReportTypeId = request.ReportTypeId,
                     IsActive = true
@@ -49,6 +50,7 @@ namespace AMJNReportSystem.Application.Services
                     return Result<bool>.Fail("Report section not found.");
 
                 existingSection.ReportSectionName = request.Name;
+                existingSection.ReportSectionValue = request.Value;
                 existingSection.Description = request.Description;
 
                 var isUpdated = await _reportSectionRepository.UpdateReportSection(existingSection);
@@ -70,7 +72,7 @@ namespace AMJNReportSystem.Application.Services
                 if (reportSection == null)
                     return Result<ReportSectionDto>.Fail("Report section not found.");
 
-                var reportSectionDto = reportSection.Adapt<ReportSectionDto>(); // Using Mapster to map entity to DTO
+                var reportSectionDto = reportSection.Adapt<ReportSectionDto>();
                 return Result<ReportSectionDto>.Success(reportSectionDto);
             }
             catch (Exception ex)
