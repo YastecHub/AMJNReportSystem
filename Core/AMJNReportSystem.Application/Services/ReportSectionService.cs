@@ -119,21 +119,18 @@ namespace AMJNReportSystem.Application.Services
 
         public async Task<Result<bool>> DeleteReportSection(Guid reportSectionId)
         {
-            try
+            var reportSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
+            if (reportSection == null)
             {
-                var existingSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
-                if (existingSection == null)
-                    return Result<bool>.Fail("Report section not found.");
+                return Result<bool>.Fail("Report section not found.");
+            }
 
-                var isDeleted = await _reportSectionRepository.DeleteReportSection(reportSectionId);
-                return isDeleted
-                    ? Result<bool>.Success(true)
-                    : Result<bool>.Fail("Failed to delete report section.");
-            }
-            catch (Exception ex)
-            {
-                return Result<bool>.Fail($"An error occurred: {ex.Message}");
-            }
+            reportSection.IsActive = false;
+            reportSection.IsDeleted = true;
+
+            var result = await _reportSectionRepository.UpdateReportSection(reportSection);
+
+            return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to delete report section.");
         }
     }
 }

@@ -40,12 +40,6 @@ namespace AMJNReportSystem.Persistence.Repositories
             _context.ReportSections.Update(reportSection);
             return await _context.SaveChangesAsync() > 0;
         }
-
-        public async Task<bool> DeleteReportSection(ReportSection reportSection)
-        {
-            _context.ReportSections.Remove(reportSection);
-            return await _context.SaveChangesAsync() > 0;
-        }
     }
 }
 
