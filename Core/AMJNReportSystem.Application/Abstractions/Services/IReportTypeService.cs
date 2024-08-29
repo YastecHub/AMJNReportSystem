@@ -13,7 +13,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method for creating new report type, accepting the name, description 
         /// and ReportTag(MuqamReport, DilaReport, ZoneReport, QaidReport) as parameters by Admin only
         /// </summary>
-        Task<Result<bool>> CreateReportType(CreateReportTypeRequest request);
+        Task<Result<bool>> CreateReportType(CreateReportSubmission request);
 
         /// <summary>
         /// Method for update report type, accepting the name and description as parameters by Admin only
