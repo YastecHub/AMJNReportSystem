@@ -3,6 +3,7 @@ using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -14,13 +15,12 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             _context = context;
         }
-        public async Task<ReportType> AddReportType(ReportType reportType)
+        public async Task<ReportType> CreateReportType(ReportType reportType)
         {
-            await _context.AddAsync(reportType);
+           var report = await _context.AddAsync(reportType);
             await _context.SaveChangesAsync();
             return reportType;
         }
-
         public async Task<bool> Exist(string reportTypeName)
         {
             var reportType = await _context.ReportTypes.AnyAsync(r => r.Title == reportTypeName);
@@ -29,27 +29,33 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<IList<ReportType>> GetAllReportTypes()
         {
-            var reportTypes = await _context.ReportTypes.ToListAsync();
+            var reportTypes = await _context.ReportTypes.Where(f => f.Id == f.Id).ToListAsync();
             return reportTypes;
         }
 
-        public async Task<IList<ReportType>> GetQaidReports()
+        public async Task<IList<ReportType>> GetQaidReports(string reportTypeName)
         {
-            var report = await _context.ReportTypes.Where(r => r.Title == "").ToListAsync();
-            return report;
+            var reports = await _context.ReportTypes
+                .Where(r => r.Title == reportTypeName)
+                .ToListAsync();
+
+            return reports;
         }
+
 
         public async Task<ReportType> GetReportTypeById(Guid id)
         {
-            var reportType = await _context.ReportTypes.SingleOrDefaultAsync(x => x.Id == id);
+            var reportType = await _context.ReportTypes.Where(f => f.Id == id).FirstOrDefaultAsync();
             return reportType;
         }
 
         public async Task<ReportType> UpdateReportType(ReportType reportType)
         {
-            _context.Update(reportType);
-            _context.SaveChanges();
+            var report =   _context.ReportTypes.Update(reportType);
+            await _context.SaveChangesAsync();
             return reportType;
         }
+
+
     }
 }

@@ -4,10 +4,10 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
 {
     public interface IReportTypeRepository
     {
-        Task<ReportType> AddReportType(ReportType reportType);
-        Task<ReportType> GetReportTypeById(Guid id);
+        Task<ReportType> CreateReportType(ReportType reportType);
         Task<IList<ReportType>> GetAllReportTypes();
-        public Task<IList<ReportType>> GetQaidReports();
+        Task<IList<ReportType>> GetQaidReports(string reportTypeName);
+        Task<ReportType> GetReportTypeById(Guid id);
         Task<ReportType> UpdateReportType(ReportType reportType);
         Task<bool> Exist(string reportTypeName);
     }
