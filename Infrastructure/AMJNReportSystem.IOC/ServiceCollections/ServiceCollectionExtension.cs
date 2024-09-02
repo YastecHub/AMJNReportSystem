@@ -43,7 +43,8 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSubmissionRepository, ReportSubmissionRepository>()
                 .AddScoped<IReportTypeRepository, ReportTypeRepository>()
                 .AddScoped<IReportSectionRepository, ReportSectionRepository>()
-                .AddScoped<IQuestionRepository, QuestionRepository>();
+                .AddScoped<IQuestionRepository, QuestionRepository>()
+                .AddScoped<ISubmissionWindowRepository, SubmissionWindowRepository>();
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration config)
@@ -54,7 +55,11 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IReportSubmissionService, ReportSubmissionService>()
                 .AddScoped<ISerializerService, NewtonSoftService>()
-                .AddScoped<ITokenService, TokenService>();
+                .AddScoped<ITokenService, TokenService>()
+                .AddScoped<ISubmissionWindowService, SubmissionWindowService>()
+                .AddScoped<IReportSectionService, ReportSectionService>()
+                .AddScoped<IQuestionService, QuestionService>()
+                .AddScoped<IReportTypeService, ReportTypeService>();
         }
 
         public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)

@@ -12,6 +12,13 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 
             builder.HasIndex(u => u.ReportSectionName).IsUnique();
             builder.HasIndex(u => u.ReportSectionValue).IsUnique();
+            builder.HasIndex(u => u.Description).IsUnique();
+
+
+            builder.HasOne<ReportType>()
+                  .WithMany()
+                  .HasForeignKey(t => t.ReportTypeId)
+                  .OnDelete(DeleteBehavior.Cascade);
         }
     } 
 }
