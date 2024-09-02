@@ -6,6 +6,6 @@ namespace AMJNReportSystem.Domain.Entities
     {
         public Guid QuestionId { get; set; }
         public Question? Question { get; set; }
-        public object Text { get; set; }
+        public string Text { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SectionQuestionServicesController : ControllerBase
+    public class SectionQuestionController : ControllerBase
     {
         private readonly ISectionQuestionService _sectionQuestionService;
 
-        public SectionQuestionServicesController(ISectionQuestionService sectionQuestionService)
+        public SectionQuestionController(ISectionQuestionService sectionQuestionService)
         {
             _sectionQuestionService = sectionQuestionService;
         }
