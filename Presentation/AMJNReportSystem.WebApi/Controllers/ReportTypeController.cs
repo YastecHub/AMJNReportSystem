@@ -19,7 +19,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("create-report-type")]
         [OpenApiOperation("Create new report type.", "")]
-        public async Task<IActionResult> CreateReportType([FromBody] CreateReportSubmission model)
+        public async Task<IActionResult> CreateReportType([FromBody] CreateReportTypeRequest model)
         {
             var a = UserContext;
             if (!ModelState.IsValid) return BadRequest(ModelState);

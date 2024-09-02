@@ -53,7 +53,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 //.AddScoped<IReportService, ReportService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IReportSubmissionService, ReportSubmissionService>()
-                .AddScoped<IRoleService, RoleService>()
                 .AddScoped<ISerializerService, NewtonSoftService>()
                 .AddScoped<ITokenService, TokenService>();
         }
@@ -64,6 +63,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 options.UseSqlServer(connectionString));
             return services;
         }
+
 
         internal static IServiceCollection AddIdentity(this IServiceCollection services) =>
             services

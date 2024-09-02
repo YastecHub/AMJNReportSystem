@@ -60,7 +60,7 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetQaidReportTypes()
+        public async Task<BaseResponse<List<ReportTypeDto>>> GetQaidReportTypes()
         {
             try
             {
@@ -72,7 +72,7 @@ namespace AMJNReportSystem.Application.Services
                     Year = r.Year,
                 }).ToList();
 
-                return new BaseResponse<IEnumerable<ReportTypeDto>>
+                return new BaseResponse<List<ReportTypeDto>>
                 {
                     Data = reportTypeDtos,
                     Status = true,
@@ -80,7 +80,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                return new BaseResponse<IEnumerable<ReportTypeDto>>
+                return new BaseResponse<List<ReportTypeDto>>
                 {
                     Message = $"Failed to retrieve report types: {ex.Message}",
                     Status = false
@@ -238,6 +238,11 @@ namespace AMJNReportSystem.Application.Services
                     Status = false
                 };
             }
+        }
+
+        Task<BaseResponse<IEnumerable<ReportTypeDto>>> IReportTypeService.GetQaidReportTypes()
+        {
+            throw new NotImplementedException();
         }
     }
 }

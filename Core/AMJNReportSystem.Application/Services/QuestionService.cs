@@ -4,7 +4,6 @@ using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
-using MassTransit;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -97,7 +96,7 @@ namespace AMJNReportSystem.Application.Services
 			{
 				Id = question.Id,
 				ReportSectionId = question.SectionId,
-				SectionName = question.ReportSection.SectionName,
+				SectionName = question.ReportSection.ReportSectionName,
 				QuestionName = question.QuestionName,
 				IsRequired = question.IsRequired,
 				IsActive = question.IsActive,
@@ -120,12 +119,12 @@ namespace AMJNReportSystem.Application.Services
 			{
 				Id = q.Id,
 				ReportSectionId = q.SectionId,
-				SectionName = q.ReportSection.SectionName,
+				SectionName = q.ReportSection.ReportSectionName,
 				QuestionName = q.QuestionName,
 				IsRequired = q.IsRequired,
 				IsActive = q.IsActive,
 				QuestionType = q.QuestionType,
-				ResponseType = q.ResponseType,
+				ResponseType = q.ResponseType, 
 				Options = q.Options.Select(o => new QuestionOption
 				{
 					Text = o.Text
