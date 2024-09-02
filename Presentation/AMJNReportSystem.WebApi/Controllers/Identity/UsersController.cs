@@ -1,10 +1,8 @@
-using AMJNReportSystem.Application.Authorization;
 using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Identity.Users.Password;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
-using AMJNReportSystem.Persistence.Auth.Permissions;
 
 namespace AMJNReportSystem.WebApi.Controllers.Identity
 {

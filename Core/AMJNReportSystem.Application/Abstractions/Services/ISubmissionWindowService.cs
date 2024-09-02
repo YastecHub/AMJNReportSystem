@@ -14,14 +14,14 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// <summary>
         /// Method for creating new report submission window,by Admin only
         /// </summary>
-        Task<Result<T>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request);
+        Task<Result<bool>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request);
 
         /// <summary>
         /// Method for updating submission window by admin only, the starting and ending date of a submission window
         /// can be updated only when the window is not yet active (i/e the start date has not been reached) otherwise
         /// we should only be able to update the ending date (which should also not be less than current date)
         /// </summary>
-        Task<Result<T>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request);
+        Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request);
 
         /// <summary>
         /// Method to get all active submission window

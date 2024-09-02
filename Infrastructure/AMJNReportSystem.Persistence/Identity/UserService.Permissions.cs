@@ -14,15 +14,7 @@ namespace AMJNReportSystem.Persistence.Identity
 
             var userRoles = await _userManager.GetRolesAsync(user);
             var permissions = new List<string>();
-            foreach (var role in await _roleManager.Roles
-                .Where(r => userRoles.Contains(r.Name!))
-                .ToListAsync(cancellationToken))
-            {
-                permissions.AddRange(await _db.RoleClaims
-                    .Where(rc => rc.RoleId == role.Id && rc.ClaimType == GXClaims.Permission)
-                    .Select(rc => rc.ClaimValue!)
-                    .ToListAsync(cancellationToken));
-            }
+           
 
             return permissions.Distinct().ToList();
         }

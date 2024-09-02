@@ -10,7 +10,34 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
         {
             builder.HasKey(t => t.Id);
 
+            
+            builder.Property(t => t.QuestionId)
+                .IsRequired();
+
+            builder.Property(t => t.TextAnswer)
+                .HasMaxLength(1000);
+
+            
+            builder.Property(t => t.QuestionOptionId)
+                .IsRequired(false);
+
            
+            builder.Property(t => t.Report)
+                .HasMaxLength(2000); 
+
+          
+            builder.HasOne(t => t.Question)
+                .WithMany() 
+                .HasForeignKey(t => t.QuestionId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            builder.HasOne(t => t.QuestionOption)
+                .WithMany() 
+                .HasForeignKey(t => t.QuestionOptionId)
+                .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }
+
+
+

@@ -33,11 +33,11 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissionWindow;
         }
 
-        public async Task<SubmissionWindow> UpdateSubmissionWindow(SubmissionWindow submissionWindow)
+        public async Task<bool> UpdateSubmissionWindow(SubmissionWindow submissionWindow)
         {
             var submission = _context.Update(submissionWindow);
             _context.SaveChanges();
-            return submissionWindow;
+            return true;
         }
     }
 }
