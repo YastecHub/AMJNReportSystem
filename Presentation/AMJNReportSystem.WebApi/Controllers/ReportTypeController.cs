@@ -5,11 +5,11 @@ using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
-    public class ReportTypesController : BaseSecuredController
+    public class ReportTypeController : BaseSecuredController
     {
         private readonly IReportTypeService _reportTypeService;
 
-        public ReportTypesController(IReportTypeService reportTypeService)
+        public ReportTypeController(IReportTypeService reportTypeService)
         {
             _reportTypeService = reportTypeService;
         }
@@ -17,18 +17,18 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPost]
+        [HttpPost("create-report-type")]
         [OpenApiOperation("Create new report type.", "")]
         public async Task<IActionResult> CreateReportType([FromBody] CreateReportSubmission model)
         {
             var a = UserContext;
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var reportTypeRequest = await _reportTypeService.CreateReportType(model);
-            return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
+            return !reportTypeRequest.Status ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("qaidReportTypes")]
+        [HttpGet("qaid--report-types")]
         [OpenApiOperation("Get list of Qaid report types.", "")]
         public async Task<IActionResult> GetQaidReportTypes()
         {
@@ -38,17 +38,17 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("{id}")]
+        [HttpGet("get-report-type{id}")]
         [OpenApiOperation("Get a specific report type by id.", "")]
         public async Task<IActionResult> GetReportType(Guid id)
         {
             if (id == Guid.Empty) return BadRequest("id can not be empty");
             var response = await _reportTypeService.GetReportType(id);
-            return !response.Succeeded ? NotFound(response) : Ok(response);
+            return !response.Status ? NotFound(response) : Ok(response);
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet]
+        [HttpGet("get-report-types")]
         [OpenApiOperation("Get list of all report types.", "")]
         public async Task<IActionResult> GetReportTypes()
         {
@@ -59,7 +59,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("{id}")]
+        [HttpPut("update-report-type{id}")]
         [OpenApiOperation("update a specific report type.", "")]
         public async Task<IActionResult> UpdateReportType(Guid id, [FromBody] UpdateReportTypeRequest request)
         {
@@ -70,7 +70,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("{id}/state")]
+        [HttpPut("set-report-type-state{id}/state")]
         [OpenApiOperation("update a Report Type Activeness State", "")]
         public async Task<IActionResult> SetReportTypeState([FromRoute] Guid reportTypeId, bool state)
         {

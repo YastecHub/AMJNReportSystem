@@ -2,8 +2,9 @@
 
 namespace AMJNReportSystem.Domain.Entities
 {
-    public class ReportResponse : AuditableEntity
+    public class ReportResponseDto
     {
+        public Guid Id { get; set; }
         public Guid QuestionId { get; set; }
         public Question Question { get; set; } = null!;
         public object? TextAnswer { get; set; } 

@@ -1,5 +1,4 @@
-﻿
-using AMJNReportSystem.Application.Abstractions;
+﻿using AMJNReportSystem.Application.Abstractions;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Identity.Roles;
@@ -43,7 +42,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
             return services
                 .AddScoped<IReportSubmissionRepository, ReportSubmissionRepository>()
                 .AddScoped<IReportTypeRepository, ReportTypeRepository>()
-                .AddScoped<IReportTypeSectionRepository, ReportTypeSectionRepository>()
+                .AddScoped<IReportSectionRepository, ReportSectionRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>();
         }
 
@@ -51,8 +50,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         {
             return services
                 .AddScoped<IEncryptionService, EncryptionService>()
-                .AddScoped<ISectionQuestionService, SectionQuestionService>()
-                .AddScoped<IReportService, ReportService>()
+                //.AddScoped<IReportService, ReportService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IReportSubmissionService, ReportSubmissionService>()
                 .AddScoped<IRoleService, RoleService>()

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Context
 {
-    public class ApplicationContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, ApplicationRoleClaim, IdentityUserToken<string>>
+    public class ApplicationContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, ApplicationRoleClaim, IdentityUserToken<string>>  
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
@@ -18,5 +18,7 @@ namespace AMJNReportSystem.Persistence.Context
         public DbSet<ReportSubmission> ReportSubmissions { get; set; }
         public DbSet<SubmissionWindow> SubmissionWindows { get; set; }
         public DbSet<QuestionOption> QuestionOptions { get; set; }
+        public DbSet<ReportSection> ReportSections { get; set; }
+        public DbSet<ReportResponse> ReportResponses { get; set; }
     }
 }

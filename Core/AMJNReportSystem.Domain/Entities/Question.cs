@@ -8,10 +8,10 @@ namespace AMJNReportSystem.Domain.Entities
         public string QuestionName { get; set; }
         public QuestionType QuestionType { get; set; }
         public ResponseType ResponseType { get; set; }
-        public List<QuestionOption>? Options { get; set; } = new List<QuestionOption>();
+        public List<QuestionOption>? Options { get; set; } = new List<QuestionOption>(); 
         public bool IsRequired { get; set; }
         public bool IsActive { get; set; }
-        public Guid SectionId { get; set; }
+        public Guid SectionId { get; set; } 
         public ReportSection ReportSection { get; set; }
     }
 }
