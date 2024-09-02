@@ -10,10 +10,10 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
         {
 
             builder.ToTable("ReportType");
-            // Setting the primary key
+          
             builder.HasKey(t => t.Id);
 
-            // Configuring properties
+            
             builder.Property(t => t.Name)
                    .IsRequired()
                    .HasMaxLength(100);

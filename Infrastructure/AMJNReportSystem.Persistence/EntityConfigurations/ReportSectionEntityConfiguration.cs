@@ -8,6 +8,8 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<ReportSection> builder)
         {
+            builder.ToTable("ReportSection");
+
             builder.HasKey(t => t.Id);
 
             builder.HasIndex(u => u.ReportSectionName).IsUnique();
@@ -15,10 +17,25 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.HasIndex(u => u.Description).IsUnique();
 
 
+            builder.Property(t => t.ReportSectionName)
+                      .IsRequired()
+                      .HasMaxLength(100);
+
+            builder.Property(t => t.ReportSectionValue)
+                   .IsRequired();
+
+            builder.Property(t => t.Description)
+                   .HasMaxLength(500);
+
+            builder.Property(t => t.IsActive)
+                   .IsRequired()
+                   .HasDefaultValue(true);
+
+
             builder.HasOne<ReportType>()
                   .WithMany()
                   .HasForeignKey(t => t.ReportTypeId)
                   .OnDelete(DeleteBehavior.Cascade);
         }
-    } 
+    }
 }
