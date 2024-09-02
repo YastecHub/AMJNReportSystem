@@ -18,5 +18,6 @@ namespace AMJNReportSystem.Persistence.Context
         public DbSet<ReportSubmission> ReportSubmissions { get; set; }
         public DbSet<SubmissionWindow> SubmissionWindows { get; set; }
         public DbSet<ReportSection> ReportSections { get; set; }
+        public DbSet<ReportResponse> ReportResponses { get; set; }
     }
 }

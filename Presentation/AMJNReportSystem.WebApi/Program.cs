@@ -1,3 +1,4 @@
+using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
 using HealthChecks.UI.Client;
@@ -14,14 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-//builder.Services.AddServices(builder.Configuration);
-//builder.Services.AddRepositories(builder.Configuration);
+builder.Services.AddServices(builder.Configuration);
+builder.Services.AddRepositories(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
-//builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
-//builder.Services.AddDatabase(connectionString);
+builder.Services.AddDatabase(connectionString);
 
 builder.Services.AddHealthChecks()
 .AddSqlServer(builder.Configuration.GetConnectionString("ConnectionString"))
@@ -49,7 +50,7 @@ app.UseCors();
 
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseInfrastructure(builder.Configuration);
+app.UseInfrastructure(builder.Configuration);
 app.MapControllers();
 
 app.Run();

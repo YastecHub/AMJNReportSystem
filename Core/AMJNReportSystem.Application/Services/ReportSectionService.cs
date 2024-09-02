@@ -95,7 +95,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
         public async Task<Result<bool>> SetreportSectionActiveness(Guid reportSectionId, bool state)
         {
             try
