@@ -17,6 +17,7 @@ namespace AMJNReportSystem.Persistence.Context
         public DbSet<Question> Questions { get; set; }
         public DbSet<ReportSubmission> ReportSubmissions { get; set; }
         public DbSet<SubmissionWindow> SubmissionWindows { get; set; }
+        public DbSet<QuestionOption> QuestionOptions { get; set; }
         public DbSet<ReportSection> ReportSections { get; set; }
         public DbSet<ReportResponse> ReportResponses { get; set; }
     }

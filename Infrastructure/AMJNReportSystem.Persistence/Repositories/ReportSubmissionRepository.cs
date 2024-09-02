@@ -12,47 +12,116 @@ namespace AMJNReportSystem.Persistence.Repositories
 {
     public class ReportSubmissionRepository : IReportSubmissionRepository
     {
-        private readonly ApplicationContext _context;
+        private readonly ApplicationContext _dbcontext;
 
-        public ReportSubmissionRepository(ApplicationContext context)
+        public ReportSubmissionRepository(ApplicationContext dbcontext)
         {
-            _context = context;
+            _dbcontext = dbcontext;
         }
 
-        public async Task<ReportSubmission> AddReportSubmissionAsync(ReportSubmission reportSubmission)
+        public async Task<ReportSubmission> CreateReportSubmissionAsync(ReportSubmission reportSubmission)
         {
-            await _context.AddAsync(reportSubmission);
-            await _context.SaveChangesAsync();
+            await _dbcontext.AddAsync(reportSubmission);
+            await _dbcontext.SaveChangesAsync();
+            return reportSubmission;
+        }
+        public async Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id)
+        {
+            var reportSubmission = await _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.QuestionOption)
+                .SingleOrDefaultAsync(x => x.Id == id);
+
             return reportSubmission;
         }
 
-        public async Task<ReportSubmission> GetReportTypeSubmissionAsync(Expression<Func<ReportSubmission, bool>> expression)
+        public async Task<PaginatedResult<ReportSubmission>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
-            var reportSubmission = await _context.ReportSubmissions.Include(x => x.ReportType).SingleOrDefaultAsync(expression);
-            return reportSubmission;
+            var query = _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .AsQueryable();
+            var totalCount = await query.CountAsync();
+
+            var submissions = await query
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            return new PaginatedResult<ReportSubmission>
+            {
+                TotalCount = totalCount,
+                Data = submissions
+            };
         }
-        public async Task<PaginatedResult<ReportSubmissionResponseModel>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
+
+        //public async Task<PaginatedResult<ReportSubmission>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
+        //{
+        //    var query = _dbcontext.ReportSubmissions
+        //        .Include(x => x.ReportType)
+        //        .Include(x => x.SubmissionWindow)
+        //        .Include(x => x.Answers)
+        //         .ThenInclude(x => x.Question)
+        //        .Include(x => x.Answers)
+        //        .ThenInclude(x => x.QuestionOption)
+        //        .AsQueryable();
+
+        //    if (!string.IsNullOrWhiteSpace(filter.Keyword))
+        //    {
+        //        query = query.Where(r =>
+        //            r.JammatEmailAddress.Contains(filter.Keyword) ||
+        //            r.ReportType.Title.Contains(filter.Keyword) ||
+        //            r.Answers.Any(a => a.TextAnswer.ToString().Contains(filter.Keyword)) 
+        //        );
+        //    }
+
+        //    var totalCount = await query.CountAsync();
+
+
+        //    var submissions = await query
+        //        .Skip((filter.PageNumber - 1) * filter.PageSize)
+        //        .Take(filter.PageSize)
+        //        .ToListAsync();
+
+        //    return new PaginatedResult<ReportSubmission>
+        //    {
+        //        TotalCount = totalCount,
+        //        Data = submissions
+        //    };
+        //}
+
+
+
+        public async Task<PaginatedResult<ReportSubmissionResponseDto>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
         {
-            var reportsSubmission = _context.ReportSubmissions;
+            var reportsSubmission = _dbcontext.ReportSubmissions;
             if (string.IsNullOrWhiteSpace(filter.Keyword))
             {
-                var response = await reportsSubmission.ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseModel>(filter.PageNumber, filter.PageSize);
+                var response = await reportsSubmission.ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseDto>(filter.PageNumber, filter.PageSize);
                 return response;
             }
-            var searchResponse = await reportsSubmission.SearchByKeyword(filter.Keyword).ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseModel>(filter.PageNumber, filter.PageSize);
+            var searchResponse = await reportsSubmission.SearchByKeyword(filter.Keyword).ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseDto>(filter.PageNumber, filter.PageSize);
             return searchResponse;
         }
 
         public async Task<ReportSubmission> UpdateReportSubmission(ReportSubmission reportSubmission)
         {
-            _context.Update(reportSubmission);
-            await _context.SaveChangesAsync();
+            _dbcontext.ReportSubmissions.Update(reportSubmission);
+            await _dbcontext.SaveChangesAsync();
             return reportSubmission;
         }
 
         public async Task<bool> Exist(string reportSubmissionName)
         {
-            var reportSub = await _context.ReportSubmissions.AnyAsync(x => x.ReportTag.ToString() == "");
+            var reportSub = await _dbcontext.ReportSubmissions.AnyAsync(x => x.ReportTag.ToString() == "");
             return reportSub;
         }
     }
