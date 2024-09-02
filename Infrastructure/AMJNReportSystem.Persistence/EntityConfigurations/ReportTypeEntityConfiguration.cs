@@ -8,8 +8,36 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<ReportType> builder)
         {
+
+            builder.ToTable("ReportType");
+            // Setting the primary key
             builder.HasKey(t => t.Id);
 
+            // Configuring properties
+            builder.Property(t => t.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(t => t.Title)
+                   .IsRequired()
+                   .HasMaxLength(200);
+
+            builder.Property(t => t.Description)
+                   .HasMaxLength(500);
+
+            builder.Property(t => t.Year)
+                   .IsRequired();
+
+            builder.Property(t => t.ReportTag)
+                   .IsRequired();
+
+
+            builder.Property(t => t.IsActive)
+                   .IsRequired()
+                   .HasDefaultValue(true);
+
+
+           
 
         }
     }
