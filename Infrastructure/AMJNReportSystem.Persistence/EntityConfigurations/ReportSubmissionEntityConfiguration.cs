@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace AMJNReportSystem.Domain.EntityConfigurations
 {
-    public class ReportSubmissionConfiguration : IEntityTypeConfiguration<ReportSubmission>
+    internal sealed class ReportSubmissionConfiguration : IEntityTypeConfiguration<ReportSubmission>
     {
         public void Configure(EntityTypeBuilder<ReportSubmission> builder)
         {
