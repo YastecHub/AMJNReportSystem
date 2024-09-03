@@ -87,7 +87,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                         column: x => x.ReportSectionId,
                         principalTable: "ReportSections",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Questions_ReportTypes_ReportTypeId",
                         column: x => x.ReportTypeId,
@@ -122,7 +122,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                         column: x => x.ReportTypeId,
                         principalTable: "ReportTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -148,7 +148,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                         column: x => x.QuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -178,13 +178,13 @@ namespace AMJNReportSystem.Persistence.Migrations
                         column: x => x.ReportTypeId,
                         principalTable: "ReportTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ReportSubmissions_SubmissionWindows_SubmissionWindowId",
                         column: x => x.SubmissionWindowId,
                         principalTable: "SubmissionWindows",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -218,7 +218,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                         column: x => x.QuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ReportResponses_ReportSubmissions_ReportSubmissionId",
                         column: x => x.ReportSubmissionId,
