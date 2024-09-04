@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Context
 {
-    public class ApplicationContext : IdentityDbContext<ApplicationUser>  
+    public class ApplicationContext : IdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, ApplicationRoleClaim, IdentityUserToken<string>>
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
