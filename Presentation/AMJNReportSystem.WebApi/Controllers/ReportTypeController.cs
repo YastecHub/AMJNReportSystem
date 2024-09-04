@@ -16,9 +16,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPost("create-report-type")]
-        [OpenApiOperation("Create new report type.", "")]
+        [ProducesResponseType(StatusCodes.Status200OK)] 
+        [HttpPost("create-report-type")] 
+        [OpenApiOperation("Create new report type.", "")] 
         public async Task<IActionResult> CreateReportType([FromBody] CreateReportTypeRequest model)
         {
             var a = UserContext;
