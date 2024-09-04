@@ -10,11 +10,11 @@ namespace AMJNReportSystem.Persistence.Context
     {
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
-        {
+        { 
         }
 
         public DbSet<ReportType> ReportTypes { get; set; }
-        public DbSet<Question> Questions { get; set; }
+        public DbSet<Question> Questions { get; set; } 
         public DbSet<ReportSubmission> ReportSubmissions { get; set; }
         public DbSet<SubmissionWindow> SubmissionWindows { get; set; }
         public DbSet<QuestionOption> QuestionOptions { get; set; }
