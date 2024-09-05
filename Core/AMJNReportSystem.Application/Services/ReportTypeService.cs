@@ -16,13 +16,13 @@ namespace AMJNReportSystem.Application.Services
             _reportTypeRepository = reportTypeRepository;
         }
 
-        public async Task<BaseResponse<bool>> CreateReportType(CreateReportTypeRequest request)
+        public async Task<BaseResponse<Guid>> CreateReportType(CreateReportTypeRequest request)
         {
             try
             {
                 if (request == null)
                 {
-                    return new BaseResponse<bool>
+                    return new BaseResponse<Guid>
                     {
                         Message = "Request cannot be null",
                         Status = false,
@@ -36,23 +36,20 @@ namespace AMJNReportSystem.Application.Services
                     Description = request.Description,
                     ReportTag = request.ReportTag,
                     Year = request.Year,
-                    Questions = request.Questions.Select(q => new Question
-                    {
-                        QuestionName = q.QuestionName,
-                    }).ToList()
                 };
 
                 var createdReportType = await _reportTypeRepository.CreateReportType(reportType);
 
-                return new BaseResponse<bool>
+                return new BaseResponse<Guid>
                 {
                     Message = "Report type created successfully",
-                    Status = true,
+                    Status = true,  
+                    Data = reportType.Id,
                 };
             }
             catch (Exception ex)
             {
-                return new BaseResponse<bool>
+                return new BaseResponse<Guid>
                 {
                     Message = $"Failed to create report type: {ex.Message}",
                     Status = false,
@@ -67,6 +64,9 @@ namespace AMJNReportSystem.Application.Services
                 var reportTypes = await _reportTypeRepository.GetAllReportTypes();
                 var reportTypeDtos = reportTypes.Select(r => new ReportTypeDto
                 {
+
+                    Name = r.Name,
+                    IsActive = r.IsActive,
                     Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,
@@ -169,7 +169,6 @@ namespace AMJNReportSystem.Application.Services
                 var reportTypeDtos = report.Select(r => new ReportTypeDto
 
                 {
-                    Id = r.Id,
                     Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,
@@ -216,6 +215,7 @@ namespace AMJNReportSystem.Application.Services
                 existingReportType.Name = request.Name;
                 existingReportType.Year = request.Year;
                 existingReportType.Title = request.Title;
+                existingReportType.ReportTag = request.ReportTag;
                 existingReportType.Questions = request.Questions.Select(q => new Question
                 {
                     QuestionName = q.QuestionName,
@@ -240,9 +240,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        Task<BaseResponse<IEnumerable<ReportTypeDto>>> IReportTypeService.GetQaidReportTypes()
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }
