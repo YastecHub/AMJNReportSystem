@@ -12,10 +12,10 @@ namespace AMJNReportSystem.Application.Services
 {
     public class SubmissionWindowService : ISubmissionWindowService
     {
-        private readonly ISubmissionWindowRepository _submissionWindowRepository;
-        public SubmissionWindowService(ISubmissionWindowRepository submissionWindowRepository)
+        private readonly ISubmissionWindowRepository _submissionWindowRepository; 
+        public SubmissionWindowService(ISubmissionWindowRepository submissionWindowRepository) 
         {
-            _submissionWindowRepository = submissionWindowRepository;
+            _submissionWindowRepository = submissionWindowRepository; 
         }
 
         public async Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request)
@@ -39,7 +39,7 @@ namespace AMJNReportSystem.Application.Services
 			var result = await _submissionWindowRepository.UpdateSubmissionWindow(submissionWindow);
 
 			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to update submission window.");
-		}
+		} 
 
 		public async Task<Result<bool>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request)
 		{
@@ -53,7 +53,7 @@ namespace AMJNReportSystem.Application.Services
 				IsDeleted = false,
 				Month = request.Month,
 				Year = request.Year,
-				ReportTypeId = request.ReportSubmissionId
+				ReportTypeId = request.ReportSubmissionId 
 			};
 			var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
 
