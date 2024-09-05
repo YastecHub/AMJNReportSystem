@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Domain.Entities;
+﻿using AMJNReportSystem.Application.Wrapper;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Repositories;
 
 namespace AMJNReportSystem.Application.Services
@@ -19,10 +20,8 @@ namespace AMJNReportSystem.Application.Services
             {
                 Id = r.Id,
                 QuestionId = r.QuestionId,
-                Question = r.Question,
                 TextAnswer = r.TextAnswer,
                 QuestionOptionId = r.QuestionOptionId,
-                QuestionOption = r.QuestionOption,
                 Report = r.Report
             });
         }
@@ -39,19 +38,28 @@ namespace AMJNReportSystem.Application.Services
             {
                 Id = response.Id,
                 QuestionId = response.QuestionId,
-                Question = response.Question,
                 TextAnswer = response.TextAnswer,
                 QuestionOptionId = response.QuestionOptionId,
-                QuestionOption = response.QuestionOption,
                 Report = response.Report
             };
         }
 
-        public async Task<ReportResponseDto> CreateReportResponseAsync(ReportResponseDto responseDto)
+
+        public async Task<Result<ReportResponseDto>> CreateReportResponseAsync(ReportResponseDto responseDto)
         {
+            if (!await _repository.QuestionExistsAsync(responseDto.QuestionId))
+            {
+                return Result<ReportResponseDto>.Fail("The provided QuestionId does not exist.");
+            }
+
+            if (responseDto.QuestionOptionId.HasValue && !await _repository.QuestionOptionExistsAsync(responseDto.QuestionOptionId.Value))
+            {
+                return Result<ReportResponseDto>.Fail("The provided QuestionOptionId does not exist.");
+            }
+
             var response = new ReportResponse
             {
-                Id = responseDto.Id,
+                Id = Guid.NewGuid(), 
                 QuestionId = responseDto.QuestionId,
                 TextAnswer = responseDto.TextAnswer,
                 QuestionOptionId = responseDto.QuestionOptionId,
@@ -60,16 +68,16 @@ namespace AMJNReportSystem.Application.Services
 
             var createdResponse = await _repository.AddReportResponseAsync(response);
 
-            return new ReportResponseDto
+            var createdResponseDto = new ReportResponseDto
             {
                 Id = createdResponse.Id,
                 QuestionId = createdResponse.QuestionId,
-                Question = createdResponse.Question,
                 TextAnswer = createdResponse.TextAnswer,
                 QuestionOptionId = createdResponse.QuestionOptionId,
-                QuestionOption = createdResponse.QuestionOption,
                 Report = createdResponse.Report
             };
+
+            return Result<ReportResponseDto>.Success(createdResponseDto);
         }
 
         public async Task<ReportResponseDto> UpdateReportResponseAsync(ReportResponseDto responseDto)
@@ -89,10 +97,8 @@ namespace AMJNReportSystem.Application.Services
             {
                 Id = updatedResponse.Id,
                 QuestionId = updatedResponse.QuestionId,
-                Question = updatedResponse.Question,
                 TextAnswer = updatedResponse.TextAnswer,
                 QuestionOptionId = updatedResponse.QuestionOptionId,
-                QuestionOption = updatedResponse.QuestionOption,
                 Report = updatedResponse.Report
             };
         }
