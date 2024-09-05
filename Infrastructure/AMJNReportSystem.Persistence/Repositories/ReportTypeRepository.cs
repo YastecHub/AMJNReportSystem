@@ -42,11 +42,11 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reports;
         }
 
-      
+
         public async Task<ReportType> GetReportTypeById(Guid id)
         {
-
-            return await _context.ReportTypes.FindAsync(id);
+            var reportType = await _context.ReportTypes.Where(f => f.Id == id).FirstOrDefaultAsync();
+            return reportType;
         }
 
         public async Task<ReportType> UpdateReportType(ReportType reportType)
