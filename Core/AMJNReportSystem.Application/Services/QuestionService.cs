@@ -10,35 +10,52 @@ namespace AMJNReportSystem.Application.Services
 	public class QuestionService : IQuestionService
 	{
 		private readonly IQuestionRepository _questionRepository;
+		private readonly IQuestionOptionRepository _questionOptionRepository;
 
-		public QuestionService(IQuestionRepository questionRepository)
+		public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository)
 		{
 			_questionRepository = questionRepository;
+			_questionOptionRepository = questionOptionRepository;
 		}
 
 		public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
 		{
 			if (request is null)
 				return await Result<bool>.FailAsync("Question can't be null.");
-			var id = Guid.NewGuid();
 			var question = new Question
 			{
-				Id = id,
+				Id = Guid.NewGuid(),
 				QuestionName = request.QuestionName,
 				QuestionType = request.QuestionType,
 				ResponseType = request.ResponseType,
 				IsRequired = request.IsRequired,
 				IsActive = request.IsActive,
 				SectionId = request.ReportSectionId,
-				Options = request.Options.Select(o => new QuestionOption
-				{
-					QuestionId = id,
-					Text = o.Text
-				}).ToList()
+				CreatedBy = "Admin",
+				CreatedOn = DateTime.Now,
 			};
-
 			var result = await _questionRepository.AddQuestion(question);
 
+			bool questionOption;
+
+			if (request.Options != null && request.Options.Count > 0)
+			{
+				foreach (var options in request.Options)
+				{
+					var option = new QuestionOption
+					{
+						Id = Guid.NewGuid(),
+						QuestionId = question.Id,
+						Text = options.Text,
+						CreatedBy = "Admin",
+						CreatedOn = DateTime.Now,
+						IsDeleted = false
+					};
+					questionOption  =  await _questionOptionRepository.CreateQuestionOption(option);
+				}
+			}
+			if(questionOption = false)
+				return await Result<bool>.FailAsync("Question Options can't be null.");
 			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create question.");
 		}
 
@@ -57,6 +74,8 @@ namespace AMJNReportSystem.Application.Services
 			question.ResponseType = request.ResponseType;
 			question.IsRequired = request.IsRequired;
 			question.IsActive = request.IsActive;
+			question.LastModifiedBy = "Admin";
+			question.LastModifiedOn = DateTime.Now;
 			question.Options = request.Options.Select(o => new QuestionOption
 			{
 				QuestionId = questionId,
@@ -76,8 +95,10 @@ namespace AMJNReportSystem.Application.Services
 				return Result<bool>.Fail("Question not found.");
 			}
 
-			question.IsActive = false; 
+			question.IsActive = false;
 			question.IsDeleted = true;
+			question.DeletedOn = DateTime.Now;
+			question.DeletedBy = "Admin";
 
 			var result = await _questionRepository.UpdateQuestion(question);
 
@@ -95,7 +116,6 @@ namespace AMJNReportSystem.Application.Services
 			var questionDto = new QuestionDto
 			{
 				Id = question.Id,
-				ReportSectionId = question.SectionId,
 				SectionName = question.ReportSection.ReportSectionName,
 				QuestionName = question.QuestionName,
 				IsRequired = question.IsRequired,
@@ -118,13 +138,12 @@ namespace AMJNReportSystem.Application.Services
 			var questionDtos = questions.Select(q => new QuestionDto
 			{
 				Id = q.Id,
-				ReportSectionId = q.SectionId,
 				SectionName = q.ReportSection.ReportSectionName,
 				QuestionName = q.QuestionName,
 				IsRequired = q.IsRequired,
 				IsActive = q.IsActive,
 				QuestionType = q.QuestionType,
-				ResponseType = q.ResponseType, 
+				ResponseType = q.ResponseType,
 				Options = q.Options.Select(o => new QuestionOption
 				{
 					Text = o.Text
@@ -139,5 +158,4 @@ namespace AMJNReportSystem.Application.Services
 			return await _questionRepository.GetQuestionsBySection(sectionId);
 		}
 	}
-
 }

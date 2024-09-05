@@ -35,7 +35,7 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.HasOne<ReportType>()
                   .WithMany()
                   .HasForeignKey(t => t.ReportTypeId)
-                  .OnDelete(DeleteBehavior.Cascade);
+                  .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

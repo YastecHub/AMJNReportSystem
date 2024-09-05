@@ -11,6 +11,5 @@ namespace AMJNReportSystem.Application.Models.RequestModels
         public string Title { get; set; }
         public int Year { get; set; }
         public bool IsActive { get; set; }
-        public List<Question> Questions { get; set; } = new List<Question>();
     }
 }

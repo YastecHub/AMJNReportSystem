@@ -32,7 +32,7 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.HasMany(e => e.Answers)
                 .WithOne()
                 .HasForeignKey("ReportSubmissionId")
-                .OnDelete(DeleteBehavior.Cascade); 
+                .OnDelete(DeleteBehavior.Restrict); 
 
             builder.Property(e => e.ReportSubmissionStatus)
                 .IsRequired();

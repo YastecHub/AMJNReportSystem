@@ -19,8 +19,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch("UpdateSubmissionWindow/{updateId}")]
-        public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId)
+        [HttpPatch("Update SubmissionWindow/{id}")]
+		[OpenApiOperation(" update submission window.", "")]
+		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -31,13 +32,17 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> AddSubmissionWindow([FromBody] CreateSubmissionWindowRequest model)
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)] 
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[HttpPost]
+		[OpenApiOperation("Create new submission window.", "")]
+		public async Task<IActionResult> AddSubmissionWindow([FromBody] CreateSubmissionWindowRequest model)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var startingDate = await _submissionWindowService.CreateReportSubmissionWindow<SubmissionWindow>(model);
-            return Ok(startingDate);
+            var submissionWindow = await _submissionWindowService.CreateReportSubmissionWindow<SubmissionWindow>(model);
+            return Ok(submissionWindow);
 
         }
 
