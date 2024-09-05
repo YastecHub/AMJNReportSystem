@@ -32,7 +32,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var isCreated = await _reportSectionRepository.CreateReportSection(reportSection);
                 return isCreated
-                    ? Result<bool>.Success(true)
+                    ? Result<bool>.Success(true, "Report section created successfully.")
                     : Result<bool>.Fail("Failed to create report section.");
             }
             catch (Exception ex)
