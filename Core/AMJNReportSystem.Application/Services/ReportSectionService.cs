@@ -2,6 +2,7 @@
 using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using Mapster;
@@ -11,16 +12,29 @@ namespace AMJNReportSystem.Application.Services
     public class ReportSectionService : IReportSectionService
     {
         private readonly IReportSectionRepository _reportSectionRepository;
+        private readonly IReportTypeRepository _reportTypeRepository;
 
-        public ReportSectionService(IReportSectionRepository reportSectionRepository)
+        public ReportSectionService(IReportSectionRepository reportSectionRepository, IReportTypeRepository reportTypeRepository)
         {
             _reportSectionRepository = reportSectionRepository;
+            _reportTypeRepository = reportTypeRepository;
         }
 
-        public async Task<Result<bool>> CreateReportSection(CreateReportSectionRequest request)
+        public async Task<Result<CreateReportSectionResponse>> CreateReportSection(CreateReportSectionRequest request)
         {
             try
             {
+                if (request == null)
+                {
+                    return Result<CreateReportSectionResponse>.Fail("Request cannot be null.");
+                }
+
+                var reportTypeExists = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
+                if (reportTypeExists == null)
+                {
+                    return Result<CreateReportSectionResponse>.Fail("Report type Id not found.");
+                }
+
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.Name,
@@ -31,13 +45,25 @@ namespace AMJNReportSystem.Application.Services
                 };
 
                 var isCreated = await _reportSectionRepository.CreateReportSection(reportSection);
-                return isCreated
-                    ? Result<bool>.Success(true, "Report section created successfully.")
-                    : Result<bool>.Fail("Failed to create report section.");
+
+                if (isCreated)
+                {
+                    var response = new CreateReportSectionResponse
+                    {
+                        Id = reportSection.Id, 
+                        Message = "Report section created successfully."
+                    };
+
+                    return Result<CreateReportSectionResponse>.Success(response);
+                }
+                else
+                {
+                    return Result<CreateReportSectionResponse>.Fail("Failed to create report section.");
+                }
             }
             catch (Exception ex)
             {
-                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+                return Result<CreateReportSectionResponse>.Fail($"An error occurred: {ex.Message}");
             }
         }
 
@@ -47,15 +73,18 @@ namespace AMJNReportSystem.Application.Services
             {
                 var existingSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
                 if (existingSection == null)
+                {
                     return Result<bool>.Fail("Report section not found.");
+                }
 
                 existingSection.ReportSectionName = request.Name;
                 existingSection.ReportSectionValue = request.Value;
                 existingSection.Description = request.Description;
 
                 var isUpdated = await _reportSectionRepository.UpdateReportSection(existingSection);
+
                 return isUpdated
-                    ? Result<bool>.Success(true)
+                    ? Result<bool>.Success(true, "Report section updated successfully.")
                     : Result<bool>.Fail("Failed to update report section.");
             }
             catch (Exception ex)
@@ -70,10 +99,12 @@ namespace AMJNReportSystem.Application.Services
             {
                 var reportSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
                 if (reportSection == null)
+                {
                     return Result<ReportSectionDto>.Fail("Report section not found.");
+                }
 
                 var reportSectionDto = reportSection.Adapt<ReportSectionDto>();
-                return Result<ReportSectionDto>.Success(reportSectionDto);
+                return Result<ReportSectionDto>.Success(reportSectionDto, "Report section retrieved successfully.");
             }
             catch (Exception ex)
             {
@@ -86,8 +117,13 @@ namespace AMJNReportSystem.Application.Services
             try
             {
                 var reportSections = await _reportSectionRepository.GetReportSections(rs => rs.ReportTypeId == reportTypeId);
+                if (!reportSections.Any())
+                {
+                    return Result<IEnumerable<ReportSectionDto>>.Fail("No report sections found.");
+                }
+
                 var reportSectionDtos = reportSections.Adapt<IEnumerable<ReportSectionDto>>();
-                return Result<IEnumerable<ReportSectionDto>>.Success(reportSectionDtos);
+                return Result<IEnumerable<ReportSectionDto>>.Success(reportSectionDtos, "Report sections retrieved successfully.");
             }
             catch (Exception ex)
             {
@@ -95,20 +131,22 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<Result<bool>> SetreportSectionActiveness(Guid reportSectionId, bool state)
+        public async Task<Result<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state)
         {
             try
             {
                 var reportSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
-                if (reportSection != null)
+                if (reportSection == null)
                 {
-                    reportSection.IsActive = state;
-                    var isUpdated = await _reportSectionRepository.UpdateReportSection(reportSection);
-                    return isUpdated
-                        ? Result<bool>.Success(true)
-                        : Result<bool>.Fail("Failed to update report section activeness.");
+                    return Result<bool>.Fail("Report section not found.");
                 }
-                return Result<bool>.Fail("Report section not found.");
+
+                reportSection.IsActive = state;
+                var isUpdated = await _reportSectionRepository.UpdateReportSection(reportSection);
+
+                return isUpdated
+                    ? Result<bool>.Success(true, $"Report section activeness updated to {(state ? "active" : "inactive")}.")
+                    : Result<bool>.Fail("Failed to update report section activeness.");
             }
             catch (Exception ex)
             {
@@ -118,18 +156,27 @@ namespace AMJNReportSystem.Application.Services
 
         public async Task<Result<bool>> DeleteReportSection(Guid reportSectionId)
         {
-            var reportSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
-            if (reportSection == null)
+            try
             {
-                return Result<bool>.Fail("Report section not found.");
+                var reportSection = await _reportSectionRepository.GetReportSectionById(reportSectionId);
+                if (reportSection == null)
+                {
+                    return Result<bool>.Fail("Report section not found.");
+                }
+
+                reportSection.IsActive = false;
+                reportSection.IsDeleted = true;
+
+                var result = await _reportSectionRepository.UpdateReportSection(reportSection);
+
+                return result
+                    ? Result<bool>.Success(true, "Report section deleted successfully.")
+                    : Result<bool>.Fail("Failed to delete report section.");
             }
-
-            reportSection.IsActive = false;
-            reportSection.IsDeleted = true;
-
-            var result = await _reportSectionRepository.UpdateReportSection(reportSection);
-
-            return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to delete report section.");
+            catch (Exception ex)
+            {
+                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+            }
         }
     }
 }

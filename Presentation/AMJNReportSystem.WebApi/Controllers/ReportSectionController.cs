@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Models.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -16,15 +17,24 @@ namespace AMJNReportSystem.WebApi.Controllers
             _reportSectionService = reportSectionService;
         }
 
+
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreateReportSectionResponse))]
         [HttpPost]
-        [OpenApiOperation("Create a new section in a report type.", "Creates a new Report Section")]
+        [OpenApiOperation("Create a new report section.", "Creates a new Report Section")]
         public async Task<IActionResult> CreateReportSection([FromBody] CreateReportSectionRequest model)
         {
-            var result = await _reportSectionService.CreateReportSection(model);
-            if (result.Succeeded)
-                return CreatedAtAction(nameof(GetReportSection), new { reportSectionId = result.Data }, result.Data);
+            if (model == null)
+                return BadRequest(new { message = "Request cannot be null" });
 
-            return BadRequest(result.Messages);
+            var result = await _reportSectionService.CreateReportSection(model);
+
+            if (result.Succeeded)
+            {
+                return CreatedAtAction(nameof(GetReportSection), new { id = result.Data.Id }, result.Data);
+            }
+
+            return BadRequest(new { message = result.Messages });
         }
 
         [HttpPut("{reportSectionId}")]
@@ -32,10 +42,13 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model)
         {
             var result = await _reportSectionService.UpdateReportSection(reportSectionId, model);
-            if (result.Succeeded)
-                return NoContent();
 
-            return BadRequest(result.Messages);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = result.Messages });
+            }
+
+            return BadRequest(new { message = result.Messages });
         }
 
         [HttpGet("{reportSectionId}")]
@@ -60,35 +73,39 @@ namespace AMJNReportSystem.WebApi.Controllers
             return NotFound(result.Messages);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
         [HttpPut("{reportSectionId}/activeness/{state}")]
         [OpenApiOperation("Update the activeness state of a report section.", "Sets the activeness state of a specific Report Section")]
         public async Task<IActionResult> SetReportSectionActiveness([FromRoute] Guid reportSectionId, [FromRoute] bool state)
         {
             if (reportSectionId == Guid.Empty)
-                return BadRequest("ID cannot be empty");
+                return BadRequest(new { message = "ID cannot be empty" });
 
-            var result = await _reportSectionService.SetreportSectionActiveness(reportSectionId, state);
+            var result = await _reportSectionService.SetReportSectionActiveness(reportSectionId, state);
             if (result.Succeeded)
-                return NoContent();
+            {
+                return Ok(new { message = result.Messages });
+            }
 
-            return BadRequest(result.Messages);
+            return BadRequest(new { message = result.Messages });
         }
-
 
         [HttpDelete("{reportSectionId}")]
         [OpenApiOperation("Delete a report section.", "Deletes a specific Report Section")]
         public async Task<IActionResult> DeleteReportSection([FromRoute] Guid reportSectionId)
         {
             if (reportSectionId == Guid.Empty)
-                return BadRequest("ID cannot be empty");
+                return BadRequest(new { message = "ID cannot be empty" });
 
             var result = await _reportSectionService.DeleteReportSection(reportSectionId);
-            if (result.Succeeded)
-                return NoContent();
 
-            return BadRequest(result.Messages);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = result.Messages });
+            }
+
+            return BadRequest(new { message = result.Messages });
         }
     }
 }

@@ -32,6 +32,8 @@ using AMJNReportSystem.Persistence.OpenApi;
 using AMJNReportSystem.Persistence.Repositories;
 using AMJNReportSystem.Persistence.SecurityHeaders;
 using ZymLabs.NSwag.FluentValidation;
+using AMJNReportSystem.Domain.Repositories;
+using AMJNReportSystem.Infrastructure.Repositories;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
@@ -43,6 +45,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSubmissionRepository, ReportSubmissionRepository>()
                 .AddScoped<IReportTypeRepository, ReportTypeRepository>()
                 .AddScoped<IReportSectionRepository, ReportSectionRepository>()
+                .AddScoped<IReportResponseRepository, ReportResponseRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>()
                 .AddScoped<IQuestionOptionRepository, QuestionOptionRepository>()
                 .AddScoped<ISubmissionWindowRepository, SubmissionWindowRepository>();
@@ -52,7 +55,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         {
             return services
                 .AddScoped<IEncryptionService, EncryptionService>()
-                //.AddScoped<IReportService, ReportService>()
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IReportSubmissionService, ReportSubmissionService>()
                 .AddScoped<ISerializerService, NewtonSoftService>()
@@ -60,6 +62,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<ISubmissionWindowService, SubmissionWindowService>()
                 .AddScoped<IReportSectionService, ReportSectionService>()
                 .AddScoped<IQuestionService, QuestionService>()
+                .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>();
         }
 
