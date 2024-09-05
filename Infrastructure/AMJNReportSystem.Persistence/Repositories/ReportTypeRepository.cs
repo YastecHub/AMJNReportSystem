@@ -17,7 +17,7 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
         public async Task<ReportType> CreateReportType(ReportType reportType)
         {
-           var report = await _context.AddAsync(reportType);
+            var report = await _context.AddAsync(reportType);
             await _context.SaveChangesAsync();
             return reportType;
         }
@@ -42,16 +42,16 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reports;
         }
 
-
+      
         public async Task<ReportType> GetReportTypeById(Guid id)
         {
-            var reportType = await _context.ReportTypes.Where(f => f.Id == id).FirstOrDefaultAsync();
-            return reportType;
+
+            return await _context.ReportTypes.FindAsync(id);
         }
 
         public async Task<ReportType> UpdateReportType(ReportType reportType)
         {
-            var report =   _context.ReportTypes.Update(reportType);
+            var report = _context.ReportTypes.Update(reportType);
             await _context.SaveChangesAsync();
             return reportType;
         }

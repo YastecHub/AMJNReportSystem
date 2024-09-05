@@ -35,11 +35,11 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// </summary>
         Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetQaidReportTypes();
 
-
-            /// <summary>
-            /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
-            /// </summary>
-            Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
+        /// <summary>
+        /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
+        /// </summary>
+        Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
+      
 
 
     }
