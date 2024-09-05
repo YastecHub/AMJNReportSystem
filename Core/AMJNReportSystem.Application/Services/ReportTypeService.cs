@@ -104,6 +104,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportTypeDto = new ReportTypeDto
                 {
+                     Name = reportType.Name,
                     Title = reportType.Title,
                     Description = reportType.Description,
                     Year = reportType.Year,
@@ -169,6 +170,7 @@ namespace AMJNReportSystem.Application.Services
                 var reportTypeDtos = report.Select(r => new ReportTypeDto
 
                 {
+                     Name = r.Name,
                     Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,

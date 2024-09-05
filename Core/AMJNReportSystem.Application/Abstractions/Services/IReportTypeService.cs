@@ -33,13 +33,14 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// <summary>
         /// Method that get Qaid report types by report tag. use the enum directly
         /// </summary>
-        Task<BaseResponse<List<ReportTypeDto>>> GetQaidReportTypes();
-        
+        Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetQaidReportTypes();
 
-            /// <summary>
-            /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
-            /// </summary>
-            Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
+
+        /// <summary>
+        /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
+        /// </summary>
+        Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
+      
 
 
     }
