@@ -32,10 +32,13 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model)
         {
             var result = await _reportSectionService.UpdateReportSection(reportSectionId, model);
-            if (result.Succeeded)
-                return NoContent();
 
-            return BadRequest(result.Messages);
+            if (result.Succeeded)
+            {
+                return Ok(new { message = result.Messages });
+            }
+
+            return BadRequest(new { message = result.Messages });
         }
 
         [HttpGet("{reportSectionId}")]
@@ -69,7 +72,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             if (reportSectionId == Guid.Empty)
                 return BadRequest("ID cannot be empty");
 
-            var result = await _reportSectionService.SetreportSectionActiveness(reportSectionId, state);
+            var result = await _reportSectionService.SetReportSectionActiveness(reportSectionId, state);
             if (result.Succeeded)
                 return NoContent();
 

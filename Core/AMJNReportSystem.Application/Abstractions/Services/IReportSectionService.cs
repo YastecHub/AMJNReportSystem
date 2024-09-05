@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 
 namespace AMJNReportSystem.Application.Abstractions.Services
@@ -13,7 +14,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method for creating new report section, accepting the name, description, and reporttypeId 
         /// as parameters by Admin only
         /// </summary>
-        Task<Result<bool>> CreateReportSection(CreateReportSectionRequest request);
+        Task<Result<CreateReportSectionResponse>> CreateReportSection(CreateReportSectionRequest request);
 
         /// <summary>
         /// Method for update report section, accepting the name and description and reporttypeId
@@ -35,7 +36,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method for update Report-Section, accepting Id and description as parameters by Admin only
         /// </summary>
         ///
-        Task<Result<bool>> SetreportSectionActiveness(Guid reportSectionId, bool state);
+        Task<Result<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state);
 
         /// <summary>
         /// Method for deleting Report-Section
