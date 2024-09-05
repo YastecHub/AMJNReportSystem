@@ -31,8 +31,9 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
                    .IsRequired()
                    .HasDefaultValue(true);
 
+			builder.HasQueryFilter(rs => !rs.IsDeleted);
 
-            builder.HasOne<ReportType>()
+			builder.HasOne<ReportType>()
                   .WithMany()
                   .HasForeignKey(t => t.ReportTypeId)
                   .OnDelete(DeleteBehavior.Restrict);
