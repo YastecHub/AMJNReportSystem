@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class new_db : Migration
+    public partial class AMJNReportingSystem : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

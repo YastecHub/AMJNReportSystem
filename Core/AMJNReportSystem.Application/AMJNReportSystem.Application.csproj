@@ -4,6 +4,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Validators\**" />
+    <EmbeddedResource Remove="Validators\**" />
+    <None Remove="Validators\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\AMJNReportSystem.Domain\AMJNReportSystem.Domain.csproj" />
@@ -17,8 +22,5 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.8" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Validators\" />
   </ItemGroup>
 </Project>
