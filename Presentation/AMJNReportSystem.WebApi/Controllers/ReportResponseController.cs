@@ -56,7 +56,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             var createdResponse = await _reportResponseService.CreateReportResponseAsync(responseDto);
 
-            return CreatedAtAction(nameof(GetReportResponseById), new { id = createdResponse.Succeeded }, createdResponse);
+            return CreatedAtAction(nameof(GetReportResponseById), new { id = createdResponse.Data }, createdResponse);
         }
 
         [OpenApiOperation("Update an existing report response.", "Updates a response based on the provided ID.")]
