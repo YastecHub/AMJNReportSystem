@@ -63,20 +63,22 @@ namespace AMJNReportSystem.WebApi.Controllers
             return NotFound(result.Messages);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
         [HttpPut("{reportSectionId}/activeness/{state}")]
         [OpenApiOperation("Update the activeness state of a report section.", "Sets the activeness state of a specific Report Section")]
         public async Task<IActionResult> SetReportSectionActiveness([FromRoute] Guid reportSectionId, [FromRoute] bool state)
         {
             if (reportSectionId == Guid.Empty)
-                return BadRequest("ID cannot be empty");
+                return BadRequest(new { message = "ID cannot be empty" });
 
             var result = await _reportSectionService.SetReportSectionActiveness(reportSectionId, state);
             if (result.Succeeded)
-                return NoContent();
+            {
+                return Ok(new { message = result.Messages });
+            }
 
-            return BadRequest(result.Messages);
+            return BadRequest(new { message = result.Messages });
         }
 
 
