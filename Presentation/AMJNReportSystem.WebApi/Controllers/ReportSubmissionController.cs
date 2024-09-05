@@ -15,7 +15,6 @@ namespace AMJNReportSystem.WebApi.Controllers
     public class ReportSubmissionController : ControllerBase
     {
         private readonly IReportSubmissionService _reportSubmissionService;
-
         public ReportSubmissionController(IReportSubmissionService reportSubmissionService)
         {
             _reportSubmissionService = reportSubmissionService;
