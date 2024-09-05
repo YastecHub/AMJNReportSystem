@@ -5,12 +5,10 @@ namespace AMJNReportSystem.Application.Models.RequestModels
 {
 	public class CreateQuestionRequest
 	{
-		public Guid Id { get; set; }
 		public string? CreatedBy { get; set; }
 		public DateTime CreatedOn { get; private set; }
 		public Guid ReportSectionId { get; set; }
 		public string QuestionName { get; set; }
-		public double Points { get; set; }
 		public bool IsRequired { get; set; }
 		public bool IsActive { get; set; }
 		public QuestionType QuestionType { get; set; }

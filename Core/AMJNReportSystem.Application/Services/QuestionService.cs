@@ -20,10 +20,9 @@ namespace AMJNReportSystem.Application.Services
 		{
 			if (request is null)
 				return await Result<bool>.FailAsync("Question can't be null.");
-			var id = Guid.NewGuid();
 			var question = new Question
 			{
-				Id = id,
+				Id = Guid.NewGuid(),
 				QuestionName = request.QuestionName,
 				QuestionType = request.QuestionType,
 				ResponseType = request.ResponseType,
@@ -32,17 +31,12 @@ namespace AMJNReportSystem.Application.Services
 				SectionId = request.ReportSectionId,
 				CreatedBy = "Admin",
 				CreatedOn = DateTime.Now,
-				Options = request.Options.Select(o => new QuestionOption
-				{
-					QuestionId = id,
-					Text = o.Text
-				}).ToList() 
 			};
 
 			var result = await _questionRepository.AddQuestion(question);
 
 			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create question.");
-		} 
+		}
 
 		public async Task<Result<bool>> UpdateQuestion(Guid questionId, UpdateQuestionRequest request)
 		{
@@ -80,7 +74,7 @@ namespace AMJNReportSystem.Application.Services
 				return Result<bool>.Fail("Question not found.");
 			}
 
-			question.IsActive = false; 
+			question.IsActive = false;
 			question.IsDeleted = true;
 			question.DeletedOn = DateTime.Now;
 			question.DeletedBy = "Admin";
@@ -128,7 +122,7 @@ namespace AMJNReportSystem.Application.Services
 				IsRequired = q.IsRequired,
 				IsActive = q.IsActive,
 				QuestionType = q.QuestionType,
-				ResponseType = q.ResponseType, 
+				ResponseType = q.ResponseType,
 				Options = q.Options.Select(o => new QuestionOption
 				{
 					Text = o.Text
