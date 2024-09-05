@@ -216,10 +216,6 @@ namespace AMJNReportSystem.Application.Services
                 existingReportType.Year = request.Year;
                 existingReportType.Title = request.Title;
                 existingReportType.ReportTag = request.ReportTag;
-                existingReportType.Questions = request.Questions.Select(q => new Question
-                {
-                    QuestionName = q.QuestionName,
-                }).ToList();
 
                 await _reportTypeRepository.UpdateReportType(existingReportType);
 
