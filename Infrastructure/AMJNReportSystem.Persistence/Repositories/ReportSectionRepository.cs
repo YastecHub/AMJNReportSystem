@@ -40,6 +40,11 @@ namespace AMJNReportSystem.Persistence.Repositories
             _context.ReportSections.Update(reportSection);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<bool> ReportTypeExistsAsync(Guid reportTypeId)
+        {
+            return await _context.ReportTypes.AnyAsync(rt => rt.Id == reportTypeId);
+        }
     }
 }
 

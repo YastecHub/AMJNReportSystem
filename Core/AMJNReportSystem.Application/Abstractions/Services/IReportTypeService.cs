@@ -13,7 +13,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method for creating new report type, accepting the name, description 
         /// and ReportTag(MuqamReport, DilaReport, ZoneReport, QaidReport) as parameters by Admin only
         /// </summary>
-        Task<BaseResponse<bool>> CreateReportType(CreateReportTypeRequest request);
+        Task<BaseResponse<Guid>> CreateReportType(CreateReportTypeRequest request);
 
         /// <summary>
         /// Method for update report type, accepting the name and description as parameters by Admin only
@@ -33,12 +33,13 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// <summary>
         /// Method that get Qaid report types by report tag. use the enum directly
         /// </summary>
-        Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetQaidReportTypes();
+        Task<BaseResponse<List<ReportTypeDto>>> GetQaidReportTypes();
+        
 
-        /// <summary>
-        /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
-        /// </summary>
-        Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
+            /// <summary>
+            /// Method for update Activeness of Report-Type Activeness state, accepting Id and description as parameters by Admin only
+            /// </summary>
+            Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state);
 
 
     }
