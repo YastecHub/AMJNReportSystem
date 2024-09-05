@@ -29,6 +29,12 @@ namespace AMJNReportSystem.Application.Services
                     return Result<CreateReportSectionResponse>.Fail("Request cannot be null.");
                 }
 
+                var reportTypeExists = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
+                if (reportTypeExists == null)
+                {
+                    return Result<CreateReportSectionResponse>.Fail("Report type Id not found.");
+                }
+
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.Name,
