@@ -53,5 +53,15 @@ namespace AMJNReportSystem.Infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> QuestionExistsAsync(Guid questionId)
+        {
+            return await _context.Questions.AnyAsync(q => q.Id == questionId);
+        }
+
+        public async Task<bool> QuestionOptionExistsAsync(Guid questionOptionId)
+        {
+            return await _context.QuestionOptions.AnyAsync(qo => qo.Id == questionOptionId);
+        }
     }
 }

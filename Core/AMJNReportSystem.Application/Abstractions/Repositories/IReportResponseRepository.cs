@@ -9,5 +9,7 @@ namespace AMJNReportSystem.Domain.Repositories
         Task<ReportResponse> AddReportResponseAsync(ReportResponse reportResponse);
         Task<ReportResponse> UpdateReportResponseAsync(ReportResponse reportResponse);
         Task<bool> DeleteReportResponseAsync(Guid responseId);
+        Task<bool> QuestionExistsAsync(Guid questionId);
+        Task<bool> QuestionOptionExistsAsync(Guid questionOptionId);
     }
 }

@@ -11,18 +11,27 @@ namespace AMJNReportSystem.Application.Services
     public class ReportSectionService : IReportSectionService
     {
         private readonly IReportSectionRepository _reportSectionRepository;
+        private readonly IReportTypeRepository _reportTypeRepository;
 
-        public ReportSectionService(IReportSectionRepository reportSectionRepository)
+        public ReportSectionService(IReportSectionRepository reportSectionRepository, IReportTypeRepository reportTypeRepository)
         {
             _reportSectionRepository = reportSectionRepository;
+            _reportTypeRepository = reportTypeRepository;
         }
 
         public async Task<Result<bool>> CreateReportSection(CreateReportSectionRequest request)
         {
             try
             {
+                if (!await _reportSectionRepository.ReportTypeExistsAsync(request.ReportTypeId))
+                {
+                    return Result<bool>.Fail("The provided ReportTypeId does not exist.");
+                }
+
+                
                 var reportSection = new ReportSection
                 {
+                    Id = Guid.NewGuid(),
                     ReportSectionName = request.Name,
                     ReportSectionValue = request.Value,
                     Description = request.Description,
