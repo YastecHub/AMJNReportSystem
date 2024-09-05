@@ -40,6 +40,20 @@ namespace AMJNReportSystem.Application.Services
 
                 var isCreated = await _reportSectionRepository.CreateReportSection(reportSection);
 
+                if (isCreated)
+                {
+                    var response = new CreateReportSectionResponse
+                    {
+                        Id = reportSection.Id, 
+                        Message = "Report section created successfully."
+                    };
+
+                    return Result<CreateReportSectionResponse>.Success(response);
+                }
+                else
+                {
+                    return Result<CreateReportSectionResponse>.Fail("Failed to create report section.");
+                }
             }
             catch (Exception ex)
             {
