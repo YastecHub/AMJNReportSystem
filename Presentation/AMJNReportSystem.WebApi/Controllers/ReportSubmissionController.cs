@@ -2,6 +2,7 @@
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.RequestModels.Reports;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -9,6 +10,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  //  [Authorize]
     public class ReportSubmissionController : ControllerBase
     {
         private readonly IReportSubmissionService _reportSubmissionService;

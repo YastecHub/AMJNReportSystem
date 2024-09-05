@@ -11,6 +11,7 @@ namespace AMJNReportSystem.Application.Models.RequestModels.Reports
         public ReportTag ReportTag { get; set; }
         public Guid SubmissionWindowId { get; set; }
         public SubmissionWindow SubmissionWindow { get; set; }
-       // public List<ReportResponseDto> Answers { get; set; } = new List<ReportResponseDto>();
+        public string LastModifiedBy { get; set; }
+        public List<ReportResponseDto> Answers { get; set; } = new List<ReportResponseDto>();
     }
 }

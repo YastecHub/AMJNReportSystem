@@ -25,6 +25,16 @@ namespace AMJNReportSystem.Persistence.Repositories
             await _dbcontext.SaveChangesAsync();
             return reportSubmission;
         }
+
+        
+
+        public async Task<bool> Exist(string reportSubmissionName)
+        {
+            return await _dbcontext.ReportSubmissions
+                .AnyAsync(x => x.ReportType.Title == reportSubmissionName);
+        }
+
+
         public async Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id)
         {
             var reportSubmission = await _dbcontext.ReportSubmissions
@@ -119,10 +129,5 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reportSubmission;
         }
 
-        public async Task<bool> Exist(string reportSubmissionName)
-        {
-            var reportSub = await _dbcontext.ReportSubmissions.AnyAsync(x => x.ReportTag.ToString() == "");
-            return reportSub;
-        }
     }
 }
