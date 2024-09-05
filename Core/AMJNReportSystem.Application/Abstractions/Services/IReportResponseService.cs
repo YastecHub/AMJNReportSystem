@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Domain.Entities;
+﻿using AMJNReportSystem.Application.Wrapper;
+using AMJNReportSystem.Domain.Entities;
 
 namespace AMJNReportSystem.Domain.Repositories
 {
@@ -17,13 +18,13 @@ namespace AMJNReportSystem.Domain.Repositories
         /// <summary>
         /// Adds a new report response to the data source.
         /// </summary>
-        
-        Task<ReportResponseDto> CreateReportResponseAsync(ReportResponseDto responseDto);
+
+        Task<Result<ReportResponseDto>> CreateReportResponseAsync(ReportResponseDto responseDto);
 
         /// <summary>
         /// Updates an existing report response in the data source.
         /// </summary>
-    
+
         Task<ReportResponseDto> UpdateReportResponseAsync(ReportResponseDto responseDto);
 
         /// <summary>

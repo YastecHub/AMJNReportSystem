@@ -36,8 +36,9 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 
             builder.Property(e => e.ReportSubmissionStatus)
                 .IsRequired();
+			builder.HasQueryFilter(sw => !sw.IsDeleted);
 
-            builder.Property(e => e.ReportTag)
+			builder.Property(e => e.ReportTag)
                 .IsRequired();
         }
     }

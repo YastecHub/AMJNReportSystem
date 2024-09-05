@@ -1,6 +1,7 @@
 ﻿using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
@@ -15,6 +16,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             _reportResponseService = reportResponseService;
         }
 
+        [OpenApiOperation("Get all report responses.", "Retrieves a list of all report responses.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ReportResponseDto>>> GetAllReportResponses()
@@ -23,6 +25,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(responses);
         }
 
+        [OpenApiOperation("Get a report response by ID.", "Retrieves a specific report response by its unique ID.")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("{id}")]
@@ -40,6 +43,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
+        [OpenApiOperation("Create a new report response.", "Creates a new response associated with a report.")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
@@ -52,9 +56,10 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             var createdResponse = await _reportResponseService.CreateReportResponseAsync(responseDto);
 
-            return CreatedAtAction(nameof(GetReportResponseById), new { id = createdResponse.Id }, createdResponse);
+            return CreatedAtAction(nameof(GetReportResponseById), new { id = createdResponse.Data }, createdResponse);
         }
 
+        [OpenApiOperation("Update an existing report response.", "Updates a response based on the provided ID.")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPut("{id}")]
@@ -75,6 +80,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(updatedResponse);
         }
 
+        [OpenApiOperation("Delete a report response.", "Deletes a response based on the provided ID.")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [HttpDelete("{id}")]

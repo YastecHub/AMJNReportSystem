@@ -19,7 +19,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)] 
-		[HttpPost]
+		[HttpPost("Create Question")]
 		[OpenApiOperation("Create new question.", "")]
 		public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionRequest model)
 		{
@@ -31,7 +31,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)] 
 		[HttpGet("{id}")]
 		[OpenApiOperation("Get a specific question by id.", "")]
 		public async Task<IActionResult> GetQuestion(Guid id)
