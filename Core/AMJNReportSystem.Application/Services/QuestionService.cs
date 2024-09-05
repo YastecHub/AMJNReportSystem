@@ -10,10 +10,12 @@ namespace AMJNReportSystem.Application.Services
 	public class QuestionService : IQuestionService
 	{
 		private readonly IQuestionRepository _questionRepository;
+		private readonly IQuestionOptionRepository _questionOptionRepository;
 
-		public QuestionService(IQuestionRepository questionRepository)
+		public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository)
 		{
 			_questionRepository = questionRepository;
+			_questionOptionRepository = questionOptionRepository;
 		}
 
 		public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
@@ -32,9 +34,28 @@ namespace AMJNReportSystem.Application.Services
 				CreatedBy = "Admin",
 				CreatedOn = DateTime.Now,
 			};
-
 			var result = await _questionRepository.AddQuestion(question);
 
+			bool questionOption;
+
+			if (request.Options != null && request.Options.Count > 0)
+			{
+				foreach (var options in request.Options)
+				{
+					var option = new QuestionOption
+					{
+						Id = Guid.NewGuid(),
+						QuestionId = question.Id,
+						Text = options.Text,
+						CreatedBy = "Admin",
+						CreatedOn = DateTime.Now,
+						IsDeleted = false
+					};
+					questionOption  =  await _questionOptionRepository.CreateQuestionOption(option);
+				}
+			}
+			if(questionOption = false)
+				return await Result<bool>.FailAsync("Question Options can't be null.");
 			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create question.");
 		}
 
