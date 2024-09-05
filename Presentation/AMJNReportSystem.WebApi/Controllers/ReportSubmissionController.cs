@@ -86,6 +86,11 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Delete a report submission
+        /// </summary>
+        /// <param name="reportSubmissionId"></param>
+        /// <returns></returns>
         [HttpDelete("{reportSubmissionId}")]
         [OpenApiOperation("Delete a report submission.", "Deletes a specific Report Submission")]
         public async Task<IActionResult> DeleteReportSubmission([FromRoute] Guid reportSubmissionId)
