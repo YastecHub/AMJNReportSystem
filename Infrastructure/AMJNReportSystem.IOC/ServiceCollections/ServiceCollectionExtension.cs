@@ -77,6 +77,13 @@ namespace AMJNReportSystem.IOC.ServiceCollections
 				.AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
 				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
 		}
+                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+
+                .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>();
+
+
+
+        }
 
 
 		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
