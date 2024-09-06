@@ -30,11 +30,6 @@ namespace AMJNReportSystem.Application.Validation
             RuleFor(x => x.ReportTag)
                 .IsInEnum().WithMessage("Invalid Report Tag provided.");
 
-
-            //When(x => x.Options != null && x.Options.Count > 0, () =>
-            //{
-            //    RuleForEach(x => x.Options).SetValidator(new ReportTypeRequestValidator());
-            //});
         }
     }
    

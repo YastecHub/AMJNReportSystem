@@ -67,20 +67,21 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IQuestionService, QuestionService>()
                 .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>();
-		}
+        }
 
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
+                .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
+                .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
 				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
 				.AddScoped<IValidator<UpdateQuestionRequest>, UpdateQuestionRequestValidator>()
 				.AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
-				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>()
-                .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>();
+				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
         }
 
 
-		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connectionString));
