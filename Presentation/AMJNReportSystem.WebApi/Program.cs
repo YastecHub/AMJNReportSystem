@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddRepositories(builder.Configuration);
+builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
