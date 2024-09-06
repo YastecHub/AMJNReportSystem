@@ -20,7 +20,7 @@ namespace AMJNReportSystem.Application.Validation
 
             RuleFor(x => x.Description)
                  .NotEmpty().WithMessage("Description is required.")
-                .MinimumLength(20).WithMessage("Descriptionu must be at least 7 characters long.");
+                .MinimumLength(7).WithMessage("Descriptionu must be at least 7 characters long.");
 
             RuleFor(x => x.Year)
            .NotEmpty().WithMessage("Year is required.")
