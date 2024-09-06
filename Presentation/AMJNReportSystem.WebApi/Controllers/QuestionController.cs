@@ -17,6 +17,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 			_questionService = questionService;
 
 		}
+
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
@@ -27,11 +28,23 @@ namespace AMJNReportSystem.WebApi.Controllers
 			var validationResult = await validator.ValidateAsync(model);
 			if (!validationResult.IsValid)
 				return BadRequest(validationResult.ToDictionary());
-			var reportTypeRequest = await _questionService.CreateQuestion(model);
-			return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
+			var questionRequest = await _questionService.CreateQuestion(model);
+			return !questionRequest.Succeeded ? Conflict(questionRequest) : Ok(questionRequest);
 		}
 
-
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[HttpPut("Update Question")]
+		[OpenApiOperation("Update question.", "")]
+		public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionRequest model ,Guid id, [FromServices] IValidator<UpdateQuestionRequest> validator)
+		{
+			var validationResult = await validator.ValidateAsync(model);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.ToDictionary());
+			var reportTypeRequest = await _questionService.UpdateQuestion(id,model);
+			return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
+		}
 
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)] 

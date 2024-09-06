@@ -28,9 +28,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 
 
-
-
-
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
 builder.Services.AddDatabase(connectionString);
 

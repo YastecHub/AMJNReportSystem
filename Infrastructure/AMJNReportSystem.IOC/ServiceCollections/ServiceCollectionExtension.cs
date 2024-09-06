@@ -36,6 +36,8 @@ using AMJNReportSystem.Infrastructure.Repositories;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.IO;
 using AMJNReportSystem.Application.Validators;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
@@ -50,7 +52,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSectionRepository, ReportSectionRepository>()
                 .AddScoped<IReportResponseRepository, ReportResponseRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>()
-                .AddScoped<IQuestionOptionRepository, QuestionOptionRepository>()
                 .AddScoped<ISubmissionWindowRepository, SubmissionWindowRepository>();
         }
 
@@ -67,7 +68,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IQuestionService, QuestionService>()
                 .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>();
-		}
+        }
 
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
@@ -79,9 +80,16 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                  .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>();
 
         }
+                .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
+                .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
+				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
+				.AddScoped<IValidator<UpdateQuestionRequest>, UpdateQuestionRequestValidator>()
+				.AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
+				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
+        }
 
 
-		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connectionString));

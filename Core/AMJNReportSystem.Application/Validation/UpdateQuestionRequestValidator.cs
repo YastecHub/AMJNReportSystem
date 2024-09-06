@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace AMJNReportSystem.Application.Validation
 {
-	public class CreateQuestionRequestValidator : AbstractValidator<CreateQuestionRequest>
+	public class UpdateQuestionRequestValidator : AbstractValidator<UpdateQuestionRequest>
 	{
-		public CreateQuestionRequestValidator()
+		public UpdateQuestionRequestValidator()
 		{
 
 			RuleFor(x => x.QuestionName)
