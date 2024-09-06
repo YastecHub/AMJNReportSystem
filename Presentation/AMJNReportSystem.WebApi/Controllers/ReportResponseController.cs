@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Domain.Entities;
+﻿using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;

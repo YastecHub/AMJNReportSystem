@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Application.Wrapper;
+﻿using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 
 namespace AMJNReportSystem.Domain.Repositories

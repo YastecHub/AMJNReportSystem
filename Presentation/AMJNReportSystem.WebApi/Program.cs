@@ -1,4 +1,6 @@
 using AMJNReportSystem.Application.Models.DTOs;
+using AMJNReportSystem.Application.Validators;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
@@ -23,7 +25,9 @@ builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<IValidator<ReportSectionDto>, ReportSectionValidator>();
+
+
+
 
 
 

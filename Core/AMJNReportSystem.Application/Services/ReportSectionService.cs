@@ -38,8 +38,8 @@ namespace AMJNReportSystem.Application.Services
                 var reportSection = new ReportSection
                 {
                     Id = id,
-                    ReportSectionName = request.Name,
-                    ReportSectionValue = request.Value,
+                    ReportSectionName = request.ReportSectionName,
+                    ReportSectionValue = request.ReportSectionValue,
                     Description = request.Description,
                     ReportTypeId = request.ReportTypeId,
                     IsActive = true
@@ -78,8 +78,8 @@ namespace AMJNReportSystem.Application.Services
                     return Result<bool>.Fail("Report section not found.");
                 }
 
-                existingSection.ReportSectionName = request.Name;
-                existingSection.ReportSectionValue = request.Value;
+                existingSection.ReportSectionName = request.ReportSectionName;
+                existingSection.ReportSectionValue = request.ReportSectionValue;
                 existingSection.Description = request.Description;
 
                 var isUpdated = await _reportSectionRepository.UpdateReportSection(existingSection);

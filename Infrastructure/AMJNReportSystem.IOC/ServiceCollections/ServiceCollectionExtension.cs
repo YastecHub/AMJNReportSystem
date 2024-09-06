@@ -1,7 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
-using AMJNReportSystem.Application.Identity.Roles;
 using AMJNReportSystem.Application.Identity.Tokens;
 using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Interfaces;
@@ -37,6 +36,7 @@ using AMJNReportSystem.Infrastructure.Repositories;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Validators;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
@@ -72,8 +72,13 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
-				.AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>();
-		}
+                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+                .AddScoped<IValidator<CreateReportSectionRequest>, ReportSectionRequestValidator>()
+                .AddScoped<IValidator<UpdateReportSectionRequest>, UpdateReportSectionRequestValidator>()
+                 .AddTransient<IValidator<CreateReportResponseRequest>, ReportResponseRequestValidator>()
+                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>();
+
+        }
 
 
 		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
