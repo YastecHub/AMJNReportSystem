@@ -2,6 +2,7 @@
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Domain.Entities;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -16,35 +17,37 @@ namespace AMJNReportSystem.WebApi.Controllers
         {
             _submissionWindowService = submissionWindowService;
         }
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[HttpPost("Crewate SubmissionWindow")]
+		[OpenApiOperation("Create new submission window.", "")]
+		public async Task<IActionResult> AddSubmissionWindow([FromBody] CreateSubmissionWindowRequest model, [FromServices] IValidator<CreateSubmissionWindowRequest> validator)
+		{
+			var validationResult = await validator.ValidateAsync(model);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.ToDictionary());
+			var submissionWindow = await _submissionWindowService.CreateReportSubmissionWindow<SubmissionWindow>(model);
+			return Ok(submissionWindow);
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+		}
+
+
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPatch("Update SubmissionWindow/{id}")]
 		[OpenApiOperation(" update submission window.", "")]
-		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId)
+		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId, [FromServices] IValidator<UpdateSubmissionWindowRequest> validator)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var startingDate = await _submissionWindowService.UpdateReportSubmissionWindow<SubmissionWindow>(id: updateId, request: updateSubmission);
-            if (!startingDate.Succeeded)
-                return Conflict(startingDate);
-            return Ok(startingDate);
-        }
-
-
-		[ProducesResponseType(StatusCodes.Status409Conflict)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)] 
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpPost]
-		[OpenApiOperation("Create new submission window.", "")]
-		public async Task<IActionResult> AddSubmissionWindow([FromBody] CreateSubmissionWindowRequest model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var submissionWindow = await _submissionWindowService.CreateReportSubmissionWindow<SubmissionWindow>(model);
-            return Ok(submissionWindow);
-
-        }
+			var validationResult = await validator.ValidateAsync(updateSubmission);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.ToDictionary());
+			var response = await _submissionWindowService.UpdateReportSubmissionWindow<SubmissionWindow>(id: updateId, request: updateSubmission);
+            if (!response.Succeeded)
+                return Conflict(response);
+            return Ok(response);
+        } 
+        
 
         [HttpGet]
         public async Task<IActionResult> GetSubmissionWindowAsync(PaginationFilter filter)
