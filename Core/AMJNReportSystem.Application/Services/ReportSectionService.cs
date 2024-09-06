@@ -34,9 +34,10 @@ namespace AMJNReportSystem.Application.Services
                 {
                     return Result<CreateReportSectionResponse>.Fail("Report type Id not found.");
                 }
-
+                var id = Guid.NewGuid();
                 var reportSection = new ReportSection
                 {
+                    Id = id,
                     ReportSectionName = request.Name,
                     ReportSectionValue = request.Value,
                     Description = request.Description,

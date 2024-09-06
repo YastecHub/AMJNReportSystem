@@ -25,6 +25,16 @@ namespace AMJNReportSystem.Persistence.Repositories
             await _dbcontext.SaveChangesAsync();
             return reportSubmission;
         }
+
+        
+
+        public async Task<bool> Exist(string reportSubmissionName)
+        {
+            return await _dbcontext.ReportSubmissions
+                .AnyAsync(x => x.ReportType.Title == reportSubmissionName);
+        }
+
+
         public async Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id)
         {
             var reportSubmission = await _dbcontext.ReportSubmissions
@@ -63,54 +73,6 @@ namespace AMJNReportSystem.Persistence.Repositories
             };
         }
 
-        //public async Task<PaginatedResult<ReportSubmission>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
-        //{
-        //    var query = _dbcontext.ReportSubmissions
-        //        .Include(x => x.ReportType)
-        //        .Include(x => x.SubmissionWindow)
-        //        .Include(x => x.Answers)
-        //         .ThenInclude(x => x.Question)
-        //        .Include(x => x.Answers)
-        //        .ThenInclude(x => x.QuestionOption)
-        //        .AsQueryable();
-
-        //    if (!string.IsNullOrWhiteSpace(filter.Keyword))
-        //    {
-        //        query = query.Where(r =>
-        //            r.JammatEmailAddress.Contains(filter.Keyword) ||
-        //            r.ReportType.Title.Contains(filter.Keyword) ||
-        //            r.Answers.Any(a => a.TextAnswer.ToString().Contains(filter.Keyword)) 
-        //        );
-        //    }
-
-        //    var totalCount = await query.CountAsync();
-
-
-        //    var submissions = await query
-        //        .Skip((filter.PageNumber - 1) * filter.PageSize)
-        //        .Take(filter.PageSize)
-        //        .ToListAsync();
-
-        //    return new PaginatedResult<ReportSubmission>
-        //    {
-        //        TotalCount = totalCount,
-        //        Data = submissions
-        //    };
-        //}
-
-
-
-        public async Task<PaginatedResult<ReportSubmissionResponseDto>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
-        {
-            var reportsSubmission = _dbcontext.ReportSubmissions;
-            if (string.IsNullOrWhiteSpace(filter.Keyword))
-            {
-                var response = await reportsSubmission.ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseDto>(filter.PageNumber, filter.PageSize);
-                return response;
-            }
-            var searchResponse = await reportsSubmission.SearchByKeyword(filter.Keyword).ToMappedPaginatedResultAsync<ReportSubmission, ReportSubmissionResponseDto>(filter.PageNumber, filter.PageSize);
-            return searchResponse;
-        }
 
         public async Task<ReportSubmission> UpdateReportSubmission(ReportSubmission reportSubmission)
         {
@@ -119,10 +81,5 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reportSubmission;
         }
 
-        public async Task<bool> Exist(string reportSubmissionName)
-        {
-            var reportSub = await _dbcontext.ReportSubmissions.AnyAsync(x => x.ReportTag.ToString() == "");
-            return reportSub;
-        }
     }
 }

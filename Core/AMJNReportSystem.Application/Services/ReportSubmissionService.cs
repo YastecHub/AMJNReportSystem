@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
@@ -16,12 +17,14 @@ namespace AMJNReportSystem.Application.Services
         private readonly IReportSubmissionRepository _reportSubmissionRepository;
         private readonly IReportTypeRepository _reportTypeRepository;
         private readonly ISubmissionWindowRepository _submissionWindowRepository;
+        private readonly ICurrentUser _currentUser;
 
-        public ReportSubmissionService(IReportSubmissionRepository reportSubmission, IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository submissionWindowRepository)
+        public ReportSubmissionService(IReportSubmissionRepository reportSubmission, IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository submissionWindowRepository, ICurrentUser currentUser)
         {
             _reportSubmissionRepository = reportSubmission;
             _reportTypeRepository = reportTypeRepository;
             _submissionWindowRepository = submissionWindowRepository;
+            _currentUser = currentUser;
         }
 
         public async Task<BaseResponse<bool>> CreateReportTypeSubmissionAsync(CreateReportSubmissionRequest request)
@@ -53,7 +56,7 @@ namespace AMJNReportSystem.Application.Services
                 {
                     return new BaseResponse<bool>
                     {
-                        Message = "Submission date already exists.",
+                        Message = "Submission  already exists.",
                         Status = false
                     };
                 }
@@ -69,7 +72,6 @@ namespace AMJNReportSystem.Application.Services
                     Answers = new List<ReportResponse>(),
                     CreatedBy = request.CreatedBy,
                     CreatedOn = DateTime.Now,
-                    DeletedOn = DateTime.Now,
                 };
                 submission.ReportType.Title = reportSubmissionName;
 
@@ -143,48 +145,6 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-
-        public async Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetReportTypeSubmissionsAsync(PaginationFilter filter)
-        {
-            try
-            {
-                if (filter == null)
-                {
-                    return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
-                    {
-                        Status = false,
-                        Message = "Pagination filter is required."
-                    };
-                }
-
-                var reportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionsAsync(filter);
-
-                if (reportSubmission == null || reportSubmission.Data.Count == 0)
-                {
-                    return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
-                    {
-                        Status = false,
-                        Message = "No report type submissions found."
-                    };
-                }
-
-                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
-                {
-                    Status = true,
-                    Message = $"{reportSubmission.TotalCount} report type submissions retrieved successfully.",
-                    Data = reportSubmission
-                };
-            }
-            catch (Exception ex)
-            {
-                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
-                {
-                    Status = false,
-                    Message = $"An error occurred while retrieving report type submissions: {ex.Message}",
-                };
-            }
-        }
-
         public async Task<BaseResponse<PaginatedResult<ReportSubmissionDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
             try
@@ -209,7 +169,14 @@ namespace AMJNReportSystem.Application.Services
                     ReportTag = submission.ReportTag,
                     SubmissionWindowId = submission.SubmissionWindowId,
                     SubmissionWindow = submission.SubmissionWindow,
-                    Answers = string.Join(", ", submission.Answers.Select(a => a.TextAnswer.ToString())) 
+                    Answers = submission.Answers.Select(a => new ReportResponseDto
+                    {
+                        TextAnswer = a.TextAnswer,
+                        Id = a.Id,
+                        QuestionId = a.QuestionId,
+                        QuestionOptionId = a.QuestionOptionId,
+                        Report = a.Report
+                    }).ToList()
                 }).ToList();
 
                 return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
@@ -235,71 +202,88 @@ namespace AMJNReportSystem.Application.Services
 
         public async Task<BaseResponse<ReportSubmissionDto>> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
         {
-            // Fetch the existing report submission by ID
-            var existingReportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(id);
+            try
+            {
+                var existingReportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(id);
 
-            if (existingReportSubmission == null)
+                if (existingReportSubmission == null)
+                {
+                    return new BaseResponse<ReportSubmissionDto>
+                    {
+                        Status = false,
+                        Message = "Report submission not found."
+                    };
+                }
+
+                id = request.ReportSubmissionId;
+                existingReportSubmission.JammatEmailAddress = request.JammatEmailAddress;
+                existingReportSubmission.ReportSubmissionStatus = request.ReportSubmissionStatus;
+                existingReportSubmission.ReportTag = request.ReportTag;
+                existingReportSubmission.LastModifiedOn = DateTime.Now;
+                existingReportSubmission.LastModifiedBy = request.LastModifiedBy;
+                await _reportSubmissionRepository.UpdateReportSubmission(existingReportSubmission);
+                var reportSubmissionDto = new ReportSubmissionDto
+                {
+                    JamaatId = existingReportSubmission.JamaatId,
+                    ReportTypeId = existingReportSubmission.ReportTypeId,
+                    JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
+                    ReportType = existingReportSubmission.ReportType,
+                    ReportSubmissionStatus = existingReportSubmission.ReportSubmissionStatus,
+                    ReportTag = existingReportSubmission.ReportTag,
+                    SubmissionWindowId = existingReportSubmission.SubmissionWindowId,
+                    SubmissionWindow = existingReportSubmission.SubmissionWindow,
+                    Answers = existingReportSubmission.Answers.Select(a => new ReportResponseDto
+                    {
+                        Id = a.Id,
+                        QuestionId = a.QuestionId,
+                        TextAnswer = a.TextAnswer,
+                        QuestionOptionId = a.QuestionOptionId,
+                        Report = a.Report
+                    }).ToList()
+                };
+
+                return new BaseResponse<ReportSubmissionDto>
+                {
+                    Status = true,
+                    Data = reportSubmissionDto,
+                    Message = "Report submission updated successfully."
+                };
+            }
+            catch (Exception ex)
             {
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = false,
-                    Message = "Report submission not found."
+                    Message = $"An error occurred while updating the report submission: {ex.Message}"
                 };
             }
+        }
 
-            // Update the properties with the values from the request DTO
-            existingReportSubmission.JammatEmailAddress = request.JammatEmailAddress;
-            existingReportSubmission.ReportType = request.ReportType;
-            existingReportSubmission.ReportSubmissionStatus = request.ReportSubmissionStatus;
-            existingReportSubmission.ReportTag = request.ReportTag;
-            existingReportSubmission.SubmissionWindowId = request.SubmissionWindowId;
-            existingReportSubmission.SubmissionWindow = request.SubmissionWindow;
-
-            // Update specific answers (if needed)
-            // Uncomment and fix the logic if you need to update answers
-            //foreach (var answerDto in request.Answers)
-            //{
-            //    var existingAnswer = existingReportSubmission.Answers
-            //        .FirstOrDefault(a => a.Id == answerDto.Id);
-
-            //    if (existingAnswer != null)
-            //    {
-            //        existingAnswer.Question = answerDto.Question;
-            //        existingAnswer.Answer = answerDto.Answer;
-            //    }
-            //    else
-            //    {
-            //        existingReportSubmission.Answers.Add(new ReportResponse
-            //        {
-            //            Id = Guid.NewGuid(),
-            //            Question = answerDto.Question,
-            //            Answer = answerDto.Answer
-            //        });
-            //    }
-            //}
-            await _reportSubmissionRepository.UpdateReportSubmission(existingReportSubmission);
-            var reportSubmissionDto = new ReportSubmissionDto
+        public async Task<Result<bool>> DeleteReportSubmission(Guid reportSubmissionId)
+        {
+            try
             {
-                JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
-                ReportType = existingReportSubmission.ReportType,
-                ReportSubmissionStatus = existingReportSubmission.ReportSubmissionStatus,
-                ReportTag = existingReportSubmission.ReportTag,
-                SubmissionWindowId = existingReportSubmission.SubmissionWindowId,
-                SubmissionWindow = existingReportSubmission.SubmissionWindow,
-                //Answers = existingReportSubmission.Answers.Select(a => new ReportResponseDto
-                //{
-                //    Id = a.Id,
-                //    Question = a.Question,
-                //    Answer = a.Answer
-                //}).ToList()
-            };
+                var reportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(reportSubmissionId);
+                if (reportSubmission == null)
+                {
+                    return Result<bool>.Fail("Report section not found.");
+                }
+                reportSubmission.IsDeleted = true;
+                reportSubmission.DeletedOn = DateTime.Now;
+                reportSubmission.DeletedBy = _currentUser.Name;
 
-            return new BaseResponse<ReportSubmissionDto>
+                var result = await _reportSubmissionRepository.UpdateReportSubmission(reportSubmission);
+                return new Result<bool>
+                {
+                    Succeeded = true,
+                    Messages = new List<string> { "Report submission deleted successfully." }
+                };
+                
+            }
+            catch (Exception ex)
             {
-                Status = true,
-                Data = reportSubmissionDto,
-                Message = "Report submission updated successfully."
-            };
+                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+            }
         }
 
     }
