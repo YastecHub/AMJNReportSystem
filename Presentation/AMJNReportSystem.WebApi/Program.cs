@@ -23,7 +23,6 @@ builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddScoped<IValidator<ReportSectionDto>, ReportSectionValidator>();
 
 
 
