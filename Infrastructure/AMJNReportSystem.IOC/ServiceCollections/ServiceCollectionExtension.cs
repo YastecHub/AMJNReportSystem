@@ -75,14 +75,8 @@ namespace AMJNReportSystem.IOC.ServiceCollections
 				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
 				.AddScoped<IValidator<UpdateQuestionRequest>, UpdateQuestionRequestValidator>()
 				.AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
-				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
-		}
-                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
-
+				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>()
                 .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>();
-
-
-
         }
 
 
