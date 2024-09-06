@@ -72,8 +72,13 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
-				.AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>();
-		}
+                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+
+                .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>();
+
+
+
+        }
 
 
 		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
