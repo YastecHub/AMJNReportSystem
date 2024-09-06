@@ -34,6 +34,9 @@ using AMJNReportSystem.Persistence.SecurityHeaders;
 using ZymLabs.NSwag.FluentValidation;
 using AMJNReportSystem.Domain.Repositories;
 using AMJNReportSystem.Infrastructure.Repositories;
+using AMJNReportSystem.Application.Validation;
+using FluentValidation;
+using AMJNReportSystem.Application.Models.RequestModels;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
@@ -64,9 +67,16 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IQuestionService, QuestionService>()
                 .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>();
-        }
+		}
 
-        public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
+        {
+            return services
+				.AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>();
+		}
+
+
+		public static IServiceCollection AddDatabase(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<ApplicationContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -418,9 +428,4 @@ namespace AMJNReportSystem.IOC.ServiceCollections
             return app;
         }
     }
-
-
-
-
-
 }

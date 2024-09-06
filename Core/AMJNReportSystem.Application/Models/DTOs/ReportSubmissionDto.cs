@@ -12,7 +12,7 @@ namespace AMJNReportSystem.Application.Models.DTOs
         public ReportTag ReportTag { get; set; }
         public Guid SubmissionWindowId { get; set; }
         public SubmissionWindow SubmissionWindow { get; set; }
-        public string Answers { get; set; }
+        public List<ReportResponseDto> Answers { get; set; } = new List<ReportResponseDto>();
 
     }
 }

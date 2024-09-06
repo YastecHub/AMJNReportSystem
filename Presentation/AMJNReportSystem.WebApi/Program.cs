@@ -1,5 +1,4 @@
 using AMJNReportSystem.Application.Models.DTOs;
-using AMJNReportSystem.Application.Validators;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
@@ -20,10 +19,12 @@ builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddRepositories(builder.Configuration);
+builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddScoped<IValidator<ReportSectionDto>, ReportSectionValidator>();
+
 
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");

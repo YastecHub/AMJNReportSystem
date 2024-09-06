@@ -1,8 +1,8 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Persistence.Context;
 using AMJNReportSystem.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {

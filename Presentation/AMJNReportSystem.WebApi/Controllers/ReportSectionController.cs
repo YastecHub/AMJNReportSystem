@@ -19,7 +19,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreateReportSectionResponse))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(object))]
         [HttpPost]
         [OpenApiOperation("Create a new report section.", "Creates a new Report Section")]
         public async Task<IActionResult> CreateReportSection([FromBody] CreateReportSectionRequest model)
@@ -29,12 +29,17 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             var result = await _reportSectionService.CreateReportSection(model);
 
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return CreatedAtAction(nameof(GetReportSection), new { id = result.Data.Id }, result.Data);
+                // Return conflict if the creation failed
+                return Conflict(new { message = result.Messages });
             }
 
-            return BadRequest(new { message = result.Messages });
+            // Assuming result.Data contains the created ReportSection with Id
+            // Make sure to use 'reportSectionId' in the route and 'nameof(GetReportSection)' as the action
+            return CreatedAtAction(nameof(GetReportSection),
+                new { reportSectionId = result.Data.Id }, // Match this name to the route parameter name in the GetReportSection method
+                new { id = result.Data.Id, message = "Report section created successfully" });
         }
 
         [HttpPut("{reportSectionId}")]

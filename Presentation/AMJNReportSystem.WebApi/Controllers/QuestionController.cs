@@ -1,5 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Validation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -15,23 +17,24 @@ namespace AMJNReportSystem.WebApi.Controllers
 			_questionService = questionService;
 
 		}
-
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status200OK)] 
-		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[HttpPost("Create Question")]
 		[OpenApiOperation("Create new question.", "")]
-		public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionRequest model)
+		public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionRequest model, [FromServices] IValidator<CreateQuestionRequest> validator)
 		{
-			var a = UserContext;
-			if (!ModelState.IsValid) return BadRequest(ModelState);
+			var validationResult = await validator.ValidateAsync(model);
+			if (!validationResult.IsValid)
+				return BadRequest(validationResult.ToDictionary());
 			var reportTypeRequest = await _questionService.CreateQuestion(model);
 			return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
 		}
 
 
+
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)] 
 		[HttpGet("{id}")]
 		[OpenApiOperation("Get a specific question by id.", "")]
 		public async Task<IActionResult> GetQuestion(Guid id)

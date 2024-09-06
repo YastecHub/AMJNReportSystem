@@ -11,53 +11,76 @@ namespace AMJNReportSystem.Application.Services
 	{
 		private readonly IQuestionRepository _questionRepository;
 		private readonly IQuestionOptionRepository _questionOptionRepository;
+		private readonly IReportSectionRepository _reportSectionRepository; 
 
-		public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository)
+		public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository, IReportSectionRepository reportSectionRepository)
 		{
 			_questionRepository = questionRepository;
 			_questionOptionRepository = questionOptionRepository;
+			_reportSectionRepository = reportSectionRepository;
 		}
 
+	
 		public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
 		{
-			if (request is null)
-				return await Result<bool>.FailAsync("Question can't be null.");
-			var question = new Question
+			try
 			{
-				Id = Guid.NewGuid(),
-				QuestionName = request.QuestionName,
-				QuestionType = request.QuestionType,
-				ResponseType = request.ResponseType,
-				IsRequired = request.IsRequired,
-				IsActive = request.IsActive,
-				SectionId = request.ReportSectionId,
-				CreatedBy = "Admin",
-				CreatedOn = DateTime.Now,
-			};
-			var result = await _questionRepository.AddQuestion(question);
+				if (request == null)
+					return await Result<bool>.FailAsync("Question can't be null.");
 
-			bool questionOption;
+				Console.WriteLine($"ReportSectionId from request: {request.ReportSectionId}");
 
-			if (request.Options != null && request.Options.Count > 0)
-			{
-				foreach (var options in request.Options)
+				var sectionExist = await _reportSectionRepository.GetReportSectionById(request.ReportSectionId);
+
+				if (sectionExist == null)
+					return await Result<bool>.FailAsync("Invalid ReportSectionId.");
+
+				var question = new Question
 				{
-					var option = new QuestionOption
+					Id = Guid.NewGuid(),
+					QuestionName = request.QuestionName,
+					QuestionType = request.QuestionType,
+					ResponseType = request.ResponseType,
+					IsRequired = request.IsRequired,
+					IsActive = request.IsActive,
+					SectionId = request.ReportSectionId,
+					CreatedBy = "Admin",
+					CreatedOn = DateTime.Now,
+				};
+
+				var questionCreated = await _questionRepository.AddQuestion(question);
+				if (!questionCreated)
+					return await Result<bool>.FailAsync("Failed to create the question.");
+
+				if (request.Options != null && request.Options.Count > 0)
+				{
+					foreach (var optionRequest in request.Options)
 					{
-						Id = Guid.NewGuid(),
-						QuestionId = question.Id,
-						Text = options.Text,
-						CreatedBy = "Admin",
-						CreatedOn = DateTime.Now,
-						IsDeleted = false
-					};
-					questionOption  =  await _questionOptionRepository.CreateQuestionOption(option);
+						var option = new QuestionOption
+						{
+							Id = Guid.NewGuid(),
+							QuestionId = question.Id,
+							Text = optionRequest.Text,
+							CreatedBy = "Admin",
+							CreatedOn = DateTime.Now,
+							IsDeleted = false
+						};
+
+						var optionCreated = await _questionOptionRepository.CreateQuestionOption(option);
+						if (!optionCreated)
+							return await Result<bool>.FailAsync("Failed to create one or more question options.");
+					}
 				}
+
+				// Return success with a message
+				return await Result<bool>.SuccessAsync(true, "Question and options created successfully.");
 			}
-			if(questionOption = false)
-				return await Result<bool>.FailAsync("Question Options can't be null.");
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create question.");
+			catch (Exception ex)
+			{
+				return await Result<bool>.FailAsync($"An error occurred: {ex.Message}");
+			}
 		}
+
 
 		public async Task<Result<bool>> UpdateQuestion(Guid questionId, UpdateQuestionRequest request)
 		{

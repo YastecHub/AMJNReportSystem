@@ -23,10 +23,11 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 
            
             builder.Property(t => t.Report)
-                .HasMaxLength(2000); 
+                .HasMaxLength(2000);
 
-          
-            builder.HasOne(t => t.Question)
+			builder.HasQueryFilter(sw => !sw.IsDeleted);
+
+			builder.HasOne(t => t.Question)
                 .WithMany() 
                 .HasForeignKey(t => t.QuestionId)
                 .OnDelete(DeleteBehavior.Restrict); 

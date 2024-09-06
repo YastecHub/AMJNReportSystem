@@ -31,6 +31,7 @@ namespace AMJNReportSystem.Persistence.EntityConfigurations
 
 			builder.Property(sw => sw.IsLocked)
 				   .IsRequired();
+			builder.HasQueryFilter(rs => !rs.IsDeleted);
 
 			builder.HasOne(sw => sw.ReportType)
 				   .WithMany()

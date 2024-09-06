@@ -19,13 +19,13 @@ namespace AMJNReportSystem.Domain.Repositories
         /// Adds a new report response to the data source.
         /// </summary>
 
-        Task<Result<ReportResponseDto>> CreateReportResponseAsync(ReportResponseDto responseDto);
+        Task<Result<ReportResponseDto>> CreateReportResponseAsync(CreateReportResponseRequest responseDto);
 
         /// <summary>
         /// Updates an existing report response in the data source.
         /// </summary>
 
-        Task<ReportResponseDto> UpdateReportResponseAsync(ReportResponseDto responseDto);
+        Task<Result<ReportResponseDto>> UpdateReportResponseAsync(Guid reportResponseId, UpdateReportResponseRequest responseDto);
 
         /// <summary>
         /// Deletes a report response by its identifier.

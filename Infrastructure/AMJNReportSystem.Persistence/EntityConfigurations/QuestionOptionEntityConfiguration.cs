@@ -10,7 +10,7 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
         {
             builder.HasKey(t => t.Id);
 
-           
-        }
+			builder.HasQueryFilter(sw => !sw.IsDeleted);
+		}
     }
 }

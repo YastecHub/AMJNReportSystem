@@ -24,7 +24,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             var a = UserContext;
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var reportTypeRequest = await _reportTypeService.CreateReportType(request);
-            return !reportTypeRequest.Status ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
+            return !reportTypeRequest.Status ? Conflict(reportTypeRequest) : Ok(reportTypeRequest); 
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
