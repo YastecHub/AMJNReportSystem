@@ -18,6 +18,8 @@
         {
             CreatedOn = DateTime.UtcNow;
             LastModifiedOn = DateTime.UtcNow;
-        }
+            IsDeleted = false;
+
+		}
     }
 }

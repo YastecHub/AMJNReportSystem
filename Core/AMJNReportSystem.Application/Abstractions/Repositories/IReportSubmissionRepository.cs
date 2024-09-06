@@ -8,7 +8,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
     {
         Task<ReportSubmission> CreateReportSubmissionAsync(ReportSubmission reportSubmission);
         Task<bool> Exist(string reportSubmissionName);
-        Task<PaginatedResult<ReportSubmissionResponseDto>> GetReportTypeSubmissionsAsync(PaginationFilter filter);
         Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id);
         Task<ReportSubmission> UpdateReportSubmission(ReportSubmission reportSubmission);
         Task<PaginatedResult<ReportSubmission>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter);

@@ -14,7 +14,6 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 
             builder.HasIndex(u => u.ReportSectionName).IsUnique();
             builder.HasIndex(u => u.ReportSectionValue).IsUnique();
-            builder.HasIndex(u => u.Description).IsUnique();
 
 
             builder.Property(t => t.ReportSectionName)
@@ -24,15 +23,16 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.Property(t => t.ReportSectionValue)
                    .IsRequired();
 
-            builder.Property(t => t.Description)
+            builder.Property(t => t.Description) 
                    .HasMaxLength(500);
 
-            builder.Property(t => t.IsActive)
+            builder.Property(t => t.IsActive) 
                    .IsRequired()
                    .HasDefaultValue(true);
 
+			builder.HasQueryFilter(rs => !rs.IsDeleted);
 
-            builder.HasOne<ReportType>()
+			builder.HasOne<ReportType>()
                   .WithMany()
                   .HasForeignKey(t => t.ReportTypeId)
                   .OnDelete(DeleteBehavior.Restrict);

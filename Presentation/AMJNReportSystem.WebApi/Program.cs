@@ -1,6 +1,8 @@
+using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -17,9 +19,13 @@ builder.Services.AddControllers();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddServices(builder.Configuration);
 builder.Services.AddRepositories(builder.Configuration);
+builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<IValidator<ReportSectionDto>, ReportSectionValidator>();
+
+
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
 builder.Services.AddDatabase(connectionString);
