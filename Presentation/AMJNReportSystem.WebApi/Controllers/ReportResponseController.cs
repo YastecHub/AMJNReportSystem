@@ -47,55 +47,67 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [HttpPost]
-        public async Task<ActionResult<ReportResponseDto>> CreateReportResponse([FromBody] ReportResponseDto responseDto)
+        public async Task<IActionResult> CreateReportResponse([FromBody] CreateReportResponseRequest responseDto)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Invalid request data", errors = ModelState });
             }
 
-            var createdResponse = await _reportResponseService.CreateReportResponseAsync(responseDto);
+            var result = await _reportResponseService.CreateReportResponseAsync(responseDto);
 
-            return CreatedAtAction(nameof(GetReportResponseById), new { id = createdResponse.Data }, createdResponse);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Failed to create report response", details = result.Messages });
+            }
+
+            return CreatedAtAction(
+                nameof(GetReportResponseById), 
+                new { id = result.Data.Id },
+                new { id = result.Data.Id, message = "Report response created successfully" }
+            );
         }
 
-        [OpenApiOperation("Update an existing report response.", "Updates a response based on the provided ID.")]
+
+        [HttpPut("{id}")]
+        [OpenApiOperation("Update an existing report response.", "Updates a response associated with a report.")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ReportResponseDto>> UpdateReportResponse(Guid id, [FromBody] ReportResponseDto responseDto)
+        public async Task<IActionResult> UpdateReportResponse([FromRoute] Guid id, [FromBody] UpdateReportResponseRequest request)
         {
-            if (id != responseDto.Id)
-            {
-                return BadRequest("ID in URL and request body do not match.");
-            }
-
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Invalid request data", errors = ModelState });
             }
 
-            var updatedResponse = await _reportResponseService.UpdateReportResponseAsync(responseDto);
+            var result = await _reportResponseService.UpdateReportResponseAsync(id, request);
 
-            return Ok(updatedResponse);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Failed to update report response", details = result.Messages });
+            }
+
+            return Ok(new { id = result.Data.Id, message = "Report response updated successfully" });
         }
+
 
         [OpenApiOperation("Delete a report response.", "Deletes a response based on the provided ID.")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteReportResponse(Guid id)
+        public async Task<IActionResult> DeleteReportResponse([FromRoute] Guid id)
         {
-            if (id == Guid.Empty) return BadRequest("ID cannot be empty.");
+            if (id == Guid.Empty)
+                return BadRequest(new { message = "ID cannot be empty." });
 
             var result = await _reportResponseService.DeleteReportResponseAsync(id);
 
             if (!result)
             {
-                return NotFound();
+                return NotFound(new { message = "Report response not found." });
             }
 
-            return NoContent();
+            return Ok(new { message = "Report response has been deleted successfully." });
         }
     }
 }

@@ -44,8 +44,7 @@ namespace AMJNReportSystem.Application.Services
             };
         }
 
-
-        public async Task<Result<ReportResponseDto>> CreateReportResponseAsync(ReportResponseDto responseDto)
+        public async Task<Result<ReportResponseDto>> CreateReportResponseAsync(CreateReportResponseRequest responseDto)
         {
             if (!await _repository.QuestionExistsAsync(responseDto.QuestionId))
             {
@@ -59,7 +58,7 @@ namespace AMJNReportSystem.Application.Services
 
             var response = new ReportResponse
             {
-                Id = Guid.NewGuid(), 
+                Id = Guid.NewGuid(),
                 QuestionId = responseDto.QuestionId,
                 TextAnswer = responseDto.TextAnswer,
                 QuestionOptionId = responseDto.QuestionOptionId,
@@ -80,31 +79,40 @@ namespace AMJNReportSystem.Application.Services
             return Result<ReportResponseDto>.Success(createdResponseDto);
         }
 
-        public async Task<ReportResponseDto> UpdateReportResponseAsync(ReportResponseDto responseDto)
+
+        public async Task<Result<ReportResponseDto>> UpdateReportResponseAsync(Guid reportResponseId, UpdateReportResponseRequest responseDto)
         {
-            var response = new ReportResponse
+            var existingResponse = await _repository.GetReportResponseByIdAsync(reportResponseId);
+            if (existingResponse == null)
             {
-                Id = responseDto.Id,
-                QuestionId = responseDto.QuestionId,
-                TextAnswer = responseDto.TextAnswer,
-                QuestionOptionId = responseDto.QuestionOptionId,
-                Report = responseDto.Report
-            };
+                return Result<ReportResponseDto>.Fail("The report response with the provided Id does not exist.");
+            }
 
-            var updatedResponse = await _repository.UpdateReportResponseAsync(response);
+            existingResponse.TextAnswer = responseDto.TextAnswer;
+            existingResponse.Report = responseDto.Report;
+            
+            var updatedResponse = await _repository.UpdateReportResponseAsync(existingResponse);
 
-            return new ReportResponseDto
+            var updatedResponseDto = new ReportResponseDto
             {
                 Id = updatedResponse.Id,
                 QuestionId = updatedResponse.QuestionId,
                 TextAnswer = updatedResponse.TextAnswer,
-                QuestionOptionId = updatedResponse.QuestionOptionId,
+                QuestionOptionId = updatedResponse.QuestionOptionId, 
                 Report = updatedResponse.Report
             };
+
+            return Result<ReportResponseDto>.Success(updatedResponseDto);
         }
 
         public async Task<bool> DeleteReportResponseAsync(Guid responseId)
         {
+            var responseExists = await _repository.GetReportResponseByIdAsync(responseId);
+            if (responseExists == null)
+            {
+                return false;
+            }
+
             return await _repository.DeleteReportResponseAsync(responseId);
         }
     }

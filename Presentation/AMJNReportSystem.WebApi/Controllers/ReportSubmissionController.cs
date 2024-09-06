@@ -2,6 +2,8 @@
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.RequestModels.Reports;
+using AMJNReportSystem.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -9,10 +11,10 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  //  [Authorize]
     public class ReportSubmissionController : ControllerBase
     {
         private readonly IReportSubmissionService _reportSubmissionService;
-
         public ReportSubmissionController(IReportSubmissionService reportSubmissionService)
         {
             _reportSubmissionService = reportSubmissionService;
@@ -51,19 +53,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
-        /// <summary>
-        /// Get list of all report submission
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("get-report-type-submissions")]
-        [OpenApiOperation("Get list of  report submission.", "")]
-        public async Task<IActionResult> GetReportTypeSubmissions(PaginationFilter filter)
-        {
-            var response = await _reportSubmissionService.GetReportTypeSubmissionsAsync(filter);
-            return Ok(response);
-        }
+        
 
         /// <summary>
         /// Get list of all report submission
@@ -71,7 +61,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <param name="filter"></param>
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("get-all-report-type-submissions")]
+        [HttpPost("get-all-report-type-submissions")]
         [OpenApiOperation("Get list of all report submission.", "")]
         public async Task<IActionResult> GeAlltReportTypeSubmissions(PaginationFilter filter)
         {
@@ -96,5 +86,26 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Delete a report submission
+        /// </summary>
+        /// <param name="reportSubmissionId"></param>
+        /// <returns></returns>
+        [HttpDelete("{reportSubmissionId}")]
+        [OpenApiOperation("Delete a report submission.", "Deletes a specific Report Submission")]
+        public async Task<IActionResult> DeleteReportSubmission([FromRoute] Guid reportSubmissionId)
+        {
+            if (reportSubmissionId == Guid.Empty)
+                return BadRequest(new { message = "ID cannot be empty" });
+
+            var result = await _reportSubmissionService.DeleteReportSubmission(reportSubmissionId);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { message = result.Messages });
+            }
+
+            return BadRequest(new { message = result.Messages });
+        }
     }
 }

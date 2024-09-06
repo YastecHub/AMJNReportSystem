@@ -17,8 +17,26 @@ namespace AMJNReportSystem.Application.Services
         {
             _submissionWindowRepository = submissionWindowRepository; 
         }
+		public async Task<Result<bool>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request)
+		{
+			if (request is null)
+				return await Result<bool>.FailAsync("Question can't be null.");
+			var submissionWindow = new SubmissionWindow
+			{
+				Id = Guid.NewGuid(),
+				EndingDate = request.EndingDate,
+				StartingDate = request.StartingDate,
+				IsDeleted = false,
+				Month = request.Month,
+				Year = request.Year,
+				ReportTypeId = request.ReportTypeId
+			};
+			var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
 
-        public async Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request)
+			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create submission window.");
+
+		}
+		public async Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request)
         {
 			if (request is null)
 				return await Result<bool>.FailAsync("Submission Window can't be null.");
@@ -40,26 +58,6 @@ namespace AMJNReportSystem.Application.Services
 
 			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to update submission window.");
 		} 
-
-		public async Task<Result<bool>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request)
-		{
-			if (request is null)
-				return await Result<bool>.FailAsync("Question can't be null.");
-			var submissionWindow = new SubmissionWindow
-			{
-				Id = Guid.NewGuid(),
-				EndingDate = request.EndingDate,
-				StartingDate = request.StartingDate,
-				IsDeleted = false,
-				Month = request.Month,
-				Year = request.Year,
-				ReportTypeId = request.ReportSubmissionId 
-			};
-			var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
-
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create submission window.");
-
-		}
 
 		public async Task<Result<bool>> DeleteSubmissionWindow(Guid subWindowId)
 		{
