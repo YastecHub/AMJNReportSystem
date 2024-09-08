@@ -37,6 +37,8 @@ using AMJNReportSystem.Infrastructure.Repositories;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.IO;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
@@ -50,7 +52,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSectionRepository, ReportSectionRepository>()
                 .AddScoped<IReportResponseRepository, ReportResponseRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>()
-                .AddScoped<IQuestionOptionRepository, QuestionOptionRepository>()
                 .AddScoped<ISubmissionWindowRepository, SubmissionWindowRepository>();
         }
 
