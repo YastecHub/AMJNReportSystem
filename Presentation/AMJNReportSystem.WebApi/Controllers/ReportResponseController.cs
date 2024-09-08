@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Domain.Entities;
+﻿using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -68,7 +69,6 @@ namespace AMJNReportSystem.WebApi.Controllers
             );
         }
 
-
         [HttpPut("{id}")]
         [OpenApiOperation("Update an existing report response.", "Updates a response associated with a report.")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -89,7 +89,6 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             return Ok(new { id = result.Data.Id, message = "Report response updated successfully" });
         }
-
 
         [OpenApiOperation("Delete a report response.", "Deletes a response based on the provided ID.")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
