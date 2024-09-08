@@ -1,6 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -34,7 +35,22 @@ namespace AMJNReportSystem.Persistence.Repositories
 			var generalQuestion = _context.Update(questionOption);
 			await _context.SaveChangesAsync();
 			return true;
+		}
 
+		public async Task<bool> DeleteQuestionOption(QuestionOption questionOption)
+		{
+			var generalQuestion = _context.Remove(questionOption);	
+			await _context.SaveChangesAsync();
+			return true; 
+		}
+
+		public async Task<IList<QuestionOption>> GetQuestionOptions(Guid questionId)
+		{
+			var questions = await _context.QuestionOptions
+				.Include(x => x.Question)
+				.Where(x => x.QuestionId == questionId)
+				.ToListAsync();
+			return questions;
 		}
 	}
 }

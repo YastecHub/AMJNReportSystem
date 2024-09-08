@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AMJNReportingSystem : Migration
+    public partial class updates_db : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -456,13 +456,6 @@ namespace AMJNReportSystem.Persistence.Migrations
                 name: "IX_ReportResponses_ReportSubmissionId",
                 table: "ReportResponses",
                 column: "ReportSubmissionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReportSection_Description",
-                table: "ReportSection",
-                column: "Description",
-                unique: true,
-                filter: "[Description] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReportSection_ReportSectionName",

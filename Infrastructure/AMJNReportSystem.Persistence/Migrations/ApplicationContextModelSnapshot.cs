@@ -227,10 +227,6 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Description")
-                        .IsUnique()
-                        .HasFilter("[Description] IS NOT NULL");
-
                     b.HasIndex("ReportSectionName")
                         .IsUnique();
 

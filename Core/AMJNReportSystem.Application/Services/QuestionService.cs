@@ -20,15 +20,12 @@ namespace AMJNReportSystem.Application.Services
 			_reportSectionRepository = reportSectionRepository;
 		}
 
-	
 		public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
 		{
 			try
 			{
 				if (request == null)
 					return await Result<bool>.FailAsync("Question can't be null.");
-
-				Console.WriteLine($"ReportSectionId from request: {request.ReportSectionId}");
 
 				var sectionExist = await _reportSectionRepository.GetReportSectionById(request.ReportSectionId);
 
@@ -52,6 +49,7 @@ namespace AMJNReportSystem.Application.Services
 				if (!questionCreated)
 					return await Result<bool>.FailAsync("Failed to create the question.");
 
+				bool optionsCreated = true;
 				if (request.Options != null && request.Options.Count > 0)
 				{
 					foreach (var optionRequest in request.Options)
@@ -68,12 +66,25 @@ namespace AMJNReportSystem.Application.Services
 
 						var optionCreated = await _questionOptionRepository.CreateQuestionOption(option);
 						if (!optionCreated)
-							return await Result<bool>.FailAsync("Failed to create one or more question options.");
+						{
+							optionsCreated = false;
+							break; 
+						}
 					}
 				}
 
-				// Return success with a message
-				return await Result<bool>.SuccessAsync(true, "Question and options created successfully.");
+				if (optionsCreated && request.Options != null && request.Options.Count > 0)
+				{
+					return await Result<bool>.SuccessAsync(true, "Question and options created successfully.");
+				}
+				else if (optionsCreated && (request.Options == null || request.Options.Count == 0))
+				{
+					return await Result<bool>.SuccessAsync(true, "Question created successfully, no options provided.");
+				}
+				else
+				{
+					return await Result<bool>.SuccessAsync(true, "Question created successfully, but one or more options failed to create.");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -81,16 +92,14 @@ namespace AMJNReportSystem.Application.Services
 			}
 		}
 
-
 		public async Task<Result<bool>> UpdateQuestion(Guid questionId, UpdateQuestionRequest request)
 		{
 			if (request is null)
 				return await Result<bool>.FailAsync("Question can't be null.");
+
 			var question = await _questionRepository.GetQuestionById(questionId);
 			if (question == null)
-			{
-				return Result<bool>.Fail("Question not found.");
-			}
+				return await Result<bool>.FailAsync("Question not found.");
 
 			question.QuestionName = request.QuestionName;
 			question.QuestionType = request.QuestionType;
@@ -99,15 +108,49 @@ namespace AMJNReportSystem.Application.Services
 			question.IsActive = request.IsActive;
 			question.LastModifiedBy = "Admin";
 			question.LastModifiedOn = DateTime.Now;
-			question.Options = request.Options.Select(o => new QuestionOption
+
+			bool optionsUpdated = true; 
+			if (request.Options != null && request.Options.Count > 0)
 			{
-				QuestionId = questionId,
-				Text = o.Text
-			}).ToList();
+				foreach (var option in question.Options)
+				{
+					await _questionOptionRepository.DeleteQuestionOption(option);
+				}
 
-			var result = await _questionRepository.UpdateQuestion(question);
+				foreach (var optionDto in request.Options)
+				{
+					var questionOption = new QuestionOption
+					{
+						Id = Guid.NewGuid(),
+						QuestionId = question.Id,
+						LastModifiedBy = "Admin",
+						LastModifiedOn = DateTime.Now,
+						Text = optionDto.Text
+					};
 
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to update question.");
+					var optionCreated = await _questionOptionRepository.CreateQuestionOption(questionOption);
+					if (!optionCreated)
+					{
+						optionsUpdated = false; 
+						break;
+					}
+				}
+			}
+
+			var questionUpdated = await _questionRepository.UpdateQuestion(question);
+
+			if (questionUpdated && optionsUpdated)
+			{
+				return await Result<bool>.SuccessAsync(true, "Question and options updated successfully.");
+			}
+			else if (questionUpdated && !optionsUpdated)
+			{
+				return await Result<bool>.SuccessAsync(true, "Question updated successfully, but some options failed to update.");
+			}
+			else
+			{
+				return await Result<bool>.FailAsync("Failed to update the question.");
+			}
 		}
 
 		public async Task<Result<bool>> DeleteQuestion(Guid questionId)
@@ -139,6 +182,7 @@ namespace AMJNReportSystem.Application.Services
 			var questionDto = new QuestionDto
 			{
 				Id = question.Id,
+				ReportSectionId = question.SectionId,
 				SectionName = question.ReportSection.ReportSectionName,
 				QuestionName = question.QuestionName,
 				IsRequired = question.IsRequired,
@@ -151,7 +195,7 @@ namespace AMJNReportSystem.Application.Services
 				}).ToList()
 			};
 
-			return Result<QuestionDto>.Success(questionDto);
+			return Result<QuestionDto>.Success(questionDto, "Question retrieved successfully");
 		}
 
 		public async Task<Result<IList<QuestionDto>>> GetQuestions()
@@ -161,24 +205,48 @@ namespace AMJNReportSystem.Application.Services
 			var questionDtos = questions.Select(q => new QuestionDto
 			{
 				Id = q.Id,
+				ReportSectionId = q.SectionId,
 				SectionName = q.ReportSection.ReportSectionName,
 				QuestionName = q.QuestionName,
 				IsRequired = q.IsRequired,
 				IsActive = q.IsActive,
 				QuestionType = q.QuestionType,
 				ResponseType = q.ResponseType,
-				Options = q.Options.Select(o => new QuestionOption
-				{
-					Text = o.Text
-				}).ToList()
+				
 			}).ToList();
 
-			return Result<IList<QuestionDto>>.Success(questionDtos);
+			return Result<IList<QuestionDto>>.Success(questionDtos, "Question retrieved successfully");
 		}
 
-		public async Task<IList<Question>> GetQuestionsBySection(Guid sectionId)
+		public async  Task<Result<IList<QuestionDto>>> GetQuestionsBySection(Guid sectionId)
 		{
-			return await _questionRepository.GetQuestionsBySection(sectionId);
+			var questions = await _questionRepository.GetQuestionsBySection(sectionId);
+			var questionDtos = questions.Select(q => new QuestionDto
+			{
+				Id = q.Id,
+				ReportSectionId = q.SectionId,
+				SectionName = q.ReportSection.ReportSectionName,
+				QuestionName = q.QuestionName,
+				IsRequired = q.IsRequired,
+				IsActive = q.IsActive,
+				QuestionType = q.QuestionType,
+				ResponseType = q.ResponseType,
+
+			}).ToList();
+			return Result<IList<QuestionDto>>.Success(questionDtos, "Question retrieved successfully");
+		}
+
+		public async Task<Result<IList<QuestionOptionDto>>> GetQuestionOptions(Guid questionId)
+		{
+			var questions = await _questionOptionRepository.GetQuestionOptions(questionId);
+			var questionDtos = questions.Select(q => new QuestionOptionDto
+			{
+				Id = q.Id, 
+				OptionText = q.Text,
+				QuestionName = q.Question.QuestionName,
+				QuestionId = q.QuestionId
+			}).ToList();
+			return Result<IList<QuestionOptionDto>>.Success(questionDtos, "Question Option retrieved successfully");
 		}
 	}
 }
