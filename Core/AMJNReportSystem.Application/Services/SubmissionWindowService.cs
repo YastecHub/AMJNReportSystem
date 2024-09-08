@@ -33,9 +33,11 @@ namespace AMJNReportSystem.Application.Services
 			};
 			var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
 
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to create submission window.");
+			//return await result ? Result<bool>.SuccessAsync(true) : Result<bool>.Fail("Failed to create submission window.");
+			return await Result<bool>.SuccessAsync(true, "Submission Window created successfully");
 
 		}
+
 		public async Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request)
         {
 			if (request is null)
@@ -55,8 +57,11 @@ namespace AMJNReportSystem.Application.Services
 
 
 			var result = await _submissionWindowRepository.UpdateSubmissionWindow(submissionWindow);
+			if(!result)
+			 return Result<bool>.Fail("Failed to update submission window.");
 
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to update submission window.");
+			return await Result<bool>.SuccessAsync(true, "Submission Window Updated successfully");
+
 		} 
 
 		public async Task<Result<bool>> DeleteSubmissionWindow(Guid subWindowId)
@@ -68,10 +73,14 @@ namespace AMJNReportSystem.Application.Services
 			}
 
 			subWindow.IsDeleted = true;
+			subWindow.DeletedBy = "Admin";
+			subWindow.DeletedOn = DateTime.Now;
 
 			var result = await _submissionWindowRepository.UpdateSubmissionWindow(subWindow);
+			if(!result)
+			  return Result<bool>.Fail("Failed to delete question.");
 
-			return result ? Result<bool>.Success(true) : Result<bool>.Fail("Failed to delete question.");
+			return await Result<bool>.SuccessAsync(true, "Submission Window Deleted Successfully");
 		}
 
 		public Task<Result<PaginatedResult<T>>> GetActiveSubmissionWindows<T>(PaginationFilter filter)

@@ -20,7 +20,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpPost("Crewate SubmissionWindow")]
+		[HttpPost("Create SubmissionWindow")]
 		[OpenApiOperation("Create new submission window.", "")]
 		public async Task<IActionResult> AddSubmissionWindow([FromBody] CreateSubmissionWindowRequest model, [FromServices] IValidator<CreateSubmissionWindowRequest> validator)
 		{
