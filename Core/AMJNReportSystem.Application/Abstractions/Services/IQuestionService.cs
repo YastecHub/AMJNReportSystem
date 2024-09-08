@@ -9,7 +9,9 @@ public interface IQuestionService
 	Task<Result<bool>> CreateQuestion(CreateQuestionRequest request);
 	Task<Result<bool>> UpdateQuestion(Guid questionId, UpdateQuestionRequest request); 
 	Task<Result<bool>> DeleteQuestion(Guid questionId); 
-	Task<Result<QuestionDto>> GetQuestion(Guid questionId); 
+	Task<Result<QuestionDto>> GetQuestion(Guid questionId);
+	Task<Result<IList<QuestionDto>>> GetQuestionsBySection(Guid sectionId);
+	Task<Result<IList<QuestionOptionDto>>> GetQuestionOptions(Guid questionId);
 	Task<Result<IList<QuestionDto>>> GetQuestions();
-	Task<IList<Question>> GetQuestionsBySection(Guid sectionId);
+	
 }

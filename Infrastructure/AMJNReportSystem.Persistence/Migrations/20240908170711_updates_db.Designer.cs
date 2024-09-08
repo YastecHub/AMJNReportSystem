@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240905201208_AMJNReportingSystem")]
-    partial class AMJNReportingSystem
+    [Migration("20240908170711_updates_db")]
+    partial class updates_db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,10 +229,6 @@ namespace AMJNReportSystem.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Description")
-                        .IsUnique()
-                        .HasFilter("[Description] IS NOT NULL");
 
                     b.HasIndex("ReportSectionName")
                         .IsUnique();
