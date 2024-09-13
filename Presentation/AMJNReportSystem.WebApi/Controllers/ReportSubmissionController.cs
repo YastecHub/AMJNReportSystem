@@ -11,7 +11,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  //  [Authorize]
+    [Authorize]
     public class ReportSubmissionController : ControllerBase
     {
         private readonly IReportSubmissionService _reportSubmissionService;

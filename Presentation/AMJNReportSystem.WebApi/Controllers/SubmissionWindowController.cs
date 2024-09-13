@@ -3,6 +3,7 @@ using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Domain.Entities;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -10,6 +11,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class SubmissionWindowController : ControllerBase
     {
         private readonly ISubmissionWindowService _submissionWindowService;

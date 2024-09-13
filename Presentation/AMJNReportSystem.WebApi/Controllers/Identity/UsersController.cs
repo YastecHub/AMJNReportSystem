@@ -9,6 +9,7 @@ namespace AMJNReportSystem.WebApi.Controllers.Identity
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;

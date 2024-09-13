@@ -26,41 +26,43 @@ builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-
-builder.Services.AddTransient<IGatewayHandler,GatewayHandler>();
-
-
+builder.Services.AddTransient<IGatewayHandler, GatewayHandler>();
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
 builder.Services.AddDatabase(connectionString);
 
 builder.Services.AddHealthChecks()
-.AddSqlServer(builder.Configuration.GetConnectionString("ConnectionString"))
-.AddCheck<HealthCheck>("HealthCheck");
+    .AddSqlServer(connectionString)
+    .AddCheck<HealthCheck>("HealthCheck");
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 app.MapHealthChecks("/health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
-    /*app.UseSwagger();
-    app.UseSwaggerUI();*/
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
-
 
 app.UseHttpsRedirection();
 app.UseCors();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseRouting();
+
+app.UseAuthentication(); 
+app.UseAuthorization(); 
+
 app.UseInfrastructure(builder.Configuration);
-app.MapControllers();
+
+app.MapControllers(); 
 
 app.Run();
+
