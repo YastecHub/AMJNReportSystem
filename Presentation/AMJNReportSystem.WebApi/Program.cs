@@ -1,4 +1,6 @@
+using AMJNReportSystem.Application;
 using AMJNReportSystem.Application.Models.DTOs;
+using AMJNReportSystem.Gateway.Implementations;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
@@ -23,6 +25,9 @@ builder.Services.AddFluentValidators(builder.Configuration);
 builder.Services.AddLocalization();
 builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+
+builder.Services.AddTransient<IGatewayHandler,GatewayHandler>();
 
 
 

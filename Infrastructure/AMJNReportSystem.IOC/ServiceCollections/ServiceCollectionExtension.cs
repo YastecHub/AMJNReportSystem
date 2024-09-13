@@ -1,7 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
-using AMJNReportSystem.Application.Identity.Roles;
 using AMJNReportSystem.Application.Identity.Tokens;
 using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Interfaces;
@@ -37,8 +36,7 @@ using AMJNReportSystem.Infrastructure.Repositories;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.IO;
+using AMJNReportSystem.Application;
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {

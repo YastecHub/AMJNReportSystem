@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using AMJNReportSystem.Application;
+using AMJNReportSystem.Domain.Entities;
 
 namespace AMJNReportSystem.Persistence.Identity
 {
@@ -22,7 +24,7 @@ namespace AMJNReportSystem.Persistence.Identity
         private readonly ApplicationContext _db;
         private readonly IStringLocalizer _t;
         private readonly ICurrentUser _currentUser;
-
+        private readonly IGatewayHandler _gatewayHandler;
         private readonly SecuritySettings _securitySettings;
         private readonly IFileStorageService _fileStorage;
 
@@ -33,7 +35,7 @@ namespace AMJNReportSystem.Persistence.Identity
             ApplicationContext db,
             IStringLocalizer<UserService> localizer,
             ICurrentUser currentUser,
-            IOptions<SecuritySettings> securitySettings)
+            IOptions<SecuritySettings> securitySettings, IGatewayHandler gatewayHandler)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -42,6 +44,7 @@ namespace AMJNReportSystem.Persistence.Identity
             _t = localizer;
             _securitySettings = securitySettings.Value;
             _currentUser = currentUser;
+            _gatewayHandler = gatewayHandler;
         }
 
         public async Task<PaginationResponse<UserDetailsDto>> SearchAsync(UserListFilter filter, CancellationToken cancellationToken)
@@ -121,5 +124,20 @@ namespace AMJNReportSystem.Persistence.Identity
 
             await _userManager.UpdateAsync(user);
         }
+
+        public Task<string[]> GetMemberRoleAsync(int chandaNo)
+        {
+           return _gatewayHandler.GetMemberRoleAsync(chandaNo);
+        }
+
+        public Task<UserApi> GetMemberByChandaNoAsync(int chandaNo)
+        {
+            return _gatewayHandler.GetMemberByChandaNoAsync(chandaNo);
+        }
+        public Task<TokenResponse> GenerateToken() 
+        {
+            return _gatewayHandler.GenerateToken();
+        }
+
     }
 }

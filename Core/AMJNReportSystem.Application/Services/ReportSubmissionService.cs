@@ -80,7 +80,8 @@ namespace AMJNReportSystem.Application.Services
                 return new BaseResponse<bool>
                 {
                     Message = "Report submission successfully added.",
-                    Status = true
+                    Status = true,
+                     Data = true,
                 };
             }
             catch (Exception ex)
@@ -110,22 +111,17 @@ namespace AMJNReportSystem.Application.Services
                 }
                 var reportSubmissionResponse = new ReportSubmissionResponseDto
                 {
-                    JamaatId = reportSubmission.JamaatId,
-                    ReportTypeId = reportSubmission.ReportTypeId,
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportType = reportSubmission.ReportType,
+                    ReportTypeName = reportSubmission.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
                     ReportTag = reportSubmission.ReportTag,
-                    SubmissionWindowId = reportSubmission.SubmissionWindowId,
-                    SubmissionWindow = reportSubmission.SubmissionWindow,
-                    Answers = reportSubmission.Answers.Select(x => new ReportResponse
+                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
+                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
                     {
                         QuestionId = x.QuestionId,
-                        Question = x.Question,
                         TextAnswer = x.TextAnswer,
                         QuestionOptionId = x.QuestionOptionId,
-                        QuestionOption = x.QuestionOption,
-                        Report = x.Report
                     }).ToList()
                 };
 
@@ -145,13 +141,14 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-        public async Task<BaseResponse<PaginatedResult<ReportSubmissionDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
+
+        public async Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
             try
             {
                 if (filter == null)
                 {
-                    return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                    return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                     {
                         Status = false,
                         Message = "Pagination filter is required."
@@ -159,16 +156,14 @@ namespace AMJNReportSystem.Application.Services
                 }
 
                 var paginatedResult = await _reportSubmissionRepository.GetAllReportTypeSubmissionsAsync(filter);
-                var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionDto
+                var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionResponseDto
                 {
-                    JamaatId = submission.JamaatId,
-                    ReportTypeId = submission.ReportTypeId,
                     JammatEmailAddress = submission.JammatEmailAddress,
-                    ReportType = submission.ReportType,
+                    ReportTypeName = submission.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
                     ReportTag = submission.ReportTag,
-                    SubmissionWindowId = submission.SubmissionWindowId,
-                    SubmissionWindow = submission.SubmissionWindow,
+                    SubmissionWindowMonth = submission.SubmissionWindow.Month,
+                    SubmissionWindowYear = submission.SubmissionWindow.Year,
                     Answers = submission.Answers.Select(a => new ReportResponseDto
                     {
                         TextAnswer = a.TextAnswer,
@@ -179,11 +174,11 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 }).ToList();
 
-                return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                 {
                     Status = true,
                     Message = $"{paginatedResult.TotalCount} report type submissions retrieved successfully.",
-                    Data = new PaginatedResult<ReportSubmissionDto>
+                    Data = new PaginatedResult<ReportSubmissionResponseDto>
                     {
                         TotalCount = paginatedResult.TotalCount,
                         Data = dtos
@@ -192,7 +187,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                 {
                     Status = false,
                     Message = $"An error occurred while retrieving report type submissions: {ex.Message}"

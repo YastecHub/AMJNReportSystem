@@ -1,5 +1,6 @@
 using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Identity.Users.Password;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -104,6 +105,31 @@ namespace AMJNReportSystem.WebApi.Controllers.Identity
         {
             return _userService.ResetPasswordAsync(request);
         }
+
+
+        [HttpGet("get-member-roles-by-chanda")]
+        [AllowAnonymous]
+        [OpenApiOperation("get member roles.", "")]
+        public Task<string[]> GetMemberRoles([FromQuery] int chandaNo)
+        {
+            return _userService.GetMemberRoleAsync(chandaNo);
+        }
+        
+        [HttpGet("get-member-by-chanda")]
+        [AllowAnonymous]
+        [OpenApiOperation("get member by chanda.", "")]
+        public Task<UserApi> GetMemberByChandaNoAsync([FromQuery] int chandaNo)
+        {
+            return _userService.GetMemberByChandaNoAsync(chandaNo);
+        }
+        [HttpGet("generate-token")]
+        [AllowAnonymous]
+        [OpenApiOperation("generate token", "")]
+        public Task<TokenResponse> GenerateToken(MemberLoginRequest request) 
+        {
+            return _userService.GenerateToken();
+        }
+
 
         private string GetOriginFromRequest() => $"{Request.Scheme}://{Request.Host}{Request.PathBase.Value}";
     }

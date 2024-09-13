@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\AMJNReportSystem.Application\AMJNReportSystem.Application.csproj" />
+    <ProjectReference Include="..\AMJNReportSystem.Gateway\AMJNReportSystem.Gateway.csproj" />
     <ProjectReference Include="..\AMJNReportSystem.Persistence\AMJNReportSystem.Persistence.csproj" />
   </ItemGroup>
 

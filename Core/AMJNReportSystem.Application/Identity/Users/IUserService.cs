@@ -1,6 +1,7 @@
 using AMJNReportSystem.Application.Identity.Users.Password;
 using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Domain.Entities;
 using System.Security.Claims;
 
 namespace AMJNReportSystem.Application.Identity.Users
@@ -38,5 +39,9 @@ namespace AMJNReportSystem.Application.Identity.Users
         Task<string> ForgotPasswordAsync(ForgotPasswordRequest request, string origin);
         Task<string> ResetPasswordAsync(ResetPasswordRequest request);
         Task ChangePasswordAsync(ChangePasswordRequest request, string userId);
+
+        Task<string[]> GetMemberRoleAsync(int chandaNo);
+        Task<UserApi> GetMemberByChandaNoAsync(int chandaNo);
+        Task<TokenResponse> GenerateToken();
     }
 }
