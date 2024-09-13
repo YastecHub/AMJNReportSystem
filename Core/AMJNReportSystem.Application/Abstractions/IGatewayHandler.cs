@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Application.Identity.Users;
+﻿using AMJNReportSystem.Application.Identity.Tokens;
+using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
@@ -11,7 +12,7 @@ namespace AMJNReportSystem.Application
         Task<PaginatedResult<Dila>> GetDilaatAsync(PaginationFilter filter);
         Task<PaginatedResult<Zone>> GetZonesAsync(PaginationFilter filter);
         Task<string[]> GetMemberRoleAsync(int chandaNo); 
-        Task<UserApi> GetMemberByChandaNoAsync(int chandaNo); 
-        Task<TokenResponse> GenerateToken(MemberLoginRequest request);
+        Task<User> GetMemberByChandaNoAsync(int chandaNo); 
+        Task<MemberApiLoginResponse> GenerateToken(TokenRequest request);
     }
 }

@@ -8,6 +8,7 @@ using AMJNReportSystem.Domain.Entities;
 using Newtonsoft.Json;
 using System.Text;
 using AMJNReportSystem.Application.Identity.Users;
+using AMJNReportSystem.Application.Identity.Tokens;
 
 namespace AMJNReportSystem.Gateway.Implementations
 {
@@ -106,7 +107,7 @@ namespace AMJNReportSystem.Gateway.Implementations
         }
 
 
-        public async Task<UserApi> GetMemberByChandaNoAsync(int chandaNo)
+        public async Task<User> GetMemberByChandaNoAsync(int chandaNo)
         {
             var url = $"{_config.Value}members/{chandaNo}";
             var request = new HttpRequestMessage();
@@ -117,7 +118,7 @@ namespace AMJNReportSystem.Gateway.Implementations
             var response = await _client.SendAsync(request);
             if (response.StatusCode.Equals(HttpStatusCode.OK))
             {
-                return await response.ReadContentAs<UserApi>();
+                return await response.ReadContentAs<User>();
             }
             else if (response.StatusCode.Equals(HttpStatusCode.NotFound))
             {
@@ -126,13 +127,13 @@ namespace AMJNReportSystem.Gateway.Implementations
             throw new Exception(response.StatusCode.ToString());
         }
 
-        public async Task<TokenResponse> GenerateToken(MemberLoginRequest memberLoginRequest)
+        public async Task<MemberApiLoginResponse> GenerateToken(TokenRequest tokenRequest)
         {
             var url = $"{_config.Value}token";
             var credentials = new TokenConstant
             {
-                Username = memberLoginRequest.ChandaNo,
-                Password = memberLoginRequest.Password
+                Username = tokenRequest.ChandaNo,
+                Password = tokenRequest.Password
             };
             var jsonContent = new StringContent(JsonConvert.SerializeObject(credentials), Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage(HttpMethod.Post, url)
@@ -142,7 +143,7 @@ namespace AMJNReportSystem.Gateway.Implementations
             var response = await _client.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(await response.Content.ReadAsStringAsync());
+                var tokenResponse = JsonConvert.DeserializeObject<MemberApiLoginResponse>(await response.Content.ReadAsStringAsync());
                 return tokenResponse;
             }
             else if (response.StatusCode.Equals(HttpStatusCode.NotFound))

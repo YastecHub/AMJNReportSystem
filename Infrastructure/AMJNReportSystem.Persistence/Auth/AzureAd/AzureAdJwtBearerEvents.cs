@@ -1,10 +1,6 @@
-﻿
-using AMJNReportSystem.Application.Exceptions;
-using AMJNReportSystem.Application.Identity.Users;
+﻿using AMJNReportSystem.Application.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 
@@ -74,13 +70,13 @@ namespace AMJNReportSystem.Persistence.Auth.AzureAd
              context.HttpContext.TrySetTenantInfo(tenant, false);
      */
             // Lookup local user or create one if none exist.
-            string userId = await context.HttpContext.RequestServices.GetRequiredService<IUserService>()
-                .GetOrCreateFromPrincipalAsync(principal);
+           ///* string userid = await context.httpcontext.requestser*/vices.getrequiredservice<Iuserservice>()
+           //     .getorcreatefromprincipalasync(principal);
 
             // We use the nameidentifier claim to store the user id.
-            var idClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
-            identity.TryRemoveClaim(idClaim);
-            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+            //var idClaim = principal.FindFirst(ClaimTypes.NameIdentifier);
+            //identity.TryRemoveClaim(idClaim);
+            //identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
 
             // And the email claim for the email.
             var upnClaim = principal.FindFirst(ClaimTypes.Upn);
