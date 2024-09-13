@@ -4,7 +4,8 @@ namespace AMJNReportSystem.Application.Models.DTOs
 {
     public class ReportSubmissionDto
     {
-        public Guid JamaatId { get; set; }
+        public int JamaatId { get; set; }
+        public int CircuitId { get; set; }
         public Guid ReportTypeId { get; set; }
         public string JammatEmailAddress { get; set; }
         public ReportType ReportType { get; set; }
