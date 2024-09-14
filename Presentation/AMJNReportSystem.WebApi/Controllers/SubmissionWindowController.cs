@@ -35,7 +35,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch("Update SubmissionWindow/{id}")]
+        [HttpPatch("Update SubmissionWindo w/{id}")]
 		[OpenApiOperation(" update submission window.", "")]
 		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId, [FromServices] IValidator<UpdateSubmissionWindowRequest> validator)
         {
@@ -60,7 +60,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [HttpGet("GetSubmissionWindow/{submissionWindowId}")]
         public async Task<IActionResult> GetSubmissionWindowAsync(Guid submissionWindowId)
-        {
+        { 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
             var response = await _submissionWindowService.GetSubmissionWindow(submissionWindowId);
