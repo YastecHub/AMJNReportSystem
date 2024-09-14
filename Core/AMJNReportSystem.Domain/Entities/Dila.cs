@@ -1,6 +1,6 @@
 ﻿namespace AMJNReportSystem.Domain.Entities
 {
-    public class Muqam
+    public class Dila
     {
     }
 }

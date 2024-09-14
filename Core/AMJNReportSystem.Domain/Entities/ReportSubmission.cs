@@ -5,7 +5,8 @@ namespace AMJNReportSystem.Domain.Entities
 {
     public class ReportSubmission : AuditableEntity
     {
-        public Guid JamaatId { get; set; }
+        public int JamaatId { get; set; }
+        public int CircuitId { get; set; }
         public Guid ReportTypeId { get; set; }
         public string JammatEmailAddress { get; set; }
         public ReportType ReportType { get; set; }

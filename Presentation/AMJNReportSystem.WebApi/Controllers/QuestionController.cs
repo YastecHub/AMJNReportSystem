@@ -2,6 +2,7 @@
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -9,6 +10,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class QuestionController : BaseSecuredController
 	{
 		private readonly IQuestionService _questionService;
@@ -24,7 +26,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 		[HttpPost("Create Question")]
 		[OpenApiOperation("Create new question.", "")]
 		public async Task<IActionResult> CreateQuestion([FromBody] CreateQuestionRequest model, [FromServices] IValidator<CreateQuestionRequest> validator)
-		{
+		{ 
 			var validationResult = await validator.ValidateAsync(model);
 			if (!validationResult.IsValid)
 				return BadRequest(validationResult.ToDictionary());
