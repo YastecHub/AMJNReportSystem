@@ -24,10 +24,6 @@ namespace AMJNReportSystem.Application.Validation
             RuleFor(x => x.ReportTypeId)
                 .NotEmpty()
                 .WithMessage("Report Type ID is required.");
-           
-            RuleFor(x => x.JamaatId)
-                .NotEmpty()
-                .WithMessage("Jamaat ID is required.");
 
             RuleFor(x => x.ReportSubmissionStatus)
                 .IsInEnum()
