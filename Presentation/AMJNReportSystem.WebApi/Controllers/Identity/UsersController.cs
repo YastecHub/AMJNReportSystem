@@ -32,7 +32,7 @@ namespace AMJNReportSystem.WebApi.Controllers.Identity
             return _userService.GetMemberByChandaNoAsync(chandaNo);
         }
 
-        [HttpGet("generate-token")]
+        [HttpPost("generate-token")]
         [AllowAnonymous]
         [OpenApiOperation("generate token", "")]
         public Task<MemberApiLoginResponse> GenerateToken(TokenRequest request) 
