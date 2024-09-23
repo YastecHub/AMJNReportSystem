@@ -30,8 +30,8 @@ namespace AMJNReportSystem.Persistence.Auth
         public IEnumerable<Claim>? GetUserClaims() =>
             _user?.Claims;
 
-        public string? GetTenant() =>
-            IsAuthenticated() ? _user?.GetTenant() : string.Empty;
+        public List<string>? GetRoles() =>
+            IsAuthenticated() ? _user?.GetUserLoggedInRoles() : null;
 
         public void SetCurrentUser(ClaimsPrincipal user)
         {
@@ -54,6 +54,16 @@ namespace AMJNReportSystem.Persistence.Auth
             {
                 _userId = Guid.Parse(userId);
             }
+        }
+
+        public int GetJamaatId()
+        {
+           return _user.GetJamaatId() ?? 0;
+        }
+
+        public int GetCircuit()
+        {
+            return _user.GetCircuitId() ?? 0;
         }
     }
 }

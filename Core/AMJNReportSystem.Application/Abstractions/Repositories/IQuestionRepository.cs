@@ -8,7 +8,6 @@ public interface IQuestionRepository
 	Task<bool> AddQuestion(Question question);
 	Task<bool> UpdateQuestion(Question question);
 	Task<IList<Question>> GetQuestionsBySection(Guid sectionId);
-	Task<Question> GetQuestionAsync(Expression<Func<Question, bool>> expression);
 	Task<IList<Question>> GetQuestions(Expression<Func<Question, bool>> expression);
 	Task<Question> GetQuestionById(Guid id);
 }

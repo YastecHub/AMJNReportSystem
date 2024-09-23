@@ -1,5 +1,3 @@
-using AMJNReportSystem.Application.Authorization;
-
 namespace System.Security.Claims
 {
     public static class ClaimsPrincipalExtensions
@@ -7,11 +5,8 @@ namespace System.Security.Claims
         public static string? GetEmail(this ClaimsPrincipal principal)
             => principal.FindFirstValue(ClaimTypes.Email);
 
-        public static string? GetTenant(this ClaimsPrincipal principal)
-            => principal.FindFirstValue(GXClaims.Tenant);
-
         public static string? GetFullName(this ClaimsPrincipal principal)
-            => principal?.FindFirst(GXClaims.Fullname)?.Value;
+            => principal?.FindFirst("Fullname")?.Value;
 
         public static string? GetFirstName(this ClaimsPrincipal principal)
             => principal?.FindFirst(ClaimTypes.Name)?.Value;
@@ -26,15 +21,49 @@ namespace System.Security.Claims
            => principal.FindFirstValue(ClaimTypes.NameIdentifier);
 
         public static string? GetImageUrl(this ClaimsPrincipal principal)
-           => principal.FindFirstValue(GXClaims.ImageUrl);
+          => principal.FindFirstValue("ImageUrl");
 
         public static DateTimeOffset GetExpiration(this ClaimsPrincipal principal) =>
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(
-                principal.FindFirstValue(GXClaims.Expiration)));
+                principal.FindFirstValue("Expiration")));
 
         private static string? FindFirstValue(this ClaimsPrincipal principal, string claimType) =>
             principal is null
                 ? throw new ArgumentNullException(nameof(principal))
                 : principal.FindFirst(claimType)?.Value;
+
+
+        public static List<string>? GetUserLoggedInRoles(this ClaimsPrincipal principal)
+        {
+            var role = principal.FindFirstValue(ClaimTypes.Role);
+
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                return role.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                               .Select(role => role.Trim())
+                               .ToList();
+            }
+            return new List<string>();
+        }
+
+        public static int? GetCircuitId(this ClaimsPrincipal principal)
+        {
+            var circuit = principal.FindFirstValue("CircuitId");
+            if (!string.IsNullOrWhiteSpace(circuit))
+            {
+                return int.Parse(circuit);
+            }
+            return null;
+        }
+
+        public static int? GetJamaatId(this ClaimsPrincipal principal)
+        {
+            var jamaat = principal.FindFirstValue("JamaatId");
+            if (!string.IsNullOrWhiteSpace(jamaat))
+            {
+                return int.Parse(jamaat);
+            }
+            return null;
+        }
     }
 }

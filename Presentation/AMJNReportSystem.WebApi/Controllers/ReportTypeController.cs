@@ -1,10 +1,16 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Services;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
+     [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
     public class ReportTypeController : BaseSecuredController
     {
         private readonly IReportTypeService _reportTypeService;
@@ -19,22 +25,23 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("create-report-type")]
         [OpenApiOperation("Create new report type.", "")]
-        public async Task<IActionResult> CreateReportType([FromBody] CreateReportTypeRequest request)
+        public async Task<IActionResult> CreateReportType([FromBody] CreateReportTypeRequest request, [FromServices] IValidator<CreateReportTypeRequest> validator)
+
         {
-            var a = UserContext;
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var validationResult = await validator.ValidateAsync(request);
+            if (!validationResult.IsValid) return BadRequest(validationResult.ToDictionary());
             var reportTypeRequest = await _reportTypeService.CreateReportType(request);
-            return !reportTypeRequest.Status ? Conflict(reportTypeRequest) : Ok(reportTypeRequest); 
+            return !reportTypeRequest.Status ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("qaid--report-types")]
-        [OpenApiOperation("Get list of Qaid report types.", "")]
-        public async Task<IActionResult> GetQaidReportTypes()
-        {
-            var qaidReportType = await _reportTypeService.GetQaidReportTypes();
-            return Ok(qaidReportType);
-        }
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[HttpGet("report-types")]
+        //[OpenApiOperation("Get list of report types.", "")]
+        //public async Task<IActionResult> GetReportTypes()
+        //{
+        //    var qaidReportType = await _reportTypeService.GetQaidReportTypes();
+        //    return Ok(qaidReportType);
+        //}
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -11,7 +11,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-  //  [Authorize]
+    [Authorize]
     public class ReportSubmissionController : ControllerBase
     {
         private readonly IReportSubmissionService _reportSubmissionService;
@@ -44,12 +44,12 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("get-report-type-submission/{id}")]
+        [HttpGet]
         [OpenApiOperation("Get a specific report submission by id.", "")]
-        public async Task<IActionResult> GetReportTypeSubmission(Guid reportTypeSubmissionId)
+        public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
         {
-            if (reportTypeSubmissionId == Guid.Empty) return BadRequest("id can not be empty");
-            var response = await _reportSubmissionService.GetReportTypeSubmissionByIdAsync(reportTypeSubmissionId);
+            if (reportsubmissionid == Guid.Empty) return BadRequest("id can not be empty");
+            var response = await _reportSubmissionService.GetReportTypeSubmissionByIdAsync(reportsubmissionid);
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
