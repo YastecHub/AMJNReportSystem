@@ -6,7 +6,6 @@ using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;

@@ -29,6 +29,14 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
                 var report = await _reportTypeRepository.Exist(request.Name);
+                if(report == true)
+                {
+                    return new BaseResponse<Guid>
+                    {
+                        Status = true,
+                        Message = "Name has been exist pls change the name",                   
+                    };
+                }
 
                 var reportType = new ReportType
                 {
