@@ -75,6 +75,8 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IValidator<UpdateReportSectionRequest>, UpdateReportSectionRequestValidator>()
                  .AddTransient<IValidator<CreateReportResponseRequest>, ReportResponseRequestValidator>()
                  .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>()
+                .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
+                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>()
                  .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
                 .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
                 .AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
