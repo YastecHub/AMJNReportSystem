@@ -73,13 +73,11 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
-                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+                .AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
                 .AddScoped<IValidator<CreateReportSectionRequest>, ReportSectionRequestValidator>()
                 .AddScoped<IValidator<UpdateReportSectionRequest>, UpdateReportSectionRequestValidator>()
                  .AddTransient<IValidator<CreateReportResponseRequest>, ReportResponseRequestValidator>()
-                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>();
-
-        }
+                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>()
                 .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
                 .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
 				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
