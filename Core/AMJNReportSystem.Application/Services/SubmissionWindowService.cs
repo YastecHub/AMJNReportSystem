@@ -33,7 +33,6 @@ namespace AMJNReportSystem.Application.Services
 			};
 			var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
 
-			//return await result ? Result<bool>.SuccessAsync(true) : Result<bool>.Fail("Failed to create submission window.");
 			return await Result<bool>.SuccessAsync(true, "Submission Window created successfully");
 
 		}
@@ -42,7 +41,7 @@ namespace AMJNReportSystem.Application.Services
         {
 			if (request is null)
 				return await Result<bool>.FailAsync("Submission Window can't be null.");
-			var submissionWindow = await _submissionWindowRepository.GetSubmissionWindowAsync(x => x.Id == id);
+			var submissionWindow = await _submissionWindowRepository.GetSubmissionWindowsById(id);
 			if (submissionWindow == null)
 			{
 				return Result<bool>.Fail("Submission Window not found.");
@@ -66,7 +65,7 @@ namespace AMJNReportSystem.Application.Services
 
 		public async Task<Result<bool>> DeleteSubmissionWindow(Guid subWindowId)
 		{
-			var subWindow = await _submissionWindowRepository.GetSubmissionWindowAsync(x => x.Id == subWindowId);
+			var subWindow = await _submissionWindowRepository.GetSubmissionWindowsById(subWindowId);
 			if (subWindow == null)
 			{
 				return Result<bool>.Fail("Submission Window not found.");
@@ -83,59 +82,51 @@ namespace AMJNReportSystem.Application.Services
 			return await Result<bool>.SuccessAsync(true, "Submission Window Deleted Successfully");
 		}
 
-		public Task<Result<PaginatedResult<T>>> GetActiveSubmissionWindows<T>(PaginationFilter filter)
+		public Task<Result<SubmissionWindowDto>> GetActiveSubmissionWindows()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException(); 
 		}
 
-		public async Task<Result<SubmissionWindowDto>> GetSubmissionWindow(Guid Id)
+		public async Task<Result<SubmissionWindowDto>> GetSubmissionWindow(Guid id)
 		{
-			var submissionWindow = await _submissionWindowRepository.GetSubmissionWindowAsync(x => x.Id == Id);
-			if (submissionWindow is null) return await Result<SubmissionWindowDto>.FailAsync("Submission Window not found");
+            var subWindow = await _submissionWindowRepository.GetSubmissionWindowsById(id);
+            if (subWindow == null)
+            {
+                return Result<SubmissionWindowDto>.Fail("Question not found."); 
+            }
 
-			var submissionWindowDto = submissionWindow.Adapt<SubmissionWindowDto>();
-			return await Result<SubmissionWindowDto>.SuccessAsync(submissionWindowDto, "Successfully retrieved Submission Window");
-		}
+            var subWindowDto = new SubmissionWindowDto 
+            {
+                SubmissionWindowId = subWindow.Id,
+				EndDate = subWindow.EndingDate,
+				ReportTypeId = subWindow.ReportTypeId,
+				ReportTypeName = subWindow.ReportType.Name,
+				Month = subWindow.Month,
+				Year = subWindow.Year,
+				StartDate = subWindow.StartingDate,
+				IsLocked = subWindow.IsLocked,
+            };
 
-		public async Task<IEnumerable<SubmissionWindowResponseModel>> GetSubmissionWindows(Guid? reportTypeId, int? month, int? year, string? status, bool? isLocked, DateTime? startDate, DateTime? endDate)
+            return Result<SubmissionWindowDto>.Success(subWindowDto, "Submission Window retrieved successfully");
+        }
+
+		public async Task<Result<IList<SubmissionWindowDto>>> GetSubmissionWindows()
 		{
-			var listOfCurrentSubmissionWindow = new List<SubmissionWindowResponseModel>();
+            var subWindow = await _submissionWindowRepository.GetAllSubmissionWindowsAsync(q => !q.IsDeleted);
 
-			var getAllSubmissionWindows = await _submissionWindowRepository.GetAllSubmissionWindowsAsync(reportTypeId, month, year, isLocked, endDate, startDate);
-			foreach (var submissionWindow in getAllSubmissionWindows)
-			{
-				if (DateTime.Now >= submissionWindow.StartingDate && DateTime.Now <= submissionWindow.EndingDate)
-				{
-					var currentSubmissionWindow = new SubmissionWindowResponseModel
-					{
-						Status = "IsCurrent",
-						Month = submissionWindow.Month,
-						Year = submissionWindow.Year,
-						EndDate = submissionWindow.EndingDate,
-						StartDate = submissionWindow.StartingDate,
-						Id = submissionWindow.Id,
-						ReportTypeName = submissionWindow.ReportType.Description,
-						ReportTypeId = submissionWindow.ReportType.Id
-					};
-					listOfCurrentSubmissionWindow.Add(currentSubmissionWindow);
-				}
-				else
-				{
-					var previousSubmissionWindow = new SubmissionWindowResponseModel
-					{
-						Status = "IsPrevious",
-						Month = submissionWindow.Month,
-						Year = submissionWindow.Year,
-						EndDate = submissionWindow.EndingDate,
-						StartDate = submissionWindow.StartingDate,
-						Id = submissionWindow.Id,
-						ReportTypeName = submissionWindow.ReportType.Description,
-						ReportTypeId = submissionWindow.ReportType.Id
-					};
-					listOfCurrentSubmissionWindow.Add(previousSubmissionWindow);
-				}
-			}
-			return listOfCurrentSubmissionWindow;
-		}
+            var subWindowDtos = subWindow.Select(q => new SubmissionWindowDto
+            {
+                SubmissionWindowId = q.Id,
+				ReportTypeId = q.ReportTypeId,
+				ReportTypeName = q.ReportType.Name,
+				Month = q.Month,
+				Year = q.Year,
+				IsLocked = q.IsLocked,
+				StartDate = q.StartingDate,
+				EndDate = q.EndingDate,
+            }).ToList();
+
+            return Result<IList<SubmissionWindowDto>>.Success(subWindowDtos, "Submission Window retrieved successfully");
+        }
 	}
 }
