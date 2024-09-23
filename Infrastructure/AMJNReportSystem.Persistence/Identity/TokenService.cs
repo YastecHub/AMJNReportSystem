@@ -1,9 +1,11 @@
-using AMJNReportSystem.Application.Authorization;
+using AMJNReportSystem.Application;
 using AMJNReportSystem.Application.Exceptions;
 using AMJNReportSystem.Application.Identity.Tokens;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Persistence.Auth;
 using AMJNReportSystem.Persistence.Auth.Jwt;
-using Microsoft.AspNetCore.Identity;
+using AMJNReportSystem.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -16,116 +18,118 @@ namespace AMJNReportSystem.Persistence.Identity
 {
     public class TokenService : ITokenService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+
         private readonly IStringLocalizer _t;
+        private readonly IGatewayHandler _gatewayHandler;
+        private readonly ApplicationContext _dbContext;
         private readonly SecuritySettings _securitySettings;
         private readonly JwtSettings _jwtSettings;
 
         public TokenService(
-            UserManager<ApplicationUser> userManager,
             IOptions<JwtSettings> jwtSettings,
             IStringLocalizer<TokenService> localizer,
-            IOptions<SecuritySettings> securitySettings)
+            IOptions<SecuritySettings> securitySettings, IGatewayHandler gatewayHandler, ApplicationContext dbContext)
         {
-            _userManager = userManager;
             _t = localizer;
+            _gatewayHandler = gatewayHandler;
+            _dbContext = dbContext;
             _jwtSettings = jwtSettings.Value;
             _securitySettings = securitySettings.Value;
         }
 
         public async Task<TokenResponse> GetTokenAsync(TokenRequest request, string ipAddress, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email.Trim().Normalize());
+            var login = await _gatewayHandler.GenerateToken(request);
 
-            if (!user.IsActive)
+            if (login == null)
             {
                 throw new UnauthorizedException(_t["User Not Active. Please contact the administrator."]);
             }
 
-            bool isLockedOut = await _userManager.IsLockedOutAsync(user);
+            var user = await _gatewayHandler.GetMemberByChandaNoAsync(int.Parse(login.Data.UserName));
 
-            if (isLockedOut)
+            if (user == null)
             {
-                DateTimeOffset? lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
-                TimeSpan? remainingTime = lockoutEndDate - DateTimeOffset.UtcNow;
 
-                throw new UnauthorizedException(_t[$"Authentication Failed. Account locked, Please try again after {remainingTime?.TotalMinutes} minutes."]);
+                throw new UnauthorizedException(_t[$"Authentication Failed."]);
             }
-
-            if (user is null || !await _userManager.CheckPasswordAsync(user, request.Password))
-            {
-                //user.AccessFailedCount++;
-                await _userManager.AccessFailedAsync(user);
-                if (user.AccessFailedCount == 4)
-                {
-                    //user.IsActive = false;
-                    // Set the lockout end date to 5 minutes from now
-                    DateTimeOffset lockoutEndDate = DateTimeOffset.UtcNow.AddMinutes(5);
-                    await _userManager.SetLockoutEndDateAsync(user, lockoutEndDate);
-
-                    TimeSpan? remainingTime = lockoutEndDate - DateTimeOffset.UtcNow;
-                    await _userManager.UpdateAsync(user);
-                    throw new UnauthorizedException(_t[$"Authentication Failed. Account Locked after 4 failed attempts. Please try again after {remainingTime?.TotalMinutes} minutes."]);
-                }
-                await _userManager.UpdateAsync(user);
-                throw new UnauthorizedException(_t["Authentication Failed."]);
-            }
-
-            if (_securitySettings.RequireConfirmedAccount && !user.EmailConfirmed)
-            {
-                throw new UnauthorizedException(_t["E-Mail not confirmed."]);
-            }
-
-            //user.AccessFailedCount = 0;
-            await _userManager.ResetAccessFailedCountAsync(user);
-            // 
+            user.Roles = string.Join(", ", login.Data.Roles);
             return await GenerateTokensAndUpdateUser(user, ipAddress);
         }
 
         public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request, string ipAddress)
         {
             var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
-            string? userEmail = userPrincipal.GetEmail();
-            var user = await _userManager.FindByEmailAsync(userEmail!);
+            string? userEmail = userPrincipal.GetUserId();
+
+            int chandaNo = !string.IsNullOrEmpty(userEmail) ? int.Parse(userEmail) : 0;
+            var user = await _gatewayHandler.GetMemberByChandaNoAsync(chandaNo);
             if (user is null)
             {
                 throw new UnauthorizedException(_t["Authentication Failed."]);
             }
 
-            if (user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            {
-                throw new UnauthorizedException(_t["Invalid Refresh Token."]);
-            }
+            var userRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.ChandaNo == userEmail);
 
+            if (userRefreshToken != null)
+            {
+                if (userRefreshToken.Token != request.RefreshToken || userRefreshToken.RefreshTokenExpiryTime <= DateTime.UtcNow)
+                {
+                    throw new UnauthorizedException(_t["Invalid Refresh Token."]);
+                }
+            }
             return await GenerateTokensAndUpdateUser(user, ipAddress);
         }
 
-        private async Task<TokenResponse> GenerateTokensAndUpdateUser(ApplicationUser user, string ipAddress)
+        private async Task<TokenResponse> GenerateTokensAndUpdateUser(User user, string ipAddress)
         {
             string token = GenerateJwt(user, ipAddress);
 
-            user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
+            var refreshToken = GenerateRefreshToken();
+            var refreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
 
-            await _userManager.UpdateAsync(user);
+            var userRefreshToken = await _dbContext.RefreshTokens.FirstOrDefaultAsync(x => x.ChandaNo == user.ChandaNo);
 
-            return new TokenResponse(token, user.RefreshToken, user.RefreshTokenExpiryTime);
+            if (userRefreshToken != null)
+            {
+                userRefreshToken.Token = token;
+                userRefreshToken.RefreshTokenExpiryTime = refreshTokenExpiryTime;
+
+                _dbContext.RefreshTokens.Update(userRefreshToken);
+
+                await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                await _dbContext.RefreshTokens.AddAsync(new RefreshToken
+                {
+                    ChandaNo = user.ChandaNo,
+                    RefreshTokenExpiryTime = refreshTokenExpiryTime,
+                    Token = token,
+                    Id = Guid.NewGuid(),
+                    CreatedDate = DateTime.UtcNow,
+                });
+                await _dbContext.SaveChangesAsync();
+            }
+            return new TokenResponse(token, refreshToken, refreshTokenExpiryTime);
         }
 
-        private string GenerateJwt(ApplicationUser user, string ipAddress) =>
+        private string GenerateJwt(User user, string ipAddress) =>
             GenerateEncryptedToken(GetSigningCredentials(), GetClaims(user, ipAddress));
 
-        private IEnumerable<Claim> GetClaims(ApplicationUser user, string ipAddress) =>
+        private IEnumerable<Claim> GetClaims(User user, string ipAddress) =>
             new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.NameIdentifier, user.ChandaNo),
                 new(ClaimTypes.Email, user.Email!),
-                new(GXClaims.Fullname, $"{user.FirstName} {user.LastName}"),
+                new("FullName", $"{user.FirstName} {user.MiddleName} {user.Surname}"),
                 new(ClaimTypes.Name, user.FirstName ?? string.Empty),
-                new(ClaimTypes.Surname, user.LastName ?? string.Empty),
-                new(GXClaims.IpAddress, ipAddress),
-                new(GXClaims.ImageUrl, user.ImageUrl ?? string.Empty),
-                new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty)
+                new(ClaimTypes.Surname, user.Surname ?? string.Empty),
+                new(ClaimTypes.MobilePhone, user.PhoneNo ?? string.Empty),
+                new(ClaimTypes.Role, user.Roles ?? string.Empty ),
+                new("JamaatId", user.JamaatId.ToString() ?? string.Empty),
+                new("CircuitId", user.CircuitId.ToString() ?? string.Empty),
+
             };
 
         private static string GenerateRefreshToken()

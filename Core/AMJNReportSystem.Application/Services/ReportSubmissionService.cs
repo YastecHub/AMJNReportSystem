@@ -18,13 +18,17 @@ namespace AMJNReportSystem.Application.Services
         private readonly IReportTypeRepository _reportTypeRepository;
         private readonly ISubmissionWindowRepository _submissionWindowRepository;
         private readonly ICurrentUser _currentUser;
+        private readonly IQuestionRepository _questionRepository;
 
-        public ReportSubmissionService(IReportSubmissionRepository reportSubmission, IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository submissionWindowRepository, ICurrentUser currentUser)
+        public ReportSubmissionService(IReportSubmissionRepository reportSubmission,
+            IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository
+            submissionWindowRepository, ICurrentUser currentUser, IQuestionRepository questionRepository)
         {
             _reportSubmissionRepository = reportSubmission;
             _reportTypeRepository = reportTypeRepository;
             _submissionWindowRepository = submissionWindowRepository;
             _currentUser = currentUser;
+            _questionRepository = questionRepository;
         }
 
         public async Task<BaseResponse<bool>> CreateReportTypeSubmissionAsync(CreateReportSubmissionRequest request)
@@ -62,7 +66,8 @@ namespace AMJNReportSystem.Application.Services
                 }
                 var submission = new ReportSubmission
                 {
-                    JamaatId = request.JamaatId,
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
                     ReportTypeId = request.ReportTypeId,
                     JammatEmailAddress = request.JammatEmailAddress,
                     ReportType = reportType,
@@ -73,6 +78,35 @@ namespace AMJNReportSystem.Application.Services
                     CreatedBy = request.CreatedBy,
                     CreatedOn = DateTime.Now,
                 };
+                if (request.ReportResponses != null && request.ReportResponses.Count > 0)
+                {
+                    foreach (var response in request.ReportResponses)
+                    {
+                        var question = await _questionRepository.GetQuestionById(response.QuestionId);
+                        if (question == null)
+                        {
+                            return new BaseResponse<bool>
+                            {
+                                Message = $"Question with ID {response.QuestionId} not found.",
+                                Status = false
+                            };
+                        }
+                        var reportResponse = new ReportResponse
+                        {
+
+                            QuestionId = response.QuestionId,
+                            Question = question,
+                            TextAnswer = response.TextAnswer,
+                            QuestionOptionId = response.QuestionOptionId,
+                            CreatedBy = request.CreatedBy,
+                            CreatedOn = DateTime.Now,
+                            Report = response.Report
+                        };
+
+                        submission.Answers.Add(reportResponse);
+                    }
+                }
+
                 submission.ReportType.Title = reportSubmissionName;
 
                 await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
@@ -80,7 +114,8 @@ namespace AMJNReportSystem.Application.Services
                 return new BaseResponse<bool>
                 {
                     Message = "Report submission successfully added.",
-                    Status = true
+                    Status = true,
+                    Data = true,
                 };
             }
             catch (Exception ex)
@@ -110,22 +145,21 @@ namespace AMJNReportSystem.Application.Services
                 }
                 var reportSubmissionResponse = new ReportSubmissionResponseDto
                 {
-                    JamaatId = reportSubmission.JamaatId,
-                    ReportTypeId = reportSubmission.ReportTypeId,
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportType = reportSubmission.ReportType,
+                    ReportTypeName = reportSubmission.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
                     ReportTag = reportSubmission.ReportTag,
-                    SubmissionWindowId = reportSubmission.SubmissionWindowId,
-                    SubmissionWindow = reportSubmission.SubmissionWindow,
-                    Answers = reportSubmission.Answers.Select(x => new ReportResponse
+                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
+                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
                     {
+                        Id = x.Id,
                         QuestionId = x.QuestionId,
-                        Question = x.Question,
                         TextAnswer = x.TextAnswer,
                         QuestionOptionId = x.QuestionOptionId,
-                        QuestionOption = x.QuestionOption,
-                        Report = x.Report
+                        Report = x.Report,
                     }).ToList()
                 };
 
@@ -145,13 +179,14 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-        public async Task<BaseResponse<PaginatedResult<ReportSubmissionDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
+
+        public async Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
             try
             {
                 if (filter == null)
                 {
-                    return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                    return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                     {
                         Status = false,
                         Message = "Pagination filter is required."
@@ -159,16 +194,14 @@ namespace AMJNReportSystem.Application.Services
                 }
 
                 var paginatedResult = await _reportSubmissionRepository.GetAllReportTypeSubmissionsAsync(filter);
-                var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionDto
+                var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionResponseDto
                 {
-                    JamaatId = submission.JamaatId,
-                    ReportTypeId = submission.ReportTypeId,
                     JammatEmailAddress = submission.JammatEmailAddress,
-                    ReportType = submission.ReportType,
+                    ReportTypeName = submission.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
                     ReportTag = submission.ReportTag,
-                    SubmissionWindowId = submission.SubmissionWindowId,
-                    SubmissionWindow = submission.SubmissionWindow,
+                    SubmissionWindowMonth = submission.SubmissionWindow.Month,
+                    SubmissionWindowYear = submission.SubmissionWindow.Year,
                     Answers = submission.Answers.Select(a => new ReportResponseDto
                     {
                         TextAnswer = a.TextAnswer,
@@ -179,11 +212,11 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 }).ToList();
 
-                return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                 {
                     Status = true,
                     Message = $"{paginatedResult.TotalCount} report type submissions retrieved successfully.",
-                    Data = new PaginatedResult<ReportSubmissionDto>
+                    Data = new PaginatedResult<ReportSubmissionResponseDto>
                     {
                         TotalCount = paginatedResult.TotalCount,
                         Data = dtos
@@ -192,7 +225,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                return new BaseResponse<PaginatedResult<ReportSubmissionDto>>
+                return new BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>
                 {
                     Status = false,
                     Message = $"An error occurred while retrieving report type submissions: {ex.Message}"
@@ -206,6 +239,7 @@ namespace AMJNReportSystem.Application.Services
             {
                 var existingReportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(id);
 
+                
                 if (existingReportSubmission == null)
                 {
                     return new BaseResponse<ReportSubmissionDto>
@@ -215,16 +249,21 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                id = request.ReportSubmissionId;
                 existingReportSubmission.JammatEmailAddress = request.JammatEmailAddress;
                 existingReportSubmission.ReportSubmissionStatus = request.ReportSubmissionStatus;
+                existingReportSubmission.SubmissionWindow.Year = request.Year;
+                existingReportSubmission.SubmissionWindow.Month = request.Month;    
                 existingReportSubmission.ReportTag = request.ReportTag;
                 existingReportSubmission.LastModifiedOn = DateTime.Now;
                 existingReportSubmission.LastModifiedBy = request.LastModifiedBy;
+
                 await _reportSubmissionRepository.UpdateReportSubmission(existingReportSubmission);
+
+                
                 var reportSubmissionDto = new ReportSubmissionDto
                 {
                     JamaatId = existingReportSubmission.JamaatId,
+                    CircuitId = existingReportSubmission.CircuitId,
                     ReportTypeId = existingReportSubmission.ReportTypeId,
                     JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
                     ReportType = existingReportSubmission.ReportType,
@@ -238,10 +277,11 @@ namespace AMJNReportSystem.Application.Services
                         QuestionId = a.QuestionId,
                         TextAnswer = a.TextAnswer,
                         QuestionOptionId = a.QuestionOptionId,
-                        Report = a.Report
+                        Report = a.Report  
                     }).ToList()
                 };
 
+                // Return a success response
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = true,
@@ -251,6 +291,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
+                // Return an error response with the exception message
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = false,
@@ -278,7 +319,7 @@ namespace AMJNReportSystem.Application.Services
                     Succeeded = true,
                     Messages = new List<string> { "Report submission deleted successfully." }
                 };
-                
+
             }
             catch (Exception ex)
             {

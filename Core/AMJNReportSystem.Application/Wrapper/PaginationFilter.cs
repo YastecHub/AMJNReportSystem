@@ -1,6 +1,6 @@
 namespace AMJNReportSystem.Application.Models
 {
-    public class PaginationFilter : BaseFilter
+    public class PaginationFilter
     {
         public int PageNumber { get; set; }
 

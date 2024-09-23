@@ -2,6 +2,7 @@
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -9,6 +10,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 {
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize]
     public class ReportSectionController : ControllerBase
     {
         private readonly IReportSectionService _reportSectionService;

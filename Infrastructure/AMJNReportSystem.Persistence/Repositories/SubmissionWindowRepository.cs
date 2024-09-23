@@ -20,19 +20,24 @@ namespace AMJNReportSystem.Persistence.Repositories
             return true;
 
         }
-
-        public async Task<IEnumerable<SubmissionWindow>> GetAllSubmissionWindowsAsync(Guid? reportTypeId, int? month, int? year, bool? isLocked, DateTime? startDate, DateTime? endDate)
+      
+        public async Task<IList<SubmissionWindow>> GetAllSubmissionWindowsAsync(Expression<Func<SubmissionWindow, bool>> expression)
         {
-            var getAllSubmissionWindows = await _context.SubmissionWindows.Where(x => x.ReportTypeId == reportTypeId && x.Month == month && x.Year == year && x.StartingDate == startDate && x.EndingDate == endDate && isLocked == false).ToListAsync();
-            return getAllSubmissionWindows;
-        }
-
-        public async Task<SubmissionWindow> GetSubmissionWindowAsync(Expression<Func<SubmissionWindow, bool>> expression)
-        {
-            var submissionWindow = await _context.SubmissionWindows.SingleOrDefaultAsync(expression);
+            var submissionWindow = await _context.SubmissionWindows
+               .Include(x => x.ReportType)
+               .Where(expression)
+               .ToListAsync(); 
             return submissionWindow;
         }
 
+        public async Task<SubmissionWindow> GetSubmissionWindowsById(Guid id) 
+        {
+            var submissionWindow = await _context.SubmissionWindows
+                .Include(x => x.ReportType)
+                .SingleOrDefaultAsync(q => q.Id == id);
+            return submissionWindow;
+        }
+         
         public async Task<bool> UpdateSubmissionWindow(SubmissionWindow submissionWindow)
         {
             var submission = _context.Update(submissionWindow);

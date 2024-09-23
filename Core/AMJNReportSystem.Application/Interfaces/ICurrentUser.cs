@@ -7,6 +7,8 @@ namespace AMJNReportSystem.Application.Interfaces
         string? Name { get; }
 
         Guid GetUserId();
+        int GetJamaatId();
+        int GetCircuit();
 
         string? GetUserEmail();
 

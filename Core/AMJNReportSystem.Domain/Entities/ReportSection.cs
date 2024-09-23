@@ -8,6 +8,7 @@ namespace AMJNReportSystem.Domain.Entities
         public int ReportSectionValue { get; set; }
         public string? Description { get; set; } 
         public Guid ReportTypeId { get; set; } 
-        public bool IsActive { get; set; } = true; 
-    }
+        public bool IsActive { get; set; } = true;
+
+	}
 }

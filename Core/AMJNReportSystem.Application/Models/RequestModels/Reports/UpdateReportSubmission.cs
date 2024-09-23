@@ -9,6 +9,8 @@ namespace AMJNReportSystem.Application.Models.RequestModels.Reports
         public ReportSubmissionStatus ReportSubmissionStatus { get; set; }
         public string JammatEmailAddress { get; set; }
         public ReportTag ReportTag { get; set; }
-        public string LastModifiedBy { get; set; } 
+        public string LastModifiedBy { get; set; }
+        public int Month { get; set; }
+        public int Year { get; set; }
     }
 }

@@ -8,7 +8,6 @@ using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,6 @@ using NSwag.AspNetCore;
 using NSwag.Generation.Processors.Security;
 using AMJNReportSystem.Persistence.Auth;
 using AMJNReportSystem.Persistence.Auth.Jwt;
-using AMJNReportSystem.Persistence.Auth.Permissions;
 using AMJNReportSystem.Persistence.Common.Services;
 using AMJNReportSystem.Persistence.Context;
 using AMJNReportSystem.Persistence.Encryption;
@@ -40,6 +38,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using System.IO;
 using AMJNReportSystem.Application.Validators;
 
+
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
     public static class ServiceCollectionExtension
@@ -52,6 +51,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSectionRepository, ReportSectionRepository>()
                 .AddScoped<IReportResponseRepository, ReportResponseRepository>()
                 .AddScoped<IQuestionRepository, QuestionRepository>()
+                .AddScoped<IQuestionOptionRepository, QuestionOptionRepository>()
                 .AddScoped<ISubmissionWindowRepository, SubmissionWindowRepository>();
         }
 
@@ -96,22 +96,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
             return services;
         }
 
-
-        internal static IServiceCollection AddIdentity(this IServiceCollection services) =>
-            services
-                .AddIdentity<ApplicationUser, ApplicationRole>(options =>
-                {
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.User.RequireUniqueEmail = true;
-                })
-                .AddEntityFrameworkStores<ApplicationContext>()
-                .AddDefaultTokenProviders()
-                .Services;
-
         internal static IServiceCollection AddJwtAuth(this IServiceCollection services)
         {
             services.AddOptions<JwtSettings>()
@@ -135,11 +119,7 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         internal static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration config)
         {
             services
-                .AddCurrentUser()
-                .AddPermissions()
-
-                // Must add identity before adding auth!
-                .AddIdentity();
+                .AddCurrentUser();
             services.Configure<SecuritySettings>(config.GetSection(nameof(SecuritySettings)));
             return config["SecuritySettings:Provider"]!.Equals("AzureAd", StringComparison.OrdinalIgnoreCase)
                 ? services.AddAzureAdAuth(config)
@@ -172,13 +152,6 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<CurrentUserMiddleware>()
                 .AddScoped<ICurrentUser, CurrentUser>()
                 .AddScoped(sp => (ICurrentUserInitializer)sp.GetRequiredService<ICurrentUser>());
-
-        private static IServiceCollection AddPermissions(this IServiceCollection services) =>
-            services
-                .AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>()
-                .AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-
-
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
         {

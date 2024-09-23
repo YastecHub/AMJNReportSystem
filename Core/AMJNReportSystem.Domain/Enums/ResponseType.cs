@@ -16,10 +16,17 @@ namespace AMJNReportSystem.Domain.Enums
         [Description("File")]
         File,
 
-        Checkbox,
-        Dropdown,
-        Radio,
-        Date,
+		[Description("Checkbox")]
+		Checkbox,
+
+		[Description("Dropdown")]
+		Dropdown,
+
+		[Description("Radio")]
+		Radio,
+
+		[Description("Date")]
+		Date,
 
     }
 }
