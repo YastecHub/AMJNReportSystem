@@ -1,5 +1,7 @@
 using AMJNReportSystem.Application;
 using AMJNReportSystem.Application.Models.DTOs;
+using AMJNReportSystem.Application.Validators;
+using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Gateway.Implementations;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;

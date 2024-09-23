@@ -1,6 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.ResponseModels;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -24,39 +25,50 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(object))]
         [HttpPost]
         [OpenApiOperation("Create a new report section.", "Creates a new Report Section")]
-        public async Task<IActionResult> CreateReportSection([FromBody] CreateReportSectionRequest model)
+        public async Task<IActionResult> CreateReportSection(
+             [FromBody] CreateReportSectionRequest model,
+             [FromServices] IValidator<CreateReportSectionRequest> validator)
         {
-            if (model == null)
-                return BadRequest(new { message = "Request cannot be null" });
+
+            var validationResult = await validator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.ToDictionary());
+            }
 
             var result = await _reportSectionService.CreateReportSection(model);
-
             if (!result.Succeeded)
             {
-                // Return conflict if the creation failed
                 return Conflict(new { message = result.Messages });
             }
 
-            // Assuming result.Data contains the created ReportSection with Id
-            // Make sure to use 'reportSectionId' in the route and 'nameof(GetReportSection)' as the action
             return CreatedAtAction(nameof(GetReportSection),
-                new { reportSectionId = result.Data.Id }, // Match this name to the route parameter name in the GetReportSection method
+                new { reportSectionId = result.Data.Id },
                 new { id = result.Data.Id, message = "Report section created successfully" });
         }
 
+
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
         [HttpPut("{reportSectionId}")]
         [OpenApiOperation("Update the details of a report section.", "Updates an existing Report Section")]
-        public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model)
+        public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model, [FromServices] IValidator<UpdateReportSectionRequest> validator)
         {
+            var validationResult = await validator.ValidateAsync(model);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.ToDictionary());
+
+            if (model == null || reportSectionId == Guid.Empty)
+                return BadRequest(new { message = "Invalid request or Report Section ID" });
+
             var result = await _reportSectionService.UpdateReportSection(reportSectionId, model);
 
-            if (result.Succeeded)
-            {
-                return Ok(new { message = result.Messages });
-            }
+            if (!result.Succeeded)
+                return BadRequest(new { message = result.Messages });
 
-            return BadRequest(new { message = result.Messages });
+            return Ok(new { message = "Report section updated successfully" });
         }
+
 
         [HttpGet("{reportSectionId}")]
         [OpenApiOperation("Get a report section by ID.", "Retrieves a specific Report Section by its ID")]

@@ -34,6 +34,10 @@ using AMJNReportSystem.Infrastructure.Repositories;
 using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.IO;
+using AMJNReportSystem.Application.Validators;
+
 
 namespace AMJNReportSystem.IOC.ServiceCollections
 {
@@ -69,6 +73,13 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
+                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+                .AddScoped<IValidator<CreateReportSectionRequest>, ReportSectionRequestValidator>()
+                .AddScoped<IValidator<UpdateReportSectionRequest>, UpdateReportSectionRequestValidator>()
+                 .AddTransient<IValidator<CreateReportResponseRequest>, ReportResponseRequestValidator>()
+                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>();
+
+        }
                 .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
                 .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
 				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
