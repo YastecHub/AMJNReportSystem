@@ -6,7 +6,6 @@ using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -31,12 +30,10 @@ using AMJNReportSystem.Persistence.SecurityHeaders;
 using ZymLabs.NSwag.FluentValidation;
 using AMJNReportSystem.Domain.Repositories;
 using AMJNReportSystem.Infrastructure.Repositories;
-using AMJNReportSystem.Application.Validation;
 using FluentValidation;
 using AMJNReportSystem.Application.Models.RequestModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.IO;
 using AMJNReportSystem.Application.Validators;
+using AMJNReportSystem.Application.Validation;
 
 
 namespace AMJNReportSystem.IOC.ServiceCollections
@@ -73,19 +70,18 @@ namespace AMJNReportSystem.IOC.ServiceCollections
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
         {
             return services
-                .AddScoped<IValidator<CreateQuestionRequest>, QuestionRequestValidator>()
+                .AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
                 .AddScoped<IValidator<CreateReportSectionRequest>, ReportSectionRequestValidator>()
                 .AddScoped<IValidator<UpdateReportSectionRequest>, UpdateReportSectionRequestValidator>()
                  .AddTransient<IValidator<CreateReportResponseRequest>, ReportResponseRequestValidator>()
-                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>();
-
-        }
-                .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
+                 .AddTransient<IValidator<UpdateReportResponseRequest>, UpdateReportResponseRequestValidator>()
+                 .AddScoped<IValidator<CreateReportSubmissionRequest>, ReportSubmissionValidator>()
                 .AddScoped<IValidator<CreateReportTypeRequest>, ReportTypeRequestValidator>()
-				.AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
-				.AddScoped<IValidator<UpdateQuestionRequest>, UpdateQuestionRequestValidator>()
-				.AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
-				.AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
+                .AddScoped<IValidator<CreateQuestionRequest>, CreateQuestionRequestValidator>()
+                .AddScoped<IValidator<UpdateQuestionRequest>, UpdateQuestionRequestValidator>()
+                .AddScoped<IValidator<CreateSubmissionWindowRequest>, CreateSubmissionWindowRequestValidator>()
+                .AddScoped<IValidator<UpdateSubmissionWindowRequest>, UpdateSubmissionWindowRequestValidator>();
+
         }
 
 
