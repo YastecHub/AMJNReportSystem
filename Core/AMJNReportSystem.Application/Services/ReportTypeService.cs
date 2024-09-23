@@ -28,6 +28,7 @@ namespace AMJNReportSystem.Application.Services
                         Status = false,
                     };
                 }
+                var report = await _reportTypeRepository.Exist(request.Name);
 
                 var reportType = new ReportType
                 {
@@ -39,6 +40,7 @@ namespace AMJNReportSystem.Application.Services
                 };
 
                 var createdReportType = await _reportTypeRepository.CreateReportType(reportType);
+                
 
                 return new BaseResponse<Guid>
                 {
