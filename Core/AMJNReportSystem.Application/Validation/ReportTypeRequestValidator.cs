@@ -14,6 +14,7 @@ namespace AMJNReportSystem.Application.Validation
         public ReportTypeRequestValidator()
         {
 
+
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MinimumLength(1).WithMessage("Name must be at least 1 characters long.");
