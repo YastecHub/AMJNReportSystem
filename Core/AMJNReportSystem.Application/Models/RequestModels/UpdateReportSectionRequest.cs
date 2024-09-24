@@ -4,6 +4,7 @@
     {
         public string ReportSectionName { get; set; } = null!;  
         public int ReportSectionValue { get; set; }  
-        public string Description { get; set; } = null!; 
+        public string Description { get; set; } = null!;
+        public Guid ReportTypeId { get; set; }
     }
 }

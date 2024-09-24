@@ -11,7 +11,7 @@ namespace AMJNReportSystem.Application.Validators
             RuleFor(x => x.ReportSectionName)
                 .NotEmpty().WithMessage("Report Section Name is required.")
                 .MinimumLength(1).WithMessage("Report Section Name must be Greater than 1")
-                .MaximumLength(20).WithMessage("Report Section Name cannot be longer than 20 characters.");
+                .MaximumLength(100).WithMessage("Report Section Name cannot be longer than 100 characters.");
 
             RuleFor(x => x.ReportSectionValue)
                 .NotEmpty().WithMessage("Report Section Value is required.")

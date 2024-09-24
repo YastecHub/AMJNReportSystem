@@ -81,6 +81,8 @@ namespace AMJNReportSystem.Application.Services
                 existingSection.ReportSectionName = request.ReportSectionName;
                 existingSection.ReportSectionValue = request.ReportSectionValue;
                 existingSection.Description = request.Description;
+                existingSection.ReportTypeId = request.ReportTypeId;
+                
 
                 var isUpdated = await _reportSectionRepository.UpdateReportSection(existingSection);
 

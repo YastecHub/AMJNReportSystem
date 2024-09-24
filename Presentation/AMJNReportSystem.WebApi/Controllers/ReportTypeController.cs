@@ -1,6 +1,5 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
-using AMJNReportSystem.Application.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
-     [Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class ReportTypeController : BaseSecuredController

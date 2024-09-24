@@ -2,9 +2,12 @@
 {
     public enum QuestionType
     {
-        Text = 1,      
+        Text = 1, 
+        
         MultipleChoice,
+
         Checkbox,
+
         Dropdown
     }
 }
