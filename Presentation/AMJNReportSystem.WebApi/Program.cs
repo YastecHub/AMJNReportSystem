@@ -1,22 +1,21 @@
 using AMJNReportSystem.Application;
-using AMJNReportSystem.Application.Models.DTOs;
-using AMJNReportSystem.Application.Validators;
-using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Gateway.Implementations;
 using AMJNReportSystem.IOC.ServiceCollections;
 using AMJNReportSystem.WebApi.Extensions;
 using AMJNReportSystem.WebApi.HealthCheck;
-using FluentValidation;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-/*builder.AMJNReportSystem.WebApi.UseSerilog((_, config) =>
-{
-    config.WriteTo.Console()
-    .ReadFrom.Configuration(builder.Configuration);
-});*/
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -59,12 +58,12 @@ app.UseCors();
 
 app.UseRouting();
 
-app.UseAuthentication(); 
-app.UseAuthorization(); 
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseInfrastructure(builder.Configuration);
 
-app.MapControllers(); 
+app.MapControllers();
 
 app.Run();
 
