@@ -23,9 +23,10 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
         public async Task<bool> Exist(string reportTypeName)
         {
-            var reportType = await _context.ReportTypes.AnyAsync(r => r.Title == reportTypeName);
+            var reportType = await _context.ReportTypes.AnyAsync(r => r.Name == reportTypeName);
             return reportType;
         }
+
 
         public async Task<IList<ReportType>> GetAllReportTypes()
         {

@@ -28,13 +28,14 @@ namespace AMJNReportSystem.Application.Services
                         Status = false,
                     };
                 }
-                var report = await _reportTypeRepository.Exist(request.Name);
-                if (report == true)
+                var reportExists = await _reportTypeRepository.Exist(request.Name);
+
+                if (reportExists)
                 {
                     return new BaseResponse<Guid>
                     {
-                       Status = false,
-                       Message = "Report Name Already exist"
+                        Status = false,
+                        Message = "Report Name already exists"
                     };
                 }
 
@@ -119,7 +120,9 @@ namespace AMJNReportSystem.Application.Services
                     Title = reportType.Title,
                     Description = reportType.Description,
                     Year = reportType.Year,
-                    Questions = reportType.Questions
+                    Questions = reportType.Questions,
+                     ReportTag = reportType.ReportTag
+                    
                 };
 
                 return new BaseResponse<ReportTypeDto>
@@ -185,6 +188,7 @@ namespace AMJNReportSystem.Application.Services
                     Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,
+                    ReportTag = r.ReportTag
                 }).ToList();
 
 
@@ -215,6 +219,7 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
+                
                 var existingReportType = await _reportTypeRepository.GetReportTypeById(reportTypeId);
                 if (existingReportType == null)
                 {
@@ -222,6 +227,17 @@ namespace AMJNReportSystem.Application.Services
                     {
                         Message = "Report type not found",
                         Status = false
+                    };
+                }
+
+                var reportExists = await _reportTypeRepository.Exist(request.Name);
+
+                if (reportExists)
+                {
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Report Name already exists"
                     };
                 }
 

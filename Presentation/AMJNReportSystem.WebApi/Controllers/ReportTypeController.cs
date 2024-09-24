@@ -77,7 +77,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("set-report-type-state{id}/state")]
+        [HttpPut("set-report-type-state{reportTypeId}/state")]
         [OpenApiOperation("update a Report Type Activeness State", "")]
         public async Task<IActionResult> SetReportTypeState([FromRoute] Guid reportTypeId, bool state)
         {
