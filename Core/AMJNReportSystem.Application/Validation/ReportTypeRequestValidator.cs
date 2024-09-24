@@ -14,13 +14,14 @@ namespace AMJNReportSystem.Application.Validation
         public ReportTypeRequestValidator()
         {
 
+
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
-                .MinimumLength(7).WithMessage("Name must be at least 7 characters long.");
+                .MinimumLength(1).WithMessage("Name must be at least 1 characters long.");
 
             RuleFor(x => x.Description)
                  .NotEmpty().WithMessage("Description is required.")
-                .MinimumLength(7).WithMessage("Descriptionu must be at least 7 characters long.");
+                .MinimumLength(2).WithMessage("Descriptionu must be at least 2 characters long.");
 
             RuleFor(x => x.Year)
            .NotEmpty().WithMessage("Year is required.")

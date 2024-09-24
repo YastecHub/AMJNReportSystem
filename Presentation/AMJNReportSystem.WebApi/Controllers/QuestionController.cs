@@ -48,6 +48,19 @@ namespace AMJNReportSystem.WebApi.Controllers
 			return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
 		}
 
+		[ProducesResponseType(StatusCodes.Status409Conflict)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[HttpDelete("Delete Question")]
+		[OpenApiOperation("Delet question.", "")]
+		public async Task<IActionResult> DeleteQuestion([FromRoute]Guid id)
+		{
+			var reportTypeRequest = await _questionService.DeleteQuestion(id);
+			return !reportTypeRequest.Succeeded ? Conflict(reportTypeRequest) : Ok(reportTypeRequest);
+		}
+
+
+
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)] 
 		[HttpGet("{id}")]
