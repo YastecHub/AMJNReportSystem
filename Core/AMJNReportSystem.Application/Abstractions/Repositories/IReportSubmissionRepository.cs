@@ -11,5 +11,8 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id);
         Task<ReportSubmission> UpdateReportSubmission(ReportSubmission reportSubmission);
         Task<PaginatedResult<ReportSubmission>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter);
+        Task<List<ReportSubmission>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId);
+        Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId);
+        Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId);
     }
 }

@@ -26,7 +26,7 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reportSubmission;
         }
 
-        
+
 
         public async Task<bool> Exist(string reportSubmissionName)
         {
@@ -81,5 +81,49 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reportSubmission;
         }
 
+        public async Task<List<ReportSubmission>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.ReportTypeId == reportTypeId)
+                .ToListAsync();
+
+            return submissions;
+        }
+
+        public async Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId)
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.CircuitId == circuitId)
+                .ToListAsync();
+
+            return submissions;
+        }
+
+        public async Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId)
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.JamaatId == jamaatId)
+                .ToListAsync();
+
+            return submissions;
+        }
     }
 }
