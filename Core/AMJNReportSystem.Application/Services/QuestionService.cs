@@ -4,6 +4,7 @@ using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -11,14 +12,16 @@ namespace AMJNReportSystem.Application.Services
 	{
 		private readonly IQuestionRepository _questionRepository;
 		private readonly IQuestionOptionRepository _questionOptionRepository;
-		private readonly IReportSectionRepository _reportSectionRepository; 
+		private readonly IReportSectionRepository _reportSectionRepository;
+        private readonly ILogger<QuestionService> _logger;
 
-		public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository, IReportSectionRepository reportSectionRepository)
+        public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository, IReportSectionRepository reportSectionRepository, ILogger<QuestionService> logger)
 		{
 			_questionRepository = questionRepository;
 			_questionOptionRepository = questionOptionRepository;
 			_reportSectionRepository = reportSectionRepository;
-		}
+            _logger = logger;
+        }
 
 		public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
 		{

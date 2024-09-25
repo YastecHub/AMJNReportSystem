@@ -15,6 +15,12 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             _context = context;
         }
+
+        public List<ReportType> GetAllReportType()
+        {
+            return _context.ReportTypes.ToList();
+        }
+
         public async Task<ReportType> CreateReportType(ReportType reportType)
         {
             var report = await _context.AddAsync(reportType);

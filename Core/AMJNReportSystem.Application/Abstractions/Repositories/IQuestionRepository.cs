@@ -10,4 +10,5 @@ public interface IQuestionRepository
 	Task<IList<Question>> GetQuestionsBySection(Guid sectionId);
 	Task<IList<Question>> GetQuestions(Expression<Func<Question, bool>> expression);
 	Task<Question> GetQuestionById(Guid id);
+    List<Question> GetAllQuestion();
 }

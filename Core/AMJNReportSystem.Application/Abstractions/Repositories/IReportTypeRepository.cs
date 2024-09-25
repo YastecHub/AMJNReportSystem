@@ -10,5 +10,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<ReportType> GetReportTypeById(Guid id);
         Task<ReportType> UpdateReportType(ReportType reportType);
         Task<bool> Exist(string reportTypeName);
+        List<ReportType> GetAllReportType();
     }
 }

@@ -8,7 +8,7 @@ namespace AMJNReportSystem.Application.Models.DTOs
 {
     public class DashboardCountDto
     {
-        public int? MembersCounts { get; set; } 
+        public int? UserCounts { get; set; }
         public int? ReportTypeCounts { get; set; }
         public int? ReportSectionCounts { get; set; }  
         public int? QuestionCounts { get; set; }

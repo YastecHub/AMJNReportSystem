@@ -12,27 +12,40 @@ namespace AMJNReportSystem.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly IReportSubmissionRepository _reportSubmissionRepository; 
+        private readonly IReportSubmissionRepository _reportSubmissionRepository;
         private readonly IReportTypeRepository _reportTypeRepository;
-        private readonly IReportSectionRepository _reportSectionRepository; 
+        private readonly IReportSectionRepository _reportSectionRepository;
         private readonly IQuestionRepository _questionRepository;
-        private readonly IUserService _userService;
         public DashboardService(IReportSubmissionRepository reportSubmissionRepository,
-                IReportTypeService reportTypeService, 
+                IReportTypeRepository reportTypeRepository,
                 IReportSectionRepository reportSectionRepository,
-                IQuestionRepository questionRepository,
-                IUserService _userService)
+                IQuestionRepository questionRepository)
         {
             _reportSubmissionRepository = reportSubmissionRepository;
             _reportTypeRepository = reportTypeRepository;
             _reportSectionRepository = reportSectionRepository;
-            _questionRepository = questionRepository;           
-           
+            _questionRepository = questionRepository;
+
 
         }
-        public Task<DashboardCountDto> DashBoardCount()
+        public DashboardCountDto DashBoardCount()
         {
-            throw new NotImplementedException();
+            var reportTypeCount = _reportTypeRepository.GetAllReportType();
+            var reportSectionCount = _reportSectionRepository.GetAllReportSection();
+            var reportSubmissionCount = _reportSubmissionRepository.GetAllReportSubmission();
+            var questionCount = _questionRepository.GetAllQuestion();
+
+
+
+            var data = new DashboardCountDto();
+
+            data.ReportTypeCounts = reportTypeCount.Count();
+            data.ReportSectionCounts = reportSectionCount.Count();
+            data.ReportSubmittedByJamaatCounts = reportSubmissionCount.Count();
+            data.ReportSubmittedByCircuitCounts = reportSubmissionCount.Count();
+            data.QuestionCounts = questionCount.Count();
+            return data;
+
         }
     }
 }
