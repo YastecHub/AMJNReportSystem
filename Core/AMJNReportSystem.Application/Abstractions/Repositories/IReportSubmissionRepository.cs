@@ -1,4 +1,5 @@
 ﻿using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 namespace AMJNReportSystem.Application.Abstractions.Repositories
@@ -13,7 +14,5 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<List<ReportSubmission>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId);
         Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId);
         Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId);
-
-        List<ReportSubmission> GetAllReportSubmission();
     }
 }

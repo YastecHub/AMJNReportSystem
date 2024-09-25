@@ -45,11 +45,6 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             return await _context.ReportTypes.AnyAsync(rt => rt.Id == reportTypeId);
         }
-
-        public List<ReportSection> GetAllReportSection()
-        {
-            return _context.ReportSections.ToList();
-        }
     }
 }
 

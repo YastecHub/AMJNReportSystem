@@ -1,7 +1,9 @@
 ﻿using AMJNReportSystem.Persistence.Context;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Domain.Entities;
+using AMJNReportSystem.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -13,12 +15,6 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             _context = context;
         }
-
-        public List<ReportType> GetAllReportType()
-        {
-            return  _context.ReportTypes.ToList();
-        }
-
         public async Task<ReportType> CreateReportType(ReportType reportType)
         {
             var report = await _context.AddAsync(reportType);

@@ -12,40 +12,22 @@ namespace AMJNReportSystem.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly IReportSubmissionRepository _reportSubmissionRepository;
+        private readonly IReportSubmissionRepository _reportSubmissionRepository; 
         private readonly IReportTypeRepository _reportTypeRepository;
         private readonly IReportSectionRepository _reportSectionRepository; 
         private readonly IQuestionRepository _questionRepository;
+        private readonly IUserService _userService;
         public DashboardService(IReportSubmissionRepository reportSubmissionRepository,
-                IReportTypeRepository reportTypeRepository, 
+                IReportTypeService reportTypeService, 
                 IReportSectionRepository reportSectionRepository,
-                IQuestionRepository questionRepository)
+                IQuestionRepository questionRepository,
+                IUserService _userService)
         {
             _reportSubmissionRepository = reportSubmissionRepository;
-            _reportTypeRepository = reportTypeRepository;
-            _reportSectionRepository = reportSectionRepository;
-            _questionRepository = questionRepository;
-           
-
         }
-        public DashboardCountDto DashBoardCount()
+        public Task<DashboardCountDto> DashBoardCount()
         {
-            var reportTypeCount = _reportTypeRepository.GetAllReportType();
-            var reportSectionCount = _reportSectionRepository.GetAllReportSection();
-            var reportSubmissionCount = _reportSubmissionRepository.GetAllReportSubmission();
-            var questionCount = _questionRepository.GetAllQuestion();
-            
- 
-            
-            var data = new DashboardCountDto();
-
-            data.ReportTypeCounts = reportTypeCount.Count();
-            data.ReportSectionCounts = reportSectionCount.Count();
-            data.ReportSubmittedByJamaatCounts = reportSubmissionCount.Count();
-            data.ReportSubmittedByCircuitCounts = reportSubmissionCount.Count();
-            data.QuestionCounts = questionCount.Count();
-            return data;
-
+            throw new NotImplementedException();
         }
     }
 }

@@ -3,7 +3,6 @@ using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.RequestModels.Reports;
 using AMJNReportSystem.Application.Services;
-using AMJNReportSystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -107,56 +106,6 @@ namespace AMJNReportSystem.WebApi.Controllers
             }
 
             return BadRequest(new { message = result.Messages });
-        }
-
-        /// <summary>
-        /// update a specific report submission
-        /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
-        /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
-        {
-            if (reportTypeId == Guid.Empty) return BadRequest("reportTypeId can not be empty");
-            var response = await _reportSubmissionService.GetReportSubmissionsByReportTypeAsync(reportTypeId);
-            return Ok(response);
-        }
-
-        /// <summary>
-        /// update a specific report submission
-        /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
-        /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByCircuitIdAsync()
-        {
-            var response = await _reportSubmissionService.GetReportSubmissionsByCircuitIdAsync();
-            return Ok(response);
-        }
-
-
-        /// <summary>
-        /// update a specific report submission
-        /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
-        /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByJamaatIdAsync()
-        {
-            var response = await _reportSubmissionService.GetReportSubmissionsByJamaatIdAsync();
-            return Ok(response);
         }
     }
 }
