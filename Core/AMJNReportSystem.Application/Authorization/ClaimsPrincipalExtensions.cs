@@ -27,12 +27,6 @@ namespace System.Security.Claims
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(
                 principal.FindFirstValue("Expiration")));
 
-        private static string? FindFirstValue(this ClaimsPrincipal principal, string claimType) =>
-            principal is null
-                ? throw new ArgumentNullException(nameof(principal))
-                : principal.FindFirst(claimType)?.Value;
-
-
         public static List<string>? GetUserLoggedInRoles(this ClaimsPrincipal principal)
         {
             var role = principal.FindFirstValue(ClaimTypes.Role);
