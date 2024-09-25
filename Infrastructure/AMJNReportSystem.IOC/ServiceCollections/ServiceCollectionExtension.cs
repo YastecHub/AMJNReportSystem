@@ -64,7 +64,9 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportSectionService, ReportSectionService>()
                 .AddScoped<IQuestionService, QuestionService>()
                 .AddScoped<IReportResponseService, ReportResponseService>()
-                .AddScoped<IReportTypeService, ReportTypeService>();
+                .AddScoped<IReportTypeService, ReportTypeService>()
+                .AddScoped<IDashboardService, DashboardService>();
+
         }
 
         public static IServiceCollection AddFluentValidators(this IServiceCollection services, IConfiguration config)
@@ -195,13 +197,13 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 //.UseHangfireDashboard(config)
                 .UseOpenApiDocumentation(config);
 
-        public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
-        {
-            builder.MapControllers().RequireAuthorization();
-            builder.MapHealthCheck();
-           // builder.MapNotifications();
-            return builder;
-        }
+        //public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder builder)
+        //{
+        //    builder.MapControllers().RequireAuthorization();
+        //    builder.MapHealthCheck();
+        //   // builder.MapNotifications();
+        //    return builder;
+        //}
 
         private static IEndpointConventionBuilder MapHealthCheck(this IEndpointRouteBuilder endpoints) =>
             endpoints.MapHealthChecks("/api/health");

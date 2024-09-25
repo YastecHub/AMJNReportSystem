@@ -54,7 +54,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
-        
+
 
         /// <summary>
         /// Get list of all report submission
@@ -110,53 +110,49 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
         /// <summary>
-        /// update a specific report submission
+        /// Get a specific report submission by reportType
         /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
+        /// <param name="reportTypeid"></param>
         /// <returns></returns>
+        [HttpGet("{reportTypeid:guid}")]
+        [OpenApiOperation("Get a specific report submission by reportType.", "")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetReportTypeSubmissionByRportType([FromRoute] Guid reportTypeid)
         {
-            if (reportTypeId == Guid.Empty) return BadRequest("reportTypeId can not be empty");
-            var response = await _reportSubmissionService.GetReportSubmissionsByReportTypeAsync(reportTypeId);
-            return Ok(response);
+            if (reportTypeid == Guid.Empty) return BadRequest("id cannot be empty");
+            var response = await _reportSubmissionService.GetReportSubmissionsByReportTypeAsync(reportTypeid);
+            return !response.Status ? NotFound(response) : Ok(response);
         }
 
         /// <summary>
-        /// update a specific report submission
+        /// Get all report submissions by  circuit ID
         /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet("circuit")]
+        [OpenApiOperation("Get all report submissions by  circuit ID.", "")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByCircuitIdAsync()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetReportSubmissionsByCircuitId()
         {
             var response = await _reportSubmissionService.GetReportSubmissionsByCircuitIdAsync();
-            return Ok(response);
+            return !response.Status ? NotFound(response) : Ok(response);
         }
 
-
         /// <summary>
-        /// update a specific report submission
+        /// Get all report submissions by  jammat ID
         /// </summary>
-        /// <param name="reportTypeId"></param>
-        /// <param name="reportSubmission"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpGet("jammat")]
+        [OpenApiOperation("Get all report submissions by  jammat ID.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("{reportTypeId}")]
-        [OpenApiOperation("get report submission by report type.", "")]
-        public async Task<IActionResult> GetReportSubmissionsByJamaatIdAsync()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetReportSubmissionsByJammatId()
         {
             var response = await _reportSubmissionService.GetReportSubmissionsByJamaatIdAsync();
-            return Ok(response);
+            return !response.Status ? NotFound(response) : Ok(response);
         }
     }
 }

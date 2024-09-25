@@ -24,7 +24,7 @@ namespace AMJNReportSystem.Application.Services
             _reportSubmissionRepository = reportSubmissionRepository;
             _reportTypeRepository = reportTypeRepository;
             _reportSectionRepository = reportSectionRepository;
-            _questionRepository = questionRepository;
+            _questionRepository = questionRepository;           
            
 
         }
