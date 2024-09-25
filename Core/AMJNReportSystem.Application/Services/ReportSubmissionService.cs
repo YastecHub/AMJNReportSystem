@@ -281,7 +281,7 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 };
 
-                // Return a success response
+               
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = true,
@@ -291,7 +291,6 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                // Return an error response with the exception message
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = false,
@@ -327,5 +326,182 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+
+        public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
+        {
+            try
+            {
+                var reportSubmissions = await _reportSubmissionRepository.GetReportSubmissionsByReportTypeAsync(reportTypeId);
+
+                if (reportSubmissions == null )
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = false,
+                        Message = "No report submissions found for the given report type."
+                    };
+                }
+
+                var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
+                {
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
+                    JammatEmailAddress = reportSubmission.JammatEmailAddress,
+                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
+                    ReportTag = reportSubmission.ReportTag,
+                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
+                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
+                    {
+                        Id = x.Id,
+                        QuestionId = x.QuestionId,
+                        TextAnswer = x.TextAnswer,
+                        QuestionOptionId = x.QuestionOptionId,
+                        Report = x.Report,
+                    }).ToList()
+                }).ToList();
+
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = true,
+                    Message = "Report submissions successfully retrieved",
+                    Data = reportSubmissionResponses
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving the report submissions.{ex.Message}"
+                };
+            }
+        }
+
+        public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByCircuitIdAsync()
+        {
+            try
+            {
+                var circuitId = _currentUser.GetCircuit(); 
+
+                if (circuitId <= 0)
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = false,
+                        Message = "Unable to retrieve the circuit ID."
+                    };
+                }
+                var reportSubmissions = await _reportSubmissionRepository.GetReportSubmissionsByCircuitIdAsync(circuitId);
+
+                if (reportSubmissions == null || !reportSubmissions.Any())
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = false,
+                        Message = "No report submissions found for the given circuit ID."
+                    };
+                }
+
+                var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
+                {
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
+                    JammatEmailAddress = reportSubmission.JammatEmailAddress,
+                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
+                    ReportTag = reportSubmission.ReportTag,
+                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
+                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
+                    {
+                        Id = x.Id,
+                        QuestionId = x.QuestionId,
+                        TextAnswer = x.TextAnswer,
+                        QuestionOptionId = x.QuestionOptionId,
+                        Report = x.Report,
+                    }).ToList()
+                }).ToList();
+
+               
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = true,
+                    Message = "Report submissions successfully retrieved",
+                    Data = reportSubmissionResponses
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving the report submissions by circuit ID.{ex.Message}"
+                };
+            }
+        }
+
+        public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByJamaatIdAsync()
+        {
+            try
+            {
+                var jamaatId = _currentUser.GetJamaatId();
+
+                if (jamaatId <= 0)
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = false,
+                        Message = "Unable to retrieve the Jamaat ID."
+                    };
+                }
+
+                var reportSubmissions = await _reportSubmissionRepository.GetReportSubmissionsByJamaatIdAsync(jamaatId);
+
+                if (reportSubmissions == null)
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = false,
+                        Message = "No report submissions found for the given Jamaat ID."
+                    };
+                }
+                var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
+                {
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
+                    JammatEmailAddress = reportSubmission.JammatEmailAddress,
+                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
+                    ReportTag = reportSubmission.ReportTag,
+                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
+                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
+                    {
+                        Id = x.Id,
+                        QuestionId = x.QuestionId,
+                        TextAnswer = x.TextAnswer,
+                        QuestionOptionId = x.QuestionOptionId,
+                        Report = x.Report,
+                    }).ToList()
+                }).ToList();
+
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = true,
+                    Message = "Report submissions successfully retrieved",
+                    Data = reportSubmissionResponses
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving the report submissions by Jamaat ID.{ex.Message}"
+                };
+            }
+        }
     }
 }
