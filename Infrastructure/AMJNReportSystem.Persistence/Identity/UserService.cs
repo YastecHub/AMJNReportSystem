@@ -8,7 +8,6 @@ using Microsoft.Extensions.Options;
 using AMJNReportSystem.Application;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Application.Identity.Tokens;
-using Microsoft.EntityFrameworkCore;
 
 namespace AMJNReportSystem.Persistence.Identity
 {
@@ -49,7 +48,6 @@ namespace AMJNReportSystem.Persistence.Identity
         {
             return _gatewayHandler.GenerateToken(request);
         }
-       
 
     }
 }

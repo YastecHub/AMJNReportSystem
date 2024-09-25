@@ -57,11 +57,5 @@ namespace AMJNReportSystem.Persistence.Repositories
 				.SingleOrDefaultAsync(q => q.Id == id);
 			return questions;
 		}
-
-        public List<Question> GetAllQuestion()
-        {
-            return _context.Questions.ToList();
-        }
-    }
-
+	}
 }
