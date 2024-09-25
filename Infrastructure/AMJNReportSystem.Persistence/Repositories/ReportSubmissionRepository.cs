@@ -125,5 +125,10 @@ namespace AMJNReportSystem.Persistence.Repositories
 
             return submissions;
         }
+
+        public List<ReportSubmission> GetAllReportSubmission()
+        {
+           return _dbcontext.ReportSubmissions.ToList();
+        }
     }
 }
