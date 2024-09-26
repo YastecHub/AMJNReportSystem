@@ -1,7 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.DTOs;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
@@ -20,7 +20,9 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("Get dash board count")]
+        [OpenApiOperation("Get list of all dash board count", "")]
         public ActionResult<DashboardCountDto> GetDashboardCounts()
         {
             var result = _dashboardService.DashBoardCount();
