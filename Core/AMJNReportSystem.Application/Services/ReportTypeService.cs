@@ -174,7 +174,7 @@ namespace AMJNReportSystem.Application.Services
                 reportType.IsActive = state;
                 await _reportTypeRepository.UpdateReportType(reportType);
 
-                _logger.LogInformation("Successfully updated activeness of report type with Id {ReportTypeId} to {State}.", reportTypeId, state);
+                _logger.LogInformation("Successfully updated activeness of report type .");
                 return new BaseResponse<bool>
                 {
                     Data = true,
@@ -209,7 +209,7 @@ namespace AMJNReportSystem.Application.Services
                     ReportTag = r.ReportTag
                 }).ToList();
 
-                _logger.LogInformation("Successfully retrieved {Count} report types.", reportTypeDtos.Count);
+                _logger.LogInformation("Successfully retrieved report types.");
                 return new BaseResponse<IEnumerable<ReportTypeDto>>
                 {
                     Message = "Record Found Successfully",
@@ -236,7 +236,7 @@ namespace AMJNReportSystem.Application.Services
                 var existingReportType = await _reportTypeRepository.GetReportTypeById(reportTypeId);
                 if (existingReportType == null)
                 {
-                    _logger.LogWarning("Report type with Id {ReportTypeId} not found.", reportTypeId);
+                    _logger.LogWarning($"Report type with Id {reportTypeId} not found.");
                     return new BaseResponse<bool>
                     {
                         Message = "Report type not found",
@@ -248,7 +248,7 @@ namespace AMJNReportSystem.Application.Services
 
                 if (reportExists)
                 {
-                    _logger.LogWarning("Report type with name {ReportName} already exists.", request.Name);
+                    _logger.LogWarning($"Report type with name {request.Name} already exists.");
                     return new BaseResponse<bool>
                     {
                         Status = false,
