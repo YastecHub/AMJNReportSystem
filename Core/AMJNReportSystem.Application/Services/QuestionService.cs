@@ -289,5 +289,38 @@ namespace AMJNReportSystem.Application.Services
             _logger.LogInformation($"Questions retrieved successfully for section ID: {sectionId}");
             return Result<IList<QuestionDto>>.Success(questionDtos, "Questions retrieved successfully");
         }
+
+        public async Task<Result<IList<QuestionOptionDto>>> GetQuestionOptions(Guid questionId)
+        {
+            _logger.LogInformation($"Fetching options for question ID: {questionId}");
+
+            try
+            {
+                var options = await _questionOptionRepository.GetQuestionOptions(questionId);
+
+                if (options == null || !options.Any())
+                {
+                    _logger.LogWarning($"No options found for question ID: {questionId}");
+                    return Result<IList<QuestionOptionDto>>.Fail("No options found for this question.");
+                }
+
+                var questionDtos = options.Select(q => new QuestionOptionDto
+                {
+                    Id = q.Id,
+                    OptionText = q.Text,
+                    QuestionName = q.Question.QuestionName,
+                    QuestionId = q.QuestionId
+                }).ToList();
+
+                _logger.LogInformation($"Successfully retrieved options for question ID: {questionId}");
+                return Result<IList<QuestionOptionDto>>.Success(questionDtos, "Question options retrieved successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An error occurred while fetching options for question ID: {questionId}. Error: {ex.Message}");
+                return Result<IList<QuestionOptionDto>>.Fail($"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }
