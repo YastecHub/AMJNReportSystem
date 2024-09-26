@@ -300,7 +300,7 @@ namespace AMJNReportSystem.Application.Services
 
                 if (options == null || !options.Any())
                 {
-                    _logger.LogWarning($"No options found for question ID: {questionId}");
+                    _logger.LogWarning($"No options found for question Id: {questionId}");
                     return Result<IList<QuestionOptionDto>>.Fail("No options found for this question.");
                 }
 
@@ -317,7 +317,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An error occurred while fetching options for question ID: {questionId}. Error: {ex.Message}");
+                _logger.LogError($"An error occurred while fetching options for question Id: {questionId}. Error: {ex.Message}");
                 return Result<IList<QuestionOptionDto>>.Fail($"An error occurred: {ex.Message}");
             }
         }
