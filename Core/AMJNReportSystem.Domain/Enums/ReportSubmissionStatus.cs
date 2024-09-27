@@ -5,10 +5,10 @@ namespace AMJNReportSystem.Domain.Enums
     public enum ReportSubmissionStatus
     {
         [Description("In Progress")]
-        Inprogress = 1,
+        Inprogress = 1, 
 
         [Description("Pending")]
-        Pending,
+        Pending, 
 
         [Description("Submitted")]
         Submitted

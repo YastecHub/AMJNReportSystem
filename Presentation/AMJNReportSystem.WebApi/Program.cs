@@ -6,16 +6,17 @@ using AMJNReportSystem.WebApi.HealthCheck;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 
-//// Configure Serilog
-//Log.Logger = new LoggerConfiguration()
-//    .ReadFrom.Configuration(builder.Configuration)
-//    .Enrich.FromLogContext()
-//    .CreateLogger();
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -28,6 +29,11 @@ builder.Services.AddLogging();
 builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddTransient<IGatewayHandler, GatewayHandler>();
+
+builder.Services.AddCors(options => options.AddPolicy(MyAllowSpecificOrigins, builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+}));
 
 var connectionString = builder.Configuration.GetConnectionString("ConnectionString");
 builder.Services.AddDatabase(connectionString);
@@ -53,17 +59,12 @@ if (app.Environment.IsDevelopment())
     // app.UseSwaggerUI();
 }
 
+app.UseCors(MyAllowSpecificOrigins);
 app.UseHttpsRedirection();
-app.UseCors();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseInfrastructure(builder.Configuration);
-
 app.MapControllers();
-
 app.Run();
 
