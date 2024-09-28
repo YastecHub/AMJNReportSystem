@@ -8,8 +8,8 @@ using AMJNReportSystem.Application.Models.RequestModels.Reports;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
-using Mapster;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -38,7 +38,7 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("CreateReportTypeSubmissionAsync called with request {@Request}", request);
+                _logger.LogInformation($"{nameof(CreateReportTypeSubmissionAsync)} called with request {JsonConvert.SerializeObject(request)}", request);
 
                 if (request == null)
                 {
@@ -53,7 +53,7 @@ namespace AMJNReportSystem.Application.Services
                 var reportType = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
                 if (reportType == null)
                 {
-                    _logger.LogWarning("ReportType with ID {ReportTypeId} not found.", request.ReportTypeId);
+                    _logger.LogWarning($"ReportType with ID {request.ReportTypeId} not found.", request.ReportTypeId);
                     return new BaseResponse<bool>
                     {
                         Message = "Report Type not found.",
@@ -62,12 +62,12 @@ namespace AMJNReportSystem.Application.Services
                 }
 
                 var reportSubmissionName = $"{reportType.Title}_{request.Year}_{request.Month}";
-                _logger.LogInformation("Generated report submission name: {ReportSubmissionName}", reportSubmissionName);
+                _logger.LogInformation($"Generated report submission name: {reportSubmissionName}");
 
                 var reportSubmissionCheckerExist = await _reportSubmissionRepository.Exist(reportSubmissionName);
                 if (reportSubmissionCheckerExist)
                 {
-                    _logger.LogWarning("Report submission with name {ReportSubmissionName} already exists.", reportSubmissionName);
+                    _logger.LogWarning($"Report submission with name {reportSubmissionName} already exists.");
                     return new BaseResponse<bool>
                     {
                         Message = "Submission already exists.",
@@ -92,13 +92,13 @@ namespace AMJNReportSystem.Application.Services
 
                 if (request.ReportResponses != null && request.ReportResponses.Count > 0)
                 {
-                    _logger.LogInformation("Processing {Count} report responses.", request.ReportResponses.Count);
+                    _logger.LogInformation($"Processing {request.ReportResponses.Count} report responses.");
                     foreach (var response in request.ReportResponses)
                     {
                         var question = await _questionRepository.GetQuestionById(response.QuestionId);
                         if (question == null)
                         {
-                            _logger.LogWarning("Question with ID {QuestionId} not found.", response.QuestionId);
+                            _logger.LogWarning($"Question with ID {response.QuestionId} not found.");
                             return new BaseResponse<bool>
                             {
                                 Message = $"Question with ID {response.QuestionId} not found.",
@@ -109,7 +109,6 @@ namespace AMJNReportSystem.Application.Services
                         var reportResponse = new ReportResponse
                         {
                             QuestionId = response.QuestionId,
-                            Question = question,
                             TextAnswer = response.TextAnswer,
                             QuestionOptionId = response.QuestionOptionId,
                             CreatedBy = request.CreatedBy,
@@ -123,7 +122,7 @@ namespace AMJNReportSystem.Application.Services
 
                 submission.ReportType.Title = reportSubmissionName;
 
-                _logger.LogInformation("Saving report submission to the database.");
+                _logger.LogInformation($"Saving report submission to the database.");
                 await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
 
                 _logger.LogInformation("Report submission successfully added.");
@@ -136,7 +135,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while creating the report submission.");
+                _logger.LogError(ex, $"An error occurred while creating the report submission.");
                 return new BaseResponse<bool>
                 {
                     Message = $"An error occurred: {ex.Message}",
@@ -149,13 +148,13 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("GetReportTypeSubmissionByIdAsync called with ID: {ReportTypeSubmissionId}", reportTypeSubmissionId);
+                _logger.LogInformation($"GetReportTypeSubmissionByIdAsync called with ID: {reportTypeSubmissionId}", reportTypeSubmissionId);
 
                 var reportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(reportTypeSubmissionId);
 
                 if (reportSubmission == null)
                 {
-                    _logger.LogWarning("Report submission with ID {ReportTypeSubmissionId} not found.", reportTypeSubmissionId);
+                    _logger.LogWarning($"Report submission with ID {reportTypeSubmissionId} not found.");
                     return new BaseResponse<ReportSubmissionResponseDto>
                     {
                         Status = false,
@@ -163,7 +162,7 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                _logger.LogInformation("Report submission with ID {ReportTypeSubmissionId} found. Mapping data to DTO.", reportTypeSubmissionId);
+                _logger.LogInformation($"Report submission with ID {reportTypeSubmissionId} found.");
 
                 var reportSubmissionResponse = new ReportSubmissionResponseDto
                 {
@@ -185,7 +184,7 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 };
 
-                _logger.LogInformation("Successfully retrieved and mapped report submission with ID {ReportTypeSubmissionId}.", reportTypeSubmissionId);
+                _logger.LogInformation($"Successfully retrieved and mapped report submission with ID {reportTypeSubmissionId}.");
 
                 return new BaseResponse<ReportSubmissionResponseDto>
                 {
@@ -196,7 +195,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving report submission with ID {ReportTypeSubmissionId}.", reportTypeSubmissionId);
+                _logger.LogError(ex, $"An error occurred while retrieving report submission with ID {reportTypeSubmissionId}.");
                 return new BaseResponse<ReportSubmissionResponseDto>
                 {
                     Status = false,
@@ -211,7 +210,7 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("GetAllReportTypeSubmissionsAsync called with pagination filter: {PageNumber}, {PageSize}", filter?.PageNumber, filter?.PageSize);
+                _logger.LogInformation($"GetAllReportTypeSubmissionsAsync called with pagination filter: {filter?.PageNumber}, {filter?.PageSize}", filter?.PageNumber, filter?.PageSize);
 
                 if (filter == null)
                 {
@@ -225,7 +224,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var paginatedResult = await _reportSubmissionRepository.GetAllReportTypeSubmissionsAsync(filter);
 
-                _logger.LogInformation("Successfully retrieved {TotalCount} report type submissions.", paginatedResult.TotalCount);
+                _logger.LogInformation($"Successfully retrieved {paginatedResult.TotalCount} report type submissions.");
 
                 var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionResponseDto
                 {
@@ -280,7 +279,7 @@ namespace AMJNReportSystem.Application.Services
 
                 if (existingReportSubmission == null)
                 {
-                    _logger.LogWarning("Report submission with ID {Id} not found.", id);
+                    _logger.LogWarning($"Report submission with ID {id} not found.");
                     return new BaseResponse<ReportSubmissionDto>
                     {
                         Status = false,
@@ -288,7 +287,7 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                _logger.LogInformation("Updating report submission with ID: {Id}", id);
+                _logger.LogInformation($"Updating report submission with ID: {id}");
                 existingReportSubmission.JammatEmailAddress = request.JammatEmailAddress;
                 existingReportSubmission.ReportSubmissionStatus = request.ReportSubmissionStatus;
                 existingReportSubmission.SubmissionWindow.Year = request.Year;
@@ -299,7 +298,7 @@ namespace AMJNReportSystem.Application.Services
 
                 await _reportSubmissionRepository.UpdateReportSubmission(existingReportSubmission);
 
-                _logger.LogInformation("Successfully updated report submission with ID: {Id}", id);
+                _logger.LogInformation($"Successfully updated report submission with ID: {id}");
                 var reportSubmissionDto = new ReportSubmissionDto
                 {
                     JamaatId = existingReportSubmission.JamaatId,
@@ -321,7 +320,7 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 };
 
-                _logger.LogInformation("Report submission DTO mapped successfully for submission ID: {Id}", id);
+                _logger.LogInformation($"Report submission DTO mapped successfully for submission ID: {id}");
 
                 return new BaseResponse<ReportSubmissionDto>
                 {
@@ -332,7 +331,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while updating the report submission with ID: {Id}", id);
+                _logger.LogError(ex, $"An error occurred while updating the report submission with ID: {id}");
                 return new BaseResponse<ReportSubmissionDto>
                 {
                     Status = false,
@@ -346,36 +345,33 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("DeleteReportSubmission called for submission ID: {ReportSubmissionId}", reportSubmissionId);
+                _logger.LogInformation($"DeleteReportSubmission called for submission ID: {reportSubmissionId}", reportSubmissionId);
 
                 var reportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(reportSubmissionId);
                 if (reportSubmission == null)
                 {
-                    _logger.LogWarning("Report submission with ID {ReportSubmissionId} not found.", reportSubmissionId);
+                    _logger.LogWarning($"Report submission with ID {reportSubmissionId} not found.");
                     return Result<bool>.Fail("Report section not found.");
                 }
 
-                _logger.LogInformation("Marking report submission with ID {ReportSubmissionId} as deleted.", reportSubmissionId);
+                _logger.LogInformation($"Marking report submission with ID {reportSubmissionId} as deleted.", reportSubmissionId);
                 reportSubmission.IsDeleted = true;
                 reportSubmission.DeletedOn = DateTime.Now;
                 reportSubmission.DeletedBy = _currentUser.Name;
 
                 var result = await _reportSubmissionRepository.UpdateReportSubmission(reportSubmission);
 
-                _logger.LogInformation("Report submission with ID {ReportSubmissionId} deleted successfully.", reportSubmissionId);
+                _logger.LogInformation($"Report submission with ID {reportSubmissionId} deleted successfully.", reportSubmissionId);
                 return new Result<bool>
                 {
                     Succeeded = true,
                     Messages = new List<string> { "Report submission deleted successfully." }
                 };
 
-
-                _logger.LogWarning("Failed to delete report submission with ID {ReportSubmissionId}.", reportSubmissionId);
-                return Result<bool>.Fail("Failed to delete report submission.");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting report submission with ID: {ReportSubmissionId}", reportSubmissionId);
+                _logger.LogError(ex, $"An error occurred while deleting report submission with ID: {reportSubmissionId}");
                 return Result<bool>.Fail($"An error occurred: {ex.Message}");
             }
         }
@@ -391,7 +387,7 @@ namespace AMJNReportSystem.Application.Services
 
                 if (reportSubmissions == null || !reportSubmissions.Any())
                 {
-                    _logger.LogWarning("No report submissions found for ReportTypeId: {ReportTypeId}", reportTypeId);
+                    _logger.LogWarning($"No report submissions found for ReportTypeId: {reportTypeId}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -399,7 +395,7 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                _logger.LogInformation("{Count} report submissions found for ReportTypeId: {ReportTypeId}", reportSubmissions.Count, reportTypeId);
+                _logger.LogInformation($"{reportSubmissions.Count} report submissions found for ReportTypeId: {reportTypeId}");
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
@@ -432,7 +428,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving report submissions for ReportTypeId: {ReportTypeId}", reportTypeId);
+                _logger.LogError(ex, $"An error occurred while retrieving report submissions for ReportTypeId: {reportTypeId}");
                 return new BaseResponse<List<ReportSubmissionResponseDto>>
                 {
                     Status = false,
@@ -446,14 +442,14 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("GetReportSubmissionsByCircuitIdAsync called for user: {UserId}", _currentUser.GetUserId());
+                _logger.LogInformation($"GetReportSubmissionsByCircuitIdAsync called for user: {_currentUser.GetUserId()}");
 
                 var circuitId = _currentUser.GetCircuit();
-                _logger.LogInformation("Retrieved Circuit ID: {CircuitId} for user: {UserId}", circuitId, _currentUser.GetUserId());
+                _logger.LogInformation($"Retrieved Circuit ID: {circuitId} for user: {_currentUser.GetUserId()}");
 
                 if (circuitId <= 0)
                 {
-                    _logger.LogWarning("Unable to retrieve a valid circuit ID for user: {UserId}", _currentUser.GetUserId());
+                    _logger.LogWarning($"Unable to retrieve a valid circuit ID for user: {_currentUser.GetUserId()}", _currentUser.GetUserId());
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -462,11 +458,11 @@ namespace AMJNReportSystem.Application.Services
                 }
 
                 var reportSubmissions = await _reportSubmissionRepository.GetReportSubmissionsByCircuitIdAsync(circuitId);
-                _logger.LogInformation("{Count} report submissions retrieved for Circuit ID: {CircuitId}", reportSubmissions?.Count() ?? 0, circuitId);
+                _logger.LogInformation($"report submissions retrieved for Circuit ID: {circuitId}");
 
                 if (reportSubmissions == null || !reportSubmissions.Any())
                 {
-                    _logger.LogWarning("No report submissions found for Circuit ID: {CircuitId}", circuitId);
+                    _logger.LogWarning($"No report submissions found for Circuit ID: {circuitId}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -494,7 +490,7 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 }).ToList();
 
-                _logger.LogInformation("Successfully retrieved report submissions for Circuit ID: {CircuitId}", circuitId);
+                _logger.LogInformation($"Successfully retrieved report submissions for Circuit ID: {circuitId}");
 
                 return new BaseResponse<List<ReportSubmissionResponseDto>>
                 {
@@ -519,14 +515,14 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation("GetReportSubmissionsByJamaatIdAsync called for user: {UserId}", _currentUser.GetUserId());
+                _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.GetUserId()}");
 
                 var jamaatId = _currentUser.GetJamaatId();
-                _logger.LogInformation("Retrieved Jamaat ID: {JamaatId} for user: {UserId}", jamaatId, _currentUser.GetUserId());
+                _logger.LogInformation($"Retrieved Jamaat ID: {jamaatId} for user: {_currentUser.GetUserId()}");
 
                 if (jamaatId <= 0)
                 {
-                    _logger.LogWarning("Unable to retrieve a valid Jamaat ID for user: {UserId}", _currentUser.GetUserId());
+                    _logger.LogWarning($"Unable to retrieve a valid Jamaat ID for user: {_currentUser.GetUserId()}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -535,11 +531,11 @@ namespace AMJNReportSystem.Application.Services
                 }
 
                 var reportSubmissions = await _reportSubmissionRepository.GetReportSubmissionsByJamaatIdAsync(jamaatId);
-                _logger.LogInformation("{Count} report submissions retrieved for Jamaat ID: {JamaatId}", reportSubmissions?.Count() ?? 0, jamaatId);
+                _logger.LogInformation($"{reportSubmissions.Count()} report submissions retrieved for Jamaat ID: {jamaatId}");
 
                 if (reportSubmissions == null || !reportSubmissions.Any())
                 {
-                    _logger.LogWarning("No report submissions found for Jamaat ID: {JamaatId}", jamaatId);
+                    _logger.LogWarning($"No report submissions found for Jamaat ID: {jamaatId}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -567,7 +563,7 @@ namespace AMJNReportSystem.Application.Services
                     }).ToList()
                 }).ToList();
 
-                _logger.LogInformation("Successfully retrieved report submissions for Jamaat ID: {JamaatId}", jamaatId);
+                _logger.LogInformation($"Successfully retrieved report submissions for Jamaat ID: {jamaatId}");
 
                 return new BaseResponse<List<ReportSubmissionResponseDto>>
                 {
@@ -578,7 +574,7 @@ namespace AMJNReportSystem.Application.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while retrieving report submissions for Jamaat ID: {JamaatId}");
+                _logger.LogError(ex, $"An error occurred while retrieving report submissions for Jamaat");
                 return new BaseResponse<List<ReportSubmissionResponseDto>>
                 {
                     Status = false,
