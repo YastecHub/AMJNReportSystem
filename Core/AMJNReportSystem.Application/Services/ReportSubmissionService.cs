@@ -61,6 +61,38 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
+                var submissionWindow = await _submissionWindowRepository.GetSubmissionWindowsById(request.SubmissionWindowId);
+                if (submissionWindow == null)
+                {
+                    _logger.LogWarning($"Submission window with ID {request.SubmissionWindowId} not found.");
+                    return new BaseResponse<bool>
+                    {
+                        Message = "Submission window not found.",
+                        Status = false
+                    };
+                }
+               
+                var currentDate = DateTime.Now;
+                if (currentDate < submissionWindow.StartingDate || currentDate > submissionWindow.EndingDate)
+                {
+                    _logger.LogWarning("Current date is outside the submission window.");
+                    return new BaseResponse<bool>
+                    {
+                        Message = "The submission window is closed.",
+                        Status = false
+                    };
+                }
+               
+                if (submissionWindow.IsLocked)
+                {
+                    _logger.LogWarning("The submission window is locked.");
+                    return new BaseResponse<bool>
+                    {
+                        Message = "The submission window is locked and no further submissions are allowed.",
+                        Status = false
+                    };
+                }
+
                 var reportSubmissionName = $"{reportType.Title}_{request.Year}_{request.Month}";
                 _logger.LogInformation($"Generated report submission name: {reportSubmissionName}");
 
