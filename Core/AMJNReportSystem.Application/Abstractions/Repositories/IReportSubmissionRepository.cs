@@ -15,5 +15,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId);
         Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId);
         List<ReportSubmission> GetAllReportSubmission();
+        Task<List<ReportSubmission>> GetAllReportTypeSubmissionsAsync();
     }
 }

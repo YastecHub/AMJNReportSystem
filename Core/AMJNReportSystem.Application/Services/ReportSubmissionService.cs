@@ -260,6 +260,8 @@ namespace AMJNReportSystem.Application.Services
 
                 var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionResponseDto
                 {
+                    JamaatId = _currentUser.GetJamaatId(),
+                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,
                     ReportTypeName = submission.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
@@ -300,6 +302,57 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+        public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync()
+        {
+            try
+            {
+                _logger.LogInformation("GetAllReportTypeSubmissionsAsync called without pagination.");
+
+                var submissions = await _reportSubmissionRepository.GetAllReportTypeSubmissionsAsync();
+
+                _logger.LogInformation($"Successfully retrieved {submissions.Count} report type submissions.");
+
+                var dtos = submissions.Select(submission => new ReportSubmissionResponseDto
+                {
+                    JamaatId = _currentUser.GetJamaatId(),
+                     CircuitId = _currentUser.GetCircuit(),
+                    JammatEmailAddress = submission.JammatEmailAddress,
+                    ReportTypeName = submission.ReportType.Name,
+                    ReportSubmissionStatus = submission.ReportSubmissionStatus,
+                    ReportTag = submission.ReportTag,
+                    SubmissionWindowMonth = submission.SubmissionWindow.Month,
+                    SubmissionWindowYear = submission.SubmissionWindow.Year,
+                    Answers = submission.Answers.Select(a => new ReportResponseDto
+                    {
+                        TextAnswer = a.TextAnswer,
+                        Id = a.Id,
+                        QuestionId = a.QuestionId,
+                        QuestionOptionId = a.QuestionOptionId,
+                        Report = a.Report
+                    }).ToList()
+                }).ToList();
+
+                _logger.LogInformation("Mapped report type submissions to DTO successfully.");
+
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = true,
+                    Message = $"{submissions.Count} report type submissions retrieved successfully.",
+                    Data = dtos
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while retrieving report type submissions.");
+                return new BaseResponse<List<ReportSubmissionResponseDto>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving report type submissions: {ex.Message}"
+                };
+            }
+        }
+
+
 
         public async Task<BaseResponse<ReportSubmissionDto>> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
         {
@@ -333,8 +386,8 @@ namespace AMJNReportSystem.Application.Services
                 _logger.LogInformation($"Successfully updated report submission with ID: {id}");
                 var reportSubmissionDto = new ReportSubmissionDto
                 {
-                    JamaatId = existingReportSubmission.JamaatId,
-                    CircuitId = existingReportSubmission.CircuitId,
+                    JamaatId = _currentUser.GetJamaatId(),
+                    CircuitId = _currentUser.GetCircuit(),
                     ReportTypeId = existingReportSubmission.ReportTypeId,
                     JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
                     ReportType = existingReportSubmission.ReportType,
