@@ -27,6 +27,6 @@
         public string MemberShipStatus { get; set; }
         public string Nationality { get; set; }
         public string? PhotoUrl { get; set; }
-        public string? Roles { get; set; }
+        public List<string>? Roles { get; set; }
     }
 }

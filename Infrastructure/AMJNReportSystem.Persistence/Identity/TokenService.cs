@@ -5,6 +5,8 @@ using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Persistence.Auth;
 using AMJNReportSystem.Persistence.Auth.Jwt;
 using AMJNReportSystem.Persistence.Context;
+using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -53,7 +55,7 @@ namespace AMJNReportSystem.Persistence.Identity
 
                 throw new UnauthorizedException(_t[$"Authentication Failed."]);
             }
-            user.Roles = string.Join(", ", login.Data.Roles);
+            user.Roles = login.Data.Roles?.ToList() ?? new List<string>();
             return await GenerateTokensAndUpdateUser(user, ipAddress);
         }
 
@@ -84,6 +86,18 @@ namespace AMJNReportSystem.Persistence.Identity
         private async Task<TokenResponse> GenerateTokensAndUpdateUser(User user, string ipAddress)
         {
             string token = GenerateJwt(user, ipAddress);
+            Data data = new Data
+            {
+                CircuitName = user.CircuitName,
+                MemberName = user.FirstName + " " + user.Surname,
+                Roles = user.Roles,
+                UserName = user.ChandaNo,
+                JamaatName = user.JamaatName,
+                CircuitId = user.CircuitId,
+                JamaatId = user.JamaatId,
+                Email = user.Email,
+                PhoneNo = user.PhoneNo
+            };
 
             var refreshToken = GenerateRefreshToken();
             var refreshTokenExpiryTime = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationInDays);
@@ -111,7 +125,7 @@ namespace AMJNReportSystem.Persistence.Identity
                 });
                 await _dbContext.SaveChangesAsync();
             }
-            return new TokenResponse(token, refreshToken, refreshTokenExpiryTime);
+            return new TokenResponse(token, refreshToken, refreshTokenExpiryTime, data);
         }
 
         private string GenerateJwt(User user, string ipAddress) =>
@@ -126,7 +140,7 @@ namespace AMJNReportSystem.Persistence.Identity
                 new(ClaimTypes.Name, user.FirstName ?? string.Empty),
                 new(ClaimTypes.Surname, user.Surname ?? string.Empty),
                 new(ClaimTypes.MobilePhone, user.PhoneNo ?? string.Empty),
-                new(ClaimTypes.Role, user.Roles ?? string.Empty ),
+               new(ClaimTypes.Role, user.Roles != null && user.Roles.Any() ? string.Join(",", user.Roles) : string.Empty),
                 new("JamaatId", user.JamaatId.ToString() ?? string.Empty),
                 new("CircuitId", user.CircuitId.ToString() ?? string.Empty),
 

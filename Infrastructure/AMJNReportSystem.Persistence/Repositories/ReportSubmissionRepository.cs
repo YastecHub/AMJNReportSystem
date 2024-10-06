@@ -73,6 +73,20 @@ namespace AMJNReportSystem.Persistence.Repositories
             };
         }
 
+        public async Task<List<ReportSubmission>> GetAllReportTypeSubmissionsAsync()
+        {
+            var query = _dbcontext.ReportSubmissions
+                .Include(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .AsQueryable();
+
+            return await query.ToListAsync();
+        }
+
 
         public async Task<ReportSubmission> UpdateReportSubmission(ReportSubmission reportSubmission)
         {

@@ -21,6 +21,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId);
         Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByCircuitIdAsync();
         Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByJamaatIdAsync();
+        Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync();
     }
 }
 

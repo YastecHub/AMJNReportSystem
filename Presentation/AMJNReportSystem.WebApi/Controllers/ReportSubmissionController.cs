@@ -70,6 +70,21 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
         /// <summary>
+        /// Retrieves a list of all report submissions without pagination.
+        /// This endpoint returns all report submissions, bypassing any pagination filters.
+        /// </summary>
+        /// <returns>Returns a list of all report submissions.</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("get-all-report-type-submissions")]
+        [OpenApiOperation("Get list of all report submissions without pagination.", "")]
+        public async Task<IActionResult> GetAllReportTypeSubmissions()
+        {
+            var response = await _reportSubmissionService.GetAllReportTypeSubmissionsAsync();
+            return Ok(response);
+        }
+
+
+        /// <summary>
         /// update a specific report submission
         /// </summary>
         /// <param name="Id"></param>
@@ -138,6 +153,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             var response = await _reportSubmissionService.GetReportSubmissionsByCircuitIdAsync();
             return !response.Status ? NotFound(response) : Ok(response);
         }
+
 
         /// <summary>
         /// Get all report submissions by  jammat ID
