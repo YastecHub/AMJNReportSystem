@@ -59,7 +59,7 @@ namespace AMJNReportSystem.Application.Services
 
 			var result = await _submissionWindowRepository.UpdateSubmissionWindow(submissionWindow);
 			if(!result)
-			 return Result<bool>.Fail("Failed to update submission window.");
+			 return Result<bool>.Fail("Failed to update submission Window.");
 
 			return await Result<bool>.SuccessAsync(true, "Submission Window Updated successfully");
 
