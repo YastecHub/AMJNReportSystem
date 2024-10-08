@@ -26,6 +26,7 @@ namespace AMJNReportSystem.Application.Services
 				Id = Guid.NewGuid(),
 				EndingDate = request.EndingDate,
 				StartingDate = request.StartingDate,
+				IsLocked = false,
 				IsDeleted = false,
 				Month = request.Month,
 				Year = request.Year,
@@ -49,6 +50,7 @@ namespace AMJNReportSystem.Application.Services
 			submissionWindow.StartingDate = request.StartingDate;
 			submissionWindow.EndingDate = request.EndingDate;
 			submissionWindow.LastModifiedBy = "Admin";
+			submissionWindow.IsLocked = false;
 			submissionWindow.LastModifiedOn = DateTime.Now;
 			submissionWindow.Year = request.Year;
 			submissionWindow.Month = request.Month;
@@ -82,33 +84,25 @@ namespace AMJNReportSystem.Application.Services
 			return await Result<bool>.SuccessAsync(true, "Submission Window Deleted Successfully");
 		}
 
-		public Task<Result<SubmissionWindowDto>> GetActiveSubmissionWindows()
+		public  async Task<Result<IList<SubmissionWindowDto>>> GetActiveSubmissionWindows()
 		{
-			throw new NotImplementedException(); 
-		}
+            var subWindow = await _submissionWindowRepository.GetActiveSubmissionWindows(q => q.IsLocked  == true);
 
-		public async Task<Result<SubmissionWindowDto>> GetSubmissionWindow(Guid id)
-		{
-            var subWindow = await _submissionWindowRepository.GetSubmissionWindowsById(id);
-            if (subWindow == null)
+            var subWindowDtos = subWindow.Select(q => new SubmissionWindowDto
             {
-                return Result<SubmissionWindowDto>.Fail("Question not found."); 
-            }
+                SubmissionWindowId = q.Id,
+                ReportTypeId = q.ReportTypeId,
+                ReportTypeName = q.ReportType.Name,
+                Month = q.Month,
+                Year = q.Year,
+                IsLocked = q.IsLocked,
+                StartDate = q.StartingDate,
+                EndDate = q.EndingDate,
+            }).ToList();
 
-            var subWindowDto = new SubmissionWindowDto 
-            {
-                SubmissionWindowId = subWindow.Id,
-				EndDate = subWindow.EndingDate,
-				ReportTypeId = subWindow.ReportTypeId,
-				ReportTypeName = subWindow.ReportType.Name,
-				Month = subWindow.Month,
-				Year = subWindow.Year,
-				StartDate = subWindow.StartingDate,
-				IsLocked = subWindow.IsLocked,
-            };
-
-            return Result<SubmissionWindowDto>.Success(subWindowDto, "Submission Window retrieved successfully");
+            return Result<IList<SubmissionWindowDto>>.Success(subWindowDtos, "Submission Window retrieved successfully");
         }
+		
 
 		public async Task<Result<IList<SubmissionWindowDto>>> GetSubmissionWindows()
 		{
@@ -128,5 +122,28 @@ namespace AMJNReportSystem.Application.Services
 
             return Result<IList<SubmissionWindowDto>>.Success(subWindowDtos, "Submission Window retrieved successfully");
         }
-	}
+
+        public async Task<Result<SubmissionWindowDto>> GetSubmissionWindow(Guid id)
+        {
+            var subWindow = await _submissionWindowRepository.GetSubmissionWindowsById(id);
+            if (subWindow == null)
+            {
+                return Result<SubmissionWindowDto>.Fail("Question not found.");
+            }
+
+            var subWindowDto = new SubmissionWindowDto
+            {
+                SubmissionWindowId = subWindow.Id,
+                EndDate = subWindow.EndingDate,
+                ReportTypeId = subWindow.ReportTypeId,
+                ReportTypeName = subWindow.ReportType.Name,
+                Month = subWindow.Month,
+                Year = subWindow.Year,
+                StartDate = subWindow.StartingDate,
+                IsLocked = subWindow.IsLocked,
+            };
+
+            return Result<SubmissionWindowDto>.Success(subWindowDto, "Submission Window retrieved successfully");
+        }
+    }
 }

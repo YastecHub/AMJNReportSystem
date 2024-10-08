@@ -83,5 +83,16 @@ namespace AMJNReportSystem.WebApi.Controllers
             var response = await _submissionWindowService.GetSubmissionWindows();
             return Ok(response);
         }
+
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("GetAllActiveSubmissionWindow")] 
+        [OpenApiOperation("Get all active submission windows.","")]
+        public async Task<IActionResult> GetActiveSubmissionWindows()
+        {
+            var response = await _submissionWindowService.GetActiveSubmissionWindows();
+            return Ok(response);
+        }
+
     }
 }

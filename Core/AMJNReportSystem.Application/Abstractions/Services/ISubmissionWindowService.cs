@@ -13,10 +13,10 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         Task<Result<bool>> UpdateReportSubmissionWindow<T>(Guid id, UpdateSubmissionWindowRequest request);
         Task<Result<bool>> DeleteSubmissionWindow(Guid subWindowId);
 
-        Task<Result<SubmissionWindowDto>> GetActiveSubmissionWindows();
+        Task<Result<IList<SubmissionWindowDto>>> GetActiveSubmissionWindows();
 
         Task<Result<SubmissionWindowDto>> GetSubmissionWindow(Guid Id);
 
         Task<Result<IList<SubmissionWindowDto>>> GetSubmissionWindows();
-    }
+    } 
 }
