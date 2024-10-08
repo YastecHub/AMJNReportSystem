@@ -9,6 +9,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<bool> UpdateSubmissionWindow(SubmissionWindow submissionWindow);
         Task<SubmissionWindow> GetSubmissionWindowsById(Guid id);
         Task<IList<SubmissionWindow>> GetAllSubmissionWindowsAsync(Expression<Func<SubmissionWindow, bool>> expression);
-        Task<IList<SubmissionWindow>> GetActiveSubmissionWindows(Expression<Func<SubmissionWindow, bool>> expression);
+        Task<SubmissionWindow> GetActiveSubmissionWindows(Guid id);
     }
 }

@@ -2,7 +2,6 @@
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.RequestModels.Reports;
-using AMJNReportSystem.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -33,7 +32,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> CreateReportSubmission([FromBody] CreateReportSubmissionRequest request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var reportSubmission = await _reportSubmissionService.CreateReportTypeSubmissionAsync(request);
+            var reportSubmission = await _reportSubmissionService.CreateReporteubmissionAsync(request);
             return !reportSubmission.Status ? Conflict(reportSubmission) : Ok(reportSubmission);
         }
 

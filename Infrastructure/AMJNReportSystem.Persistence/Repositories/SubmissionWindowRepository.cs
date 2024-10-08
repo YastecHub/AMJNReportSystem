@@ -29,13 +29,12 @@ namespace AMJNReportSystem.Persistence.Repositories
                .ToListAsync(); 
             return submissionWindow;
         }
-        public async Task<IList<SubmissionWindow>> GetActiveSubmissionWindows(Expression<Func<SubmissionWindow, bool>> expression)
+        public async Task<SubmissionWindow> GetActiveSubmissionWindows(Guid id)
         {
             var submissionWindow = await _context.SubmissionWindows
-               .Include(x => x.ReportType)
-               .Where(expression) 
-               .ToListAsync();  
-            return submissionWindow;
+                .Include(x => x.ReportType)
+                .SingleOrDefaultAsync(q => q.Id == id);
+            return submissionWindow; 
         }
 
 

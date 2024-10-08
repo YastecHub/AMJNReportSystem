@@ -21,10 +21,12 @@ namespace AMJNReportSystem.Application.Services
         private readonly ICurrentUser _currentUser;
         private readonly IQuestionRepository _questionRepository;
         private readonly ILogger<ReportSubmissionService> _logger;
+        private readonly ISubmissionWindowService _submissionWindowService;
 
         public ReportSubmissionService(IReportSubmissionRepository reportSubmission,
             IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository
-            submissionWindowRepository, ICurrentUser currentUser, IQuestionRepository questionRepository, ILogger<ReportSubmissionService> logger)
+            submissionWindowRepository, ICurrentUser currentUser, IQuestionRepository questionRepository,
+            ILogger<ReportSubmissionService> logger, ISubmissionWindowService submissionWindowService)
         {
             _reportSubmissionRepository = reportSubmission;
             _reportTypeRepository = reportTypeRepository;
@@ -32,13 +34,15 @@ namespace AMJNReportSystem.Application.Services
             _currentUser = currentUser;
             _questionRepository = questionRepository;
             _logger = logger;
+            _submissionWindowService = submissionWindowService;
         }
 
-        public async Task<BaseResponse<bool>> CreateReportTypeSubmissionAsync(CreateReportSubmissionRequest request)
+        public async Task<BaseResponse<bool>> CreateReporteubmissionAsync(CreateReportSubmissionRequest request)
         {
             try
             {
-                _logger.LogInformation($"{nameof(CreateReportTypeSubmissionAsync)} called with request {JsonConvert.SerializeObject(request)}", request);
+                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateReporteubmissionAsync), JsonConvert.SerializeObject(request));
+
 
                 if (request == null)
                 {
@@ -71,27 +75,18 @@ namespace AMJNReportSystem.Application.Services
                         Status = false
                     };
                 }
-               
-                var currentDate = DateTime.Now;
-                if (currentDate < submissionWindow.StartingDate || currentDate > submissionWindow.EndingDate)
+
+                var getsubwinactiveness = await _submissionWindowService.GetActiveSubmissionWindows(request.SubmissionWindowId);
+                if (getsubwinactiveness.Data.IsLocked)
                 {
-                    _logger.LogWarning("Current date is outside the submission window.");
+                    _logger.LogWarning($"Submission window with ID {request.SubmissionWindowId} is locked.");
                     return new BaseResponse<bool>
                     {
-                        Message = "The submission window is closed.",
+                        Message = "Submission window is locked. No further submissions are allowed.",
                         Status = false
                     };
                 }
-               
-                if (submissionWindow.IsLocked)
-                {
-                    _logger.LogWarning("The submission window is locked.");
-                    return new BaseResponse<bool>
-                    {
-                        Message = "The submission window is locked and no further submissions are allowed.",
-                        Status = false
-                    };
-                }
+
 
                 var reportSubmissionName = $"{reportType.Title}_{request.Year}_{request.Month}";
                 _logger.LogInformation($"Generated report submission name: {reportSubmissionName}");
@@ -261,7 +256,7 @@ namespace AMJNReportSystem.Application.Services
                 var dtos = paginatedResult.Data.Select(submission => new ReportSubmissionResponseDto
                 {
                     JamaatId = _currentUser.GetJamaatId(),
-                     CircuitId = _currentUser.GetCircuit(),
+                    CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,
                     ReportTypeName = submission.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
@@ -315,7 +310,7 @@ namespace AMJNReportSystem.Application.Services
                 var dtos = submissions.Select(submission => new ReportSubmissionResponseDto
                 {
                     JamaatId = _currentUser.GetJamaatId(),
-                     CircuitId = _currentUser.GetCircuit(),
+                    CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,
                     ReportTypeName = submission.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,

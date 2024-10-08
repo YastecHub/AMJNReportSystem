@@ -1,9 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
-using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Domain.Entities;
 using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -88,9 +86,9 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("GetAllActiveSubmissionWindow")] 
         [OpenApiOperation("Get all active submission windows.","")]
-        public async Task<IActionResult> GetActiveSubmissionWindows()
+        public async Task<IActionResult> GetActiveSubmissionWindows(Guid id)
         {
-            var response = await _submissionWindowService.GetActiveSubmissionWindows();
+            var response = await _submissionWindowService.GetActiveSubmissionWindows(id);
             return Ok(response);
         }
 
