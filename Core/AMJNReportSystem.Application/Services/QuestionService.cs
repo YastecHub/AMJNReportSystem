@@ -263,6 +263,10 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
                 ResponseType = q.ResponseType,
+                Options = q.Options.Select(o => new QuestionOption
+                {
+                    Text = o.Text
+                }).ToList()
             }).ToList();
 
             _logger.LogInformation("Questions retrieved successfully.");
@@ -283,7 +287,11 @@ namespace AMJNReportSystem.Application.Services
                 IsRequired = q.IsRequired,
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
-                ResponseType = q.ResponseType
+                ResponseType = q.ResponseType,
+                 Options = q.Options.Select(o => new QuestionOption
+                 {
+                     Text = o.Text
+                 }).ToList()
             }).ToList();
 
             _logger.LogInformation($"Questions retrieved successfully for section ID: {sectionId}");
