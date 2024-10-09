@@ -12,7 +12,8 @@ namespace AMJNReportSystem.Application.Models.ResponseModels
         public ReportSubmissionStatus ReportSubmissionStatus { get; set; }
         public ReportTag ReportTag { get; set; }
         public int  SubmissionWindowYear { get; set; }
-        public int SubmissionWindowMonth { get; set; } 
+        public int SubmissionWindowMonth { get; set; }
+        public DateTime CreatedOn { get; set; }
         public List<ReportResponseDto> Answers { get; set; } = new List<ReportResponseDto>(); 
     }
 }

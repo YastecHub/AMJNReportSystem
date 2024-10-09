@@ -43,7 +43,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet]
+        [HttpGet("get-report-submission-by-id")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
         public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
         {
@@ -91,7 +91,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPut("{id}")]
+        [HttpPut("update-report-submission{id}")]
         [OpenApiOperation("update a specific report submission.", "")]
         public async Task<IActionResult> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
         {
@@ -105,7 +105,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="reportSubmissionId"></param>
         /// <returns></returns>
-        [HttpDelete("{reportSubmissionId}")]
+        [HttpDelete("delete-report-submission{reportSubmissionId}")]
         [OpenApiOperation("Delete a report submission.", "Deletes a specific Report Submission")]
         public async Task<IActionResult> DeleteReportSubmission([FromRoute] Guid reportSubmissionId)
         {
@@ -127,7 +127,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="reportTypeid"></param>
         /// <returns></returns>
-        [HttpGet("{reportTypeid:guid}")]
+        [HttpGet("get-report-submission-by-reportType{reportTypeid:guid}")]
         [OpenApiOperation("Get a specific report submission by reportType.", "")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -142,7 +142,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// Get all report submissions by  circuit ID
         /// </summary>
         /// <returns></returns>
-        [HttpGet("circuit")]
+        [HttpGet("get-report-submission-by-circuit-id")]
         [OpenApiOperation("Get all report submissions by  circuit ID.", "")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -158,8 +158,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// Get all report submissions by  jammat ID
         /// </summary>
         /// <returns></returns>
-        [HttpGet("jammat")]
-        [OpenApiOperation("Get all report submissions by  jammat ID.")]
+        [HttpGet("get-report-submission-by-jammat-id")]
+        [OpenApiOperation("Get all report submissions by  jammat ID." , "")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

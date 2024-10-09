@@ -65,5 +65,6 @@ namespace AMJNReportSystem.Persistence.Auth
         {
             return _user.GetCircuitId() ?? 0;
         }
+        
     }
 }
