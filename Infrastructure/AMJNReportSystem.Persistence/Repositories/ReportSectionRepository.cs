@@ -22,12 +22,14 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<ReportSection?> GetReportSection(Expression<Func<ReportSection, bool>> expression)
         {
-            return await _context.ReportSections.FirstOrDefaultAsync(expression);
+            return await _context.ReportSections
+                .FirstOrDefaultAsync(expression);
         }
 
         public async Task<ReportSection?> GetReportSectionById(Guid id)
         {
-            return await _context.ReportSections.FindAsync(id);
+            return await _context.ReportSections
+                .FindAsync(id);
         }
 
         public async Task<IList<ReportSection>> GetReportSections(Expression<Func<ReportSection, bool>> expression)
@@ -41,13 +43,16 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<bool> UpdateReportSection(ReportSection reportSection)
         {
-            _context.ReportSections.Update(reportSection);
-            return await _context.SaveChangesAsync() > 0;
+            _context.ReportSections
+                .Update(reportSection);
+            return await _context
+                .SaveChangesAsync() > 0;
         }
 
         public async Task<bool> ReportTypeExistsAsync(Guid reportTypeId)
         {
-            return await _context.ReportTypes.AnyAsync(rt => rt.Id == reportTypeId);
+            return await _context.ReportTypes
+                .AnyAsync(rt => rt.Id == reportTypeId);
         }
 
         public List<ReportSection> GetAllReportSection()

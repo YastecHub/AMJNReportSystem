@@ -14,29 +14,29 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method for creating new report section, accepting the name, description, and reporttypeId 
         /// as parameters by Admin only
         /// </summary>
-        Task<Result<CreateReportSectionResponse>> CreateReportSection(CreateReportSectionRequest request);
+        Task<BaseResponse<ReportSectionDto>> CreateReportSection(CreateReportSectionRequest request);
 
         /// <summary>
         /// Method for update report section, accepting the name and description and reporttypeId
         /// as parameters by Admin only
         /// </summary>
-        Task<Result<bool>> UpdateReportSection(Guid reportSectionId, UpdateReportSectionRequest request);
+        Task<BaseResponse<bool>> UpdateReportSection(Guid reportSectionId, UpdateReportSectionRequest request);
 
         /// <summary>
         /// Method that get a particular report section, accepting the reportSection Id as parameter
         /// </summary>
-        Task<Result<ReportSectionDto>> GetReportSection(Guid reportSectionId);
+        Task<BaseResponse<ReportSectionDto>> GetReportSection(Guid reportSectionId);
 
         /// <summary>
         /// Method that get all report sections for a particular reporttype
         /// </summary>
-        Task<Result<IEnumerable<ReportSectionDto>>> GetReportSections(Guid reportTypeId);
+        Task<BaseResponse<IEnumerable<ReportSectionDto>>> GetReportSections(Guid reportTypeId);
 
         /// <summary>
         /// Method for update Report-Section, accepting Id and description as parameters by Admin only
         /// </summary>
         ///
-        Task<Result<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state);
+        Task<BaseResponse<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state);
 
         /// <summary>
         /// Method for deleting Report-Section

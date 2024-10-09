@@ -22,23 +22,30 @@ namespace AMJNReportSystem.Application.Services
             _logger = logger;
         }
 
-        public async Task<Result<CreateReportSectionResponse>> CreateReportSection(CreateReportSectionRequest request)
+        public async Task<BaseResponse<ReportSectionDto>> CreateReportSection(CreateReportSectionRequest request)
         {
             try
             {
                 if (request == null)
                 {
                     _logger.LogWarning("CreateReportSection was called with a null request.");
-                    return Result<CreateReportSectionResponse>.Fail("Request cannot be null.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = "Request cannot be null"
+                    };
                 }
 
                 var reportTypeExists = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
                 if (reportTypeExists == null)
                 {
                     _logger.LogWarning($"Report type Id {request.ReportTypeId} not found.");
-                    return Result<CreateReportSectionResponse>.Fail("Report type Id not found.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = $"Report type Id {request.ReportTypeId} not found."
+                    };
                 }
-
                 var id = Guid.NewGuid();
                 var reportSection = new ReportSection
                 {
@@ -61,22 +68,43 @@ namespace AMJNReportSystem.Application.Services
                         Message = "Report section created successfully."
                     };
 
-                    return Result<CreateReportSectionResponse>.Success(response);
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = true,
+                        Message = "Report section created successfully",
+                        Data = new ReportSectionDto
+                        {
+                            Id = reportSection.Id,
+                            ReportSectionName = reportSection.ReportSectionName,
+                            ReportSectionValue = reportSection.ReportSectionValue,
+                            Description = reportSection.Description,
+                            ReportTypeId = reportSection.ReportTypeId,
+                            IsActive = reportSection.IsActive
+                        }
+                    };
                 }
                 else
                 {
                     _logger.LogError("Failed to create report section.");
-                    return Result<CreateReportSectionResponse>.Fail("Failed to create report section.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = "Failed to create report section."
+                    };
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while creating a report section.");
-                return Result<CreateReportSectionResponse>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<ReportSectionDto>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 
-        public async Task<Result<bool>> UpdateReportSection(Guid reportSectionId, UpdateReportSectionRequest request)
+        public async Task<BaseResponse<bool>> UpdateReportSection(Guid reportSectionId, UpdateReportSectionRequest request)
         {
             try
             {
@@ -84,7 +112,11 @@ namespace AMJNReportSystem.Application.Services
                 if (existingSection == null)
                 {
                     _logger.LogWarning($"Report section with Id {reportSectionId} not found.");
-                    return Result<bool>.Fail("Report section not found.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = $"Report section with Id {reportSectionId} not found."
+                    };
                 }
 
                 existingSection.ReportSectionName = request.ReportSectionName;
@@ -97,22 +129,34 @@ namespace AMJNReportSystem.Application.Services
                 if (isUpdated)
                 {
                     _logger.LogInformation($"Report section with Id {reportSectionId} updated successfully.");
-                    return Result<bool>.Success(true, "Report section updated successfully.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = true,
+                        Message = "Report section updated successfully."
+                    };
                 }
                 else
                 {
                     _logger.LogError($"Failed to update report section with Id {reportSectionId}.");
-                    return Result<bool>.Fail("Failed to update report section.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Failed to update report section."
+                    };
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating report section with Id {reportSectionId}.", reportSectionId);
-                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 
-        public async Task<Result<ReportSectionDto>> GetReportSection(Guid reportSectionId)
+        public async Task<BaseResponse<ReportSectionDto>> GetReportSection(Guid reportSectionId)
         {
             try
             {
@@ -120,7 +164,11 @@ namespace AMJNReportSystem.Application.Services
                 if (reportSection == null)
                 {
                     _logger.LogWarning($"Report section with Id {reportSectionId} not found.");
-                    return Result<ReportSectionDto>.Fail("Report section not found.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = "Report section not found."
+                    };
                 }
 
                 var reportSectionDto = new ReportSectionDto
@@ -134,16 +182,25 @@ namespace AMJNReportSystem.Application.Services
                 };
 
                 _logger.LogInformation($"Report section with Id {reportSectionId} retrieved successfully.");
-                return Result<ReportSectionDto>.Success(reportSectionDto, "Report section retrieved successfully.");
+                return new BaseResponse<ReportSectionDto>
+                {
+                    Status = true,
+                    Message = "Report section retrieved successfully.",
+                    Data = reportSectionDto
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving report section with Id {reportSectionId}.", reportSectionId);
-                return Result<ReportSectionDto>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<ReportSectionDto>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
 
-        public async Task<Result<IEnumerable<ReportSectionDto>>> GetReportSections(Guid reportTypeId)
+        public async Task<BaseResponse<IEnumerable<ReportSectionDto>>> GetReportSections(Guid reportTypeId)
         {
             try
             {
@@ -151,7 +208,12 @@ namespace AMJNReportSystem.Application.Services
                 if (!reportSections.Any())
                 {
                     _logger.LogInformation($"No report sections found for ReportTypeId {reportTypeId}.");
-                    return Result<IEnumerable<ReportSectionDto>>.Fail("No report sections found.");
+                    return new BaseResponse<IEnumerable<ReportSectionDto>>
+                    {
+                        Status = false,
+                        Message = "No report sections found.",
+                        Data = Enumerable.Empty<ReportSectionDto>()
+                    };
                 }
 
                 var reportSectionDtos = reportSections.Select(rs => new ReportSectionDto
@@ -166,16 +228,26 @@ namespace AMJNReportSystem.Application.Services
                 }).ToList();
 
                 _logger.LogInformation($"{reportSectionDtos.Count} report sections retrieved successfully for ReportTypeId {reportTypeId}.");
-                return Result<IEnumerable<ReportSectionDto>>.Success(reportSectionDtos, "Report sections retrieved successfully.");
+                return new BaseResponse<IEnumerable<ReportSectionDto>>
+                {
+                    Status = true,
+                    Message = "Report sections retrieved successfully.",
+                    Data = reportSectionDtos
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while retrieving report sections for ReportTypeId {reportTypeId}.", reportTypeId);
-                return Result<IEnumerable<ReportSectionDto>>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<IEnumerable<ReportSectionDto>>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}",
+                    Data = Enumerable.Empty<ReportSectionDto>()
+                };
             }
         }
 
-        public async Task<Result<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state)
+        public async Task<BaseResponse<bool>> SetReportSectionActiveness(Guid reportSectionId, bool state)
         {
             try
             {
@@ -183,7 +255,12 @@ namespace AMJNReportSystem.Application.Services
                 if (reportSection == null)
                 {
                     _logger.LogWarning($"Report section with Id {reportSectionId} not found.");
-                    return Result<bool>.Fail("Report section not found.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Report section not found.",
+                        Data = false
+                    };
                 }
 
                 reportSection.IsActive = state;
@@ -192,18 +269,33 @@ namespace AMJNReportSystem.Application.Services
                 if (isUpdated)
                 {
                     _logger.LogInformation($"Report section with Id {reportSectionId} activeness updated to {(state ? "active" : "inactive")}");
-                    return Result<bool>.Success(true, $"Report section activeness updated to {(state ? "active" : "inactive")}");
+                    return new BaseResponse<bool>
+                    {
+                        Status = true,
+                        Message = $"Report section activeness updated to {(state ? "active" : "inactive")}.",
+                        Data = true
+                    };
                 }
                 else
                 {
                     _logger.LogError($"Failed to update activeness for report section with Id {reportSectionId}.");
-                    return Result<bool>.Fail("Failed to update report section activeness.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Failed to update report section activeness.",
+                        Data = false
+                    };
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while updating activeness for report section with Id {reportSectionId}.", reportSectionId);
-                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}",
+                    Data = false
+                };
             }
         }
 
