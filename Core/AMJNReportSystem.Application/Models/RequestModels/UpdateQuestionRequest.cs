@@ -11,6 +11,6 @@ namespace AMJNReportSystem.Application.Models.RequestModels
 		public bool IsActive { get; set; }
 		public QuestionType QuestionType { get; set; }
 		public ResponseType ResponseType { get; set; }
-		public List<CreateQuestionOptionRequest>? Options { get; set; } = new List<CreateQuestionOptionRequest>();
+		public List<CreateQuestionOptionRequest>? Options { get; set; }
 	}
 }
