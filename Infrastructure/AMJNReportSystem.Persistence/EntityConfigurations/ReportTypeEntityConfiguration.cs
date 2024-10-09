@@ -9,8 +9,6 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
         public void Configure(EntityTypeBuilder<ReportType> builder)
         {
 
-            builder.ToTable("ReportType");
-          
             builder.HasKey(t => t.Id);
 
             

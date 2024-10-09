@@ -133,8 +133,7 @@ namespace AMJNReportSystem.Application.Services
                     Title = reportType.Title,
                     Description = reportType.Description,
                     Year = reportType.Year,
-                    Questions = reportType.Questions,
-                    ReportTag = reportType.ReportTag
+                    ReportTag = (Domain.Enums.ReportTag)reportType.ReportTag
                 };
 
                 _logger.LogInformation("Successfully retrieved report type with Id {ReportTypeId}.", reportTypeId);
@@ -206,7 +205,7 @@ namespace AMJNReportSystem.Application.Services
                     Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,
-                    ReportTag = r.ReportTag
+                    ReportTag = (Domain.Enums.ReportTag)r.ReportTag
                 }).ToList();
 
                 _logger.LogInformation("Successfully retrieved report types.");

@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Domain.Common.Contracts;
 using AMJNReportSystem.Domain.Enums;
+using System.Collections.ObjectModel;
 
 namespace AMJNReportSystem.Domain.Entities
 {
@@ -11,6 +12,8 @@ namespace AMJNReportSystem.Domain.Entities
         public int Year { get; set; }
         public ReportTag? ReportTag { get; set; }
         public bool IsActive { get; set; }
-        public List<Question> Questions { get; set; } = new List<Question>();
+
+
+        public ICollection<ReportSection> ReportSections { get; set; } = new HashSet<ReportSection>();
     }
 }

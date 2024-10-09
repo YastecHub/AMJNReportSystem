@@ -161,6 +161,7 @@ namespace AMJNReportSystem.Application.Services
                     ReportSectionValue = rs.ReportSectionValue,
                     Description = rs.Description,
                     ReportTypeId = rs.ReportTypeId,
+                    ReportTypeName = rs.ReportType.Name,
                     IsActive = rs.IsActive
                 }).ToList();
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class refreshtoken : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,7 +27,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReportType",
+                name: "ReportTypes",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -47,11 +47,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReportType", x => x.Id);
+                    table.PrimaryKey("PK_ReportTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReportSection",
+                name: "ReportSections",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -70,13 +70,13 @@ namespace AMJNReportSystem.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ReportSection", x => x.Id);
+                    table.PrimaryKey("PK_ReportSections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReportSection_ReportType_ReportTypeId",
+                        name: "FK_ReportSections_ReportTypes_ReportTypeId",
                         column: x => x.ReportTypeId,
-                        principalTable: "ReportType",
+                        principalTable: "ReportTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -102,11 +102,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_SubmissionWindows", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SubmissionWindows_ReportType_ReportTypeId",
+                        name: "FK_SubmissionWindows_ReportTypes_ReportTypeId",
                         column: x => x.ReportTypeId,
-                        principalTable: "ReportType",
+                        principalTable: "ReportTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,8 +119,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                     ResponseType = table.Column<int>(type: "int", nullable: false),
                     IsRequired = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    SectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReportTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ReportSectionId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -133,16 +132,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Questions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Questions_ReportSection_SectionId",
-                        column: x => x.SectionId,
-                        principalTable: "ReportSection",
+                        name: "FK_Questions_ReportSections_ReportSectionId",
+                        column: x => x.ReportSectionId,
+                        principalTable: "ReportSections",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Questions_ReportType_ReportTypeId",
-                        column: x => x.ReportTypeId,
-                        principalTable: "ReportType",
-                        principalColumn: "Id");
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -152,7 +146,6 @@ namespace AMJNReportSystem.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JamaatId = table.Column<int>(type: "int", nullable: false),
                     CircuitId = table.Column<int>(type: "int", nullable: false),
-                    ReportTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     JammatEmailAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReportSubmissionStatus = table.Column<int>(type: "int", nullable: false),
                     ReportTag = table.Column<int>(type: "int", nullable: false),
@@ -169,17 +162,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_ReportSubmissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ReportSubmissions_ReportType_ReportTypeId",
-                        column: x => x.ReportTypeId,
-                        principalTable: "ReportType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_ReportSubmissions_SubmissionWindows_SubmissionWindowId",
                         column: x => x.SubmissionWindowId,
                         principalTable: "SubmissionWindows",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -233,20 +220,18 @@ namespace AMJNReportSystem.Persistence.Migrations
                         name: "FK_ReportResponses_QuestionOptions_QuestionOptionId",
                         column: x => x.QuestionOptionId,
                         principalTable: "QuestionOptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ReportResponses_Questions_QuestionId",
                         column: x => x.QuestionId,
                         principalTable: "Questions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ReportResponses_ReportSubmissions_ReportSubmissionId",
                         column: x => x.ReportSubmissionId,
                         principalTable: "ReportSubmissions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -255,14 +240,9 @@ namespace AMJNReportSystem.Persistence.Migrations
                 column: "QuestionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Questions_ReportTypeId",
+                name: "IX_Questions_ReportSectionId",
                 table: "Questions",
-                column: "ReportTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Questions_SectionId",
-                table: "Questions",
-                column: "SectionId");
+                column: "ReportSectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ReportResponses_QuestionId",
@@ -280,25 +260,20 @@ namespace AMJNReportSystem.Persistence.Migrations
                 column: "ReportSubmissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportSection_ReportSectionName",
-                table: "ReportSection",
+                name: "IX_ReportSections_ReportSectionName",
+                table: "ReportSections",
                 column: "ReportSectionName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportSection_ReportSectionValue",
-                table: "ReportSection",
+                name: "IX_ReportSections_ReportSectionValue",
+                table: "ReportSections",
                 column: "ReportSectionValue",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReportSection_ReportTypeId",
-                table: "ReportSection",
-                column: "ReportTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReportSubmissions_ReportTypeId",
-                table: "ReportSubmissions",
+                name: "IX_ReportSections_ReportTypeId",
+                table: "ReportSections",
                 column: "ReportTypeId");
 
             migrationBuilder.CreateIndex(
@@ -334,10 +309,10 @@ namespace AMJNReportSystem.Persistence.Migrations
                 name: "SubmissionWindows");
 
             migrationBuilder.DropTable(
-                name: "ReportSection");
+                name: "ReportSections");
 
             migrationBuilder.DropTable(
-                name: "ReportType");
+                name: "ReportTypes");
         }
     }
 }

@@ -44,7 +44,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 			var questions = await _context.Questions
 				.Include(x => x.ReportSection)
 				.Include(x => x.Options)
-				.Where(x => x.SectionId == sectionId)
+				.Where(x => x.ReportSectionId == sectionId)
 				.ToListAsync();
 			return questions;
 		}

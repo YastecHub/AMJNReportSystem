@@ -32,7 +32,11 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<IList<ReportSection>> GetReportSections(Expression<Func<ReportSection, bool>> expression)
         {
-            return await _context.ReportSections.Where(expression).ToListAsync();
+            return await _context.ReportSections
+                .Include(x => x.ReportType)
+                .Where(expression)
+                .OrderBy(x => x.ReportSectionValue)
+                .ToListAsync();
         }
 
         public async Task<bool> UpdateReportSection(ReportSection reportSection)

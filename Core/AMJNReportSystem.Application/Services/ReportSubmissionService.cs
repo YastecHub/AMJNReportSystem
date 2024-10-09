@@ -106,9 +106,7 @@ namespace AMJNReportSystem.Application.Services
                 {
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
-                    ReportTypeId = request.ReportTypeId,
                     JammatEmailAddress = request.JammatEmailAddress,
-                    ReportType = reportType,
                     ReportSubmissionStatus = request.ReportSubmissionStatus,
                     ReportTag = request.ReportTag,
                     SubmissionWindowId = request.SubmissionWindowId,
@@ -147,7 +145,7 @@ namespace AMJNReportSystem.Application.Services
                     }
                 }
 
-                submission.ReportType.Title = reportSubmissionName;
+                submission.SubmissionWindow.ReportType.Title = reportSubmissionName;
 
                 _logger.LogInformation($"Saving report submission to the database.");
                 await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
@@ -196,9 +194,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = reportSubmission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
                     Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
@@ -258,9 +256,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,
-                    ReportTypeName = submission.ReportType.Name,
+                    ReportTypeName = submission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
-                    ReportTag = submission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)submission.ReportTag,
                     SubmissionWindowMonth = submission.SubmissionWindow.Month,
                     SubmissionWindowYear = submission.SubmissionWindow.Year,
                     Answers = submission.Answers.Select(a => new ReportResponseDto
@@ -312,9 +310,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,
-                    ReportTypeName = submission.ReportType.Name,
+                    ReportTypeName = submission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = submission.ReportSubmissionStatus,
-                    ReportTag = submission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)submission.ReportTag,
                     SubmissionWindowMonth = submission.SubmissionWindow.Month,
                     SubmissionWindowYear = submission.SubmissionWindow.Year,
                     Answers = submission.Answers.Select(a => new ReportResponseDto
@@ -383,11 +381,11 @@ namespace AMJNReportSystem.Application.Services
                 {
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
-                    ReportTypeId = existingReportSubmission.ReportTypeId,
+                    ReportTypeId = existingReportSubmission.SubmissionWindow.ReportTypeId,
                     JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
-                    ReportType = existingReportSubmission.ReportType,
+                    ReportType = existingReportSubmission.SubmissionWindow.ReportType,
                     ReportSubmissionStatus = existingReportSubmission.ReportSubmissionStatus,
-                    ReportTag = existingReportSubmission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)existingReportSubmission.ReportTag,
                     SubmissionWindowId = existingReportSubmission.SubmissionWindowId,
                     SubmissionWindow = existingReportSubmission.SubmissionWindow,
                     Answers = existingReportSubmission.Answers.Select(a => new ReportResponseDto
@@ -482,9 +480,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = reportSubmission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
                     Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
@@ -555,9 +553,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = reportSubmission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
                     Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
@@ -628,9 +626,9 @@ namespace AMJNReportSystem.Application.Services
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
-                    ReportTypeName = reportSubmission.ReportType.Name,
+                    ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = reportSubmission.ReportTag,
+                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
                     Answers = reportSubmission.Answers.Select(x => new ReportResponseDto

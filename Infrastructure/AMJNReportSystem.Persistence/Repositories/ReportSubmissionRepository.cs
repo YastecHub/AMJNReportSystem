@@ -1,12 +1,9 @@
 ﻿using AMJNReportSystem.Persistence.Context;
-using AMJNReportSystem.Persistence.Extensions;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Models;
-using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -31,15 +28,17 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<bool> Exist(string reportSubmissionName)
         {
             return await _dbcontext.ReportSubmissions
-                .AnyAsync(x => x.ReportType.Title == reportSubmissionName);
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .AnyAsync(x => x.SubmissionWindow.ReportType.Title == reportSubmissionName);
         }
 
 
         public async Task<ReportSubmission> GetReportTypeSubmissionByIdAsync(Guid id)
         {
             var reportSubmission = await _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
                 .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.Question)
                 .Include(x => x.Answers)
@@ -52,8 +51,8 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<PaginatedResult<ReportSubmission>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
             var query = _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
-                .Include(x => x.SubmissionWindow)
+                 .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                     .ThenInclude(x => x.Question)
                 .Include(x => x.Answers)
@@ -76,8 +75,8 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<List<ReportSubmission>> GetAllReportTypeSubmissionsAsync()
         {
             var query = _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
-                .Include(x => x.SubmissionWindow)
+                 .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                     .ThenInclude(x => x.Question)
                 .Include(x => x.Answers)
@@ -98,13 +97,13 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<List<ReportSubmission>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
         {
             var submissions = await _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
                 .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.Question)
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.QuestionOption)
-                .Where(x => x.ReportTypeId == reportTypeId)
+                .Where(x => x.SubmissionWindow.ReportTypeId == reportTypeId)
                 .ToListAsync();
 
             return submissions;
@@ -113,8 +112,8 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId)
         {
             var submissions = await _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
-                .Include(x => x.SubmissionWindow)
+                   .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                     .ThenInclude(x => x.Question)
                 .Include(x => x.Answers)
@@ -128,7 +127,8 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId)
         {
             var submissions = await _dbcontext.ReportSubmissions
-                .Include(x => x.ReportType)
+                    .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
                 .Include(x => x.SubmissionWindow)
                 .Include(x => x.Answers)
                     .ThenInclude(x => x.Question)

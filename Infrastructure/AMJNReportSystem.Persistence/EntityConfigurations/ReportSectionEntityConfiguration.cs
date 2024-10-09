@@ -8,7 +8,7 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<ReportSection> builder)
         {
-            builder.ToTable("ReportSection");
+            
 
             builder.HasKey(t => t.Id);
 
@@ -31,11 +31,6 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
                    .HasDefaultValue(true);
 
 			builder.HasQueryFilter(rs => !rs.IsDeleted);
-
-			builder.HasOne<ReportType>()
-                  .WithMany()
-                  .HasForeignKey(t => t.ReportTypeId)
-                  .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

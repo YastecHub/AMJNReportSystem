@@ -51,7 +51,7 @@ namespace AMJNReportSystem.Application.Services
                     ResponseType = request.ResponseType,
                     IsRequired = request.IsRequired,
                     IsActive = request.IsActive,
-                    SectionId = request.ReportSectionId,
+                    ReportSectionId = request.ReportSectionId,
                     CreatedBy = "Admin",
                     CreatedOn = DateTime.Now,
                 };
@@ -230,7 +230,7 @@ namespace AMJNReportSystem.Application.Services
             var questionDto = new QuestionDto
             {
                 Id = question.Id,
-                ReportSectionId = question.SectionId,
+                ReportSectionId = question.ReportSectionId,
                 SectionName = question.ReportSection.ReportSectionName,
                 QuestionName = question.QuestionName,
                 IsRequired = question.IsRequired,
@@ -256,7 +256,7 @@ namespace AMJNReportSystem.Application.Services
             var questionDtos = questions.Select(q => new QuestionDto
             {
                 Id = q.Id,
-                ReportSectionId = q.SectionId,
+                ReportSectionId = q.ReportSectionId,
                 SectionName = q.ReportSection.ReportSectionName,
                 QuestionName = q.QuestionName,
                 IsRequired = q.IsRequired,
@@ -277,7 +277,7 @@ namespace AMJNReportSystem.Application.Services
             var questionDtos = questions.Select(q => new QuestionDto
             {
                 Id = q.Id,
-                ReportSectionId = q.SectionId,
+                ReportSectionId = q.ReportSectionId,
                 SectionName = q.ReportSection.ReportSectionName,
                 QuestionName = q.QuestionName,
                 IsRequired = q.IsRequired,

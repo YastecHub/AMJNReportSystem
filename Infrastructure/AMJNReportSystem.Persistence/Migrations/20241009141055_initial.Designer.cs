@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20240913175022_refresh token")]
-    partial class refreshtoken
+    [Migration("20241009141055_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,22 +66,17 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Property<int>("QuestionType")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ReportTypeId")
+                    b.Property<Guid>("ReportSectionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ResponseType")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("SectionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ReportTypeId");
+                    b.HasIndex("ReportSectionId");
 
-                    b.HasIndex("SectionId");
-
-                    b.ToTable("Questions", (string)null);
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.QuestionOption", b =>
@@ -263,7 +258,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportTypeId");
 
-                    b.ToTable("ReportSection", (string)null);
+                    b.ToTable("ReportSections");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSubmission", b =>
@@ -309,15 +304,10 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Property<int>("ReportTag")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("ReportTypeId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("SubmissionWindowId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ReportTypeId");
 
                     b.HasIndex("SubmissionWindowId");
 
@@ -379,7 +369,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportType", (string)null);
+                    b.ToTable("ReportTypes");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.SubmissionWindow", b =>
@@ -431,19 +421,15 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportTypeId");
 
-                    b.ToTable("SubmissionWindows", (string)null);
+                    b.ToTable("SubmissionWindows");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.Question", b =>
                 {
-                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportType", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("ReportTypeId");
-
                     b.HasOne("AMJNReportSystem.Domain.Entities.ReportSection", "ReportSection")
-                        .WithMany()
-                        .HasForeignKey("SectionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Questions")
+                        .HasForeignKey("ReportSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ReportSection");
@@ -465,18 +451,16 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.HasOne("AMJNReportSystem.Domain.Entities.Question", "Question")
                         .WithMany()
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AMJNReportSystem.Domain.Entities.QuestionOption", "QuestionOption")
                         .WithMany()
-                        .HasForeignKey("QuestionOptionId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("QuestionOptionId");
 
                     b.HasOne("AMJNReportSystem.Domain.Entities.ReportSubmission", null)
                         .WithMany("Answers")
-                        .HasForeignKey("ReportSubmissionId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ReportSubmissionId");
 
                     b.Navigation("Question");
 
@@ -485,28 +469,22 @@ namespace AMJNReportSystem.Persistence.Migrations
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSection", b =>
                 {
-                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportType", null)
-                        .WithMany()
+                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportType", "ReportType")
+                        .WithMany("ReportSections")
                         .HasForeignKey("ReportTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ReportType");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSubmission", b =>
                 {
-                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportType", "ReportType")
-                        .WithMany()
-                        .HasForeignKey("ReportTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("AMJNReportSystem.Domain.Entities.SubmissionWindow", "SubmissionWindow")
                         .WithMany()
                         .HasForeignKey("SubmissionWindowId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("ReportType");
 
                     b.Navigation("SubmissionWindow");
                 });
@@ -516,7 +494,7 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.HasOne("AMJNReportSystem.Domain.Entities.ReportType", "ReportType")
                         .WithMany()
                         .HasForeignKey("ReportTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("ReportType");
@@ -527,6 +505,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Navigation("Options");
                 });
 
+            modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSection", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSubmission", b =>
                 {
                     b.Navigation("Answers");
@@ -534,7 +517,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportType", b =>
                 {
-                    b.Navigation("Questions");
+                    b.Navigation("ReportSections");
                 });
 #pragma warning restore 612, 618
         }
