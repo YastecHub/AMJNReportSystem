@@ -8,10 +8,7 @@ namespace AMJNReportSystem.Application.Validation
     {
         public ReportSubmissionValidator()
         {
-            RuleFor(x => x.JammatEmailAddress)
-                .EmailAddress()
-                .WithMessage("Invalid Email Address, please check.");
-
+            
             RuleFor(x => x.Month)
                 .InclusiveBetween(1, 12)
                 .WithMessage("Month must be between 1 and 12.");

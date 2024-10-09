@@ -106,7 +106,7 @@ namespace AMJNReportSystem.Application.Services
                 {
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
-                    JammatEmailAddress = request.JammatEmailAddress,
+                    JammatEmailAddress = _currentUser.GetUserEmail(),
                     ReportSubmissionStatus = request.ReportSubmissionStatus,
                     ReportTag = request.ReportTag,
                     SubmissionWindowId = request.SubmissionWindowId,
@@ -323,7 +323,7 @@ namespace AMJNReportSystem.Application.Services
                         QuestionOptionId = a.QuestionOptionId,
                         Report = a.Report
                     }).ToList()
-                }).ToList();
+                }).OrderByDescending(x => x.CreatedOn).ToList();
 
                 _logger.LogInformation("Mapped report type submissions to DTO successfully.");
 
