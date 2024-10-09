@@ -206,7 +206,8 @@ namespace AMJNReportSystem.Application.Services
                     Description = r.Description,
                     Year = r.Year,
                     ReportTag = (Domain.Enums.ReportTag)r.ReportTag
-                }).ToList();
+                }).OrderByDescending(x => x.CreatedOn)
+                  .ToList();
 
                 _logger.LogInformation("Successfully retrieved report types.");
                 return new BaseResponse<IEnumerable<ReportTypeDto>>

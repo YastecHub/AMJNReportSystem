@@ -81,7 +81,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return NotFound(result.Messages);
         }
 
-        [HttpGet("{reportTypeId}")]
+        [HttpGet("{reportTypeId}/reportSections")]
         [OpenApiOperation("Get all report sections for a specific report type.", "")]
         public async Task<IActionResult> GetReportSectionsByReportType([FromRoute] Guid reportTypeId)
         {

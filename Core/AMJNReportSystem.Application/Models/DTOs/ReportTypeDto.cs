@@ -12,5 +12,11 @@ namespace AMJNReportSystem.Application.Models.DTOs
         public string Title { get; set; }
         public int Year { get; set; }
         public bool IsActive { get; set; }
+
+
+        public string CreatedBy { get; set; }
+        public DateTime CreatedOn { get; }
+        public string LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
     }
 }
