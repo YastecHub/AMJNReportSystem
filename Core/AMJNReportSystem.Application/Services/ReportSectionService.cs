@@ -259,7 +259,6 @@ namespace AMJNReportSystem.Application.Services
                     {
                         Status = false,
                         Message = "Report section not found.",
-                        Data = false
                     };
                 }
 
@@ -273,7 +272,6 @@ namespace AMJNReportSystem.Application.Services
                     {
                         Status = true,
                         Message = $"Report section activeness updated to {(state ? "active" : "inactive")}.",
-                        Data = true
                     };
                 }
                 else
@@ -283,7 +281,6 @@ namespace AMJNReportSystem.Application.Services
                     {
                         Status = false,
                         Message = "Failed to update report section activeness.",
-                        Data = false
                     };
                 }
             }
@@ -294,7 +291,6 @@ namespace AMJNReportSystem.Application.Services
                 {
                     Status = false,
                     Message = $"An error occurred: {ex.Message}",
-                    Data = false
                 };
             }
         }

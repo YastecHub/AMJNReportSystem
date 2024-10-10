@@ -103,7 +103,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
-        [HttpPut("update-reportsection-activeness{reportSectionId}")]
+        [HttpPut("update-reportsection-activeness/{reportSectionId}/{state}")]
         [OpenApiOperation("Update the activeness state of a report section.", "Sets the activeness state of a specific Report Section")]
         public async Task<IActionResult> SetReportSectionActiveness([FromRoute] Guid reportSectionId, [FromRoute] bool state)
         {
