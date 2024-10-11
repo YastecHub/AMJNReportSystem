@@ -35,14 +35,14 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPatch("update-submission-window")]
+        [HttpPatch("update-submission-window/{submissionWindowId}")]
 		[OpenApiOperation("update-submissionWindow", " update submission window.")]
-		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission, Guid updateId, [FromServices] IValidator<UpdateSubmissionWindowRequest> validator)
+		public async Task<IActionResult> UpdateSubmissionWindow([FromBody] UpdateSubmissionWindowRequest updateSubmission,[FromRoute] Guid submissionWindowId, [FromServices] IValidator<UpdateSubmissionWindowRequest> validator)
         {
 			var validationResult = await validator.ValidateAsync(updateSubmission);
 			if (!validationResult.IsValid)
 				return BadRequest(validationResult.ToDictionary());
-			var response = await _submissionWindowService.UpdateReportSubmissionWindow<SubmissionWindow>(id: updateId, request: updateSubmission);
+			var response = await _submissionWindowService.UpdateReportSubmissionWindow<SubmissionWindow>(id: submissionWindowId, request: updateSubmission);
             if (!response.Succeeded)
                 return Conflict(response);
             return Ok(response);
@@ -62,9 +62,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("get-submission-window/{id}")]
+        [HttpGet("get-submission-window/{submissionWindowId}")]
         [OpenApiOperation("Get submission window by id", "")]
-        public async Task<IActionResult> GetSubmissionWindowAsync(Guid submissionWindowId)
+        public async Task<IActionResult> GetSubmissionWindowAsync([FromRoute]Guid submissionWindowId)
         { 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -84,9 +84,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("get-all-active-submission-windows")] 
+        [HttpGet("get-all-active-submission-windows/{id}")] 
         [OpenApiOperation("Get all active submission windows.","")]
-        public async Task<IActionResult> GetActiveSubmissionWindows(Guid id)
+        public async Task<IActionResult> GetActiveSubmissionWindows([FromRoute]Guid id)
         {
             var response = await _submissionWindowService.GetActiveSubmissionWindows(id);
             return Ok(response);
