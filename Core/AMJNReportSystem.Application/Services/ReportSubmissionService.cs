@@ -88,7 +88,7 @@ namespace AMJNReportSystem.Application.Services
                 }
 
 
-                var reportSubmissionName = $"{reportType.Title}_{request.Year}_{request.Month}";
+                var reportSubmissionName = $"{reportType.Name}_{request.Year}_{request.Month}";
                 _logger.LogInformation($"Generated report submission name: {reportSubmissionName}");
 
                 var reportSubmissionCheckerExist = await _reportSubmissionRepository.Exist(reportSubmissionName);
@@ -145,7 +145,7 @@ namespace AMJNReportSystem.Application.Services
                     }
                 }
 
-                submission.SubmissionWindow.ReportType.Title = reportSubmissionName;
+                submission.SubmissionWindow.ReportType.Name = reportSubmissionName;
 
                 _logger.LogInformation($"Saving report submission to the database.");
                 await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);

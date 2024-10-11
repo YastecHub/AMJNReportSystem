@@ -27,10 +27,6 @@ namespace AMJNReportSystem.Application.Validation
            .NotEmpty().WithMessage("Year is required.")
            .InclusiveBetween(1000, 9999).WithMessage("Year must be a 4-digit number.");
 
-
-            RuleFor(x => x.ReportTag)
-                .IsInEnum().WithMessage("Invalid Report Tag provided.");
-
         }
     }
    

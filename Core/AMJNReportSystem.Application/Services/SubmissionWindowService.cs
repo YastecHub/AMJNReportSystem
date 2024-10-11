@@ -21,6 +21,13 @@ namespace AMJNReportSystem.Application.Services
         {
             if (request is null)
                 return await Result<bool>.FailAsync("Question can't be null.");
+
+            var reportTypeEsist = _submissionWindowRepository.GetReportTypeExist(request.ReportTypeId);
+            if (reportTypeEsist != null)
+            {
+                return await Result<bool>.FailAsync("Report Type already exist");
+            }
+
             var submissionWindow = new SubmissionWindow
             {
                 Id = Guid.NewGuid(),

@@ -16,27 +16,11 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(t => t.Title)
-                   .IsRequired()
-                   .HasMaxLength(200);
-
             builder.Property(t => t.Description)
                    .HasMaxLength(500);
 
             builder.Property(t => t.Year)
                    .IsRequired();
-
-            builder.Property(t => t.ReportTag)
-                   .IsRequired();
-
-
-            builder.Property(t => t.IsActive)
-                   .IsRequired()
-                   .HasDefaultValue(true);
-
-
-           
-
         }
     }
 }

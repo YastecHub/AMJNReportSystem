@@ -37,13 +37,21 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissionWindow; 
         }
 
-
+    
 
         public async Task<SubmissionWindow> GetSubmissionWindowsById(Guid id) 
         {
             var submissionWindow = await _context.SubmissionWindows
                 .Include(x => x.ReportType)
                 .SingleOrDefaultAsync(q => q.Id == id);
+            return submissionWindow;
+        }
+         
+        public async Task<SubmissionWindow> GetReportTypeExist(Guid reportTypeId)   
+        {
+            var submissionWindow = await _context.SubmissionWindows
+                .Include(x => x.ReportType)
+                .SingleOrDefaultAsync(q => q.ReportTypeId == reportTypeId);  
             return submissionWindow;
         }
          

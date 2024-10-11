@@ -10,5 +10,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<SubmissionWindow> GetSubmissionWindowsById(Guid id);
         Task<IList<SubmissionWindow>> GetAllSubmissionWindowsAsync(Expression<Func<SubmissionWindow, bool>> expression);
         Task<SubmissionWindow> GetActiveSubmissionWindows(Guid id);
+        Task<SubmissionWindow> GetReportTypeExist(Guid reportTypeId);
     }
 }
