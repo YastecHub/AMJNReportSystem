@@ -43,7 +43,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet("get-report-submission-by-id")]
+        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
         public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
         {
@@ -125,9 +125,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <summary>
         /// Get a specific report submission by reportType
         /// </summary>
-        /// <param name="reportTypeid"></param>
         /// <returns></returns>
-        [HttpGet("get-report-submission-by-reportType{reportTypeid:guid}")]
+        [HttpGet("get-report-submission-by-reportType/{reportTypeid}")]
         [OpenApiOperation("Get a specific report submission by reportType.", "")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

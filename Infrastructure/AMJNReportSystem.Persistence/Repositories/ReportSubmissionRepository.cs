@@ -30,7 +30,7 @@ namespace AMJNReportSystem.Persistence.Repositories
             return await _dbcontext.ReportSubmissions
                 .Include(x => x.SubmissionWindow)
                 .ThenInclude(x => x.ReportType)
-                .AnyAsync(x => x.SubmissionWindow.ReportType.Title == reportSubmissionName);
+                .AnyAsync(x => x.SubmissionWindow.ReportType.Name == reportSubmissionName);
         }
 
 
