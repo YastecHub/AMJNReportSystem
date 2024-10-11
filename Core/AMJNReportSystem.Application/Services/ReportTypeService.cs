@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Wrapper;
@@ -12,11 +13,13 @@ namespace AMJNReportSystem.Application.Services
     {
         private readonly IReportTypeRepository _reportTypeRepository;
         private readonly ILogger<ReportTypeService> _logger;
+        private readonly ICurrentUser _currentUser;
 
-        public ReportTypeService(IReportTypeRepository reportTypeRepository, ILogger<ReportTypeService> logger)
+        public ReportTypeService(IReportTypeRepository reportTypeRepository, ILogger<ReportTypeService> logger, ICurrentUser currentUser)
         {
             _reportTypeRepository = reportTypeRepository;
             _logger = logger;
+            _currentUser = currentUser;
         }
 
         public async Task<BaseResponse<Guid>> CreateReportType(CreateReportTypeRequest request)
@@ -50,10 +53,10 @@ namespace AMJNReportSystem.Application.Services
                 var reportType = new ReportType
                 {
                     Name = request.Name,
-                    Title = request.Title,
                     Description = request.Description,
-                    ReportTag = request.ReportTag,
                     Year = request.Year,
+                    CreatedBy = _currentUser.Name,
+                    CreatedOn = DateTime.Now
                 };
 
                 _logger.LogInformation("Creating new report type {ReportName}.", request.Name);
@@ -78,38 +81,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetQaidReportTypes()
-        {
-            _logger.LogInformation("Starting GetQaidReportTypes method.");
-            try
-            {
-                var reportTypes = await _reportTypeRepository.GetAllReportTypes();
-                var reportTypeDtos = reportTypes.Select(r => new ReportTypeDto
-                {
-                    Name = r.Name,
-                    IsActive = r.IsActive,
-                    Title = r.Title,
-                    Description = r.Description,
-                    Year = r.Year,
-                }).ToList();
-
-                _logger.LogInformation("Successfully retrieved {Count} report types.", reportTypeDtos.Count);
-                return new BaseResponse<IEnumerable<ReportTypeDto>>
-                {
-                    Data = reportTypeDtos,
-                    Status = true,
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while retrieving report types.");
-                return new BaseResponse<IEnumerable<ReportTypeDto>>
-                {
-                    Message = $"Failed to retrieve report types: {ex.Message}",
-                    Status = false
-                };
-            }
-        }
 
         public async Task<BaseResponse<ReportTypeDto>> GetReportType(Guid reportTypeId)
         {
@@ -130,11 +101,12 @@ namespace AMJNReportSystem.Application.Services
                 var reportTypeDto = new ReportTypeDto
                 {
                     Name = reportType.Name,
-                    Title = reportType.Title,
                     Description = reportType.Description,
                     Year = reportType.Year,
-                    Questions = reportType.Questions,
-                    ReportTag = reportType.ReportTag
+                    CreatedBy = _currentUser.Name,
+                    Id = reportType.Id,
+                    LastModifiedBy = reportType.LastModifiedBy,
+                    LastModifiedOn = reportType.LastModifiedOn
                 };
 
                 _logger.LogInformation("Successfully retrieved report type with Id {ReportTypeId}.", reportTypeId);
@@ -155,44 +127,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<BaseResponse<bool>> SetReportTypeActiveness(Guid reportTypeId, bool state)
-        {
-            _logger.LogInformation("Starting SetReportTypeActiveness method for Id {ReportTypeId} with state {State}.", reportTypeId, state);
-            try
-            {
-                var reportType = await _reportTypeRepository.GetReportTypeById(reportTypeId);
-                if (reportType == null)
-                {
-                    _logger.LogWarning("Report type with Id {ReportTypeId} not found.", reportTypeId);
-                    return new BaseResponse<bool>
-                    {
-                        Message = "Report type not found",
-                        Status = false
-                    };
-                }
-
-                reportType.IsActive = state;
-                await _reportTypeRepository.UpdateReportType(reportType);
-
-                _logger.LogInformation("Successfully updated activeness of report type .");
-                return new BaseResponse<bool>
-                {
-                    Data = true,
-                    Status = true,
-                    Message = "Report type activeness updated successfully"
-                };
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error occurred while updating report type activeness.");
-                return new BaseResponse<bool>
-                {
-                    Message = $"Failed to update report type activeness: {ex.Message}",
-                    Status = false
-                };
-            }
-        }
-
         public async Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetReportTypes()
         {
             _logger.LogInformation("Starting GetReportTypes method.");
@@ -203,11 +137,13 @@ namespace AMJNReportSystem.Application.Services
                 {
                     Id = r.Id,
                     Name = r.Name,
-                    Title = r.Title,
                     Description = r.Description,
                     Year = r.Year,
-                    ReportTag = r.ReportTag
-                }).ToList();
+                    CreatedBy = _currentUser.Name,
+                    LastModifiedBy = r.LastModifiedBy,
+                    LastModifiedOn = r.LastModifiedOn
+                }).OrderByDescending(x => x.CreatedOn)
+                  .ToList();
 
                 _logger.LogInformation("Successfully retrieved report types.");
                 return new BaseResponse<IEnumerable<ReportTypeDto>>
@@ -244,26 +180,20 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                var reportExists = await _reportTypeRepository.Exist(request.Name);
-
-                if (reportExists)
-                {
-                    _logger.LogWarning($"Report type with name {request.Name} already exists.");
-                    return new BaseResponse<bool>
-                    {
-                        Status = false,
-                        Message = "Report Name already exists"
-                    };
-                }
-
                 existingReportType.Description = request.Description;
                 existingReportType.Name = request.Name;
                 existingReportType.Year = request.Year;
-                existingReportType.Title = request.Title;
-                existingReportType.ReportTag = request.ReportTag;
 
                 await _reportTypeRepository.UpdateReportType(existingReportType);
 
+                var reportType = new ReportType
+                {
+                    CreatedBy = _currentUser.Name,
+                    LastModifiedBy = _currentUser.Name,
+                    LastModifiedOn = existingReportType.LastModifiedOn,
+                    Description = existingReportType.Description,
+                    Year = existingReportType.Year,
+                };
                 _logger.LogInformation("Successfully updated report type with Id {ReportTypeId}.", reportTypeId);
                 return new BaseResponse<bool>
                 {

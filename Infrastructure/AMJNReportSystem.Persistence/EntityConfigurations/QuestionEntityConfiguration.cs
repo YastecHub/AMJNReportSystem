@@ -8,7 +8,6 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 	{
 		public void Configure(EntityTypeBuilder<Question> builder)
 		{
-			builder.ToTable("Questions");
 
 			builder.HasKey(q => q.Id);
 
@@ -28,25 +27,13 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
 			builder.Property(q => q.IsActive)
 				   .IsRequired();
 
-			builder.Property(q => q.SectionId)
+			builder.Property(q => q.ReportSectionId)
 				   .IsRequired();
 
-			// Configure the relationship with ReportSection
-			builder.HasOne(q => q.ReportSection)
-				   .WithMany()  // Ensure to specify the collection property if it exists
-				   .HasForeignKey(q => q.SectionId)
-				   .OnDelete(DeleteBehavior.Restrict);  // Optional: change to `SetNull` or `NoAction` if necessary
-
-			// Configure the relationship with QuestionOption
-			builder.HasMany(q => q.Options)
-				   .WithOne(o => o.Question)
-				   .HasForeignKey(o => o.QuestionId)
-				   .OnDelete(DeleteBehavior.Cascade);
+			
 
 			// Define global query filter
 			builder.HasQueryFilter(q => !q.IsDeleted);
-
-			// Optional: Define additional query filters for related entities if needed
 		}
 	}
 

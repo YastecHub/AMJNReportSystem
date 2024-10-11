@@ -4,9 +4,10 @@
     {
         public Guid Id { get; set; }
         public string ReportSectionName { get; set; }
+        public string ReportTypeName { get; set; }
         public int ReportSectionValue { get; set; }
         public string Description { get; set; }
-        public Guid ReportTypeId { get; set; }
+        public Guid ReportTypeId { get; set; } 
         public bool IsActive { get; set; } = true;
     }
 }

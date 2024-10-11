@@ -23,7 +23,8 @@ namespace AMJNReportSystem.Application.Validation
             public NullableChildValidatorAdaptor(IValidator<TProperty> validator, Type validatorType)
                 : base(validator, validatorType)
             {
-            }
+            } 
+
 #pragma warning disable RCS1132
             public override bool IsValid(ValidationContext<T> context, TProperty? value)
             {
@@ -34,6 +35,7 @@ namespace AMJNReportSystem.Application.Validation
             {
                 return base.IsValidAsync(context, value!, cancellation);
             }
+
 #pragma warning restore RCS1132
         }
     }

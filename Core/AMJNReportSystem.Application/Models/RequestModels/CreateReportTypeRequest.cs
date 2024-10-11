@@ -7,9 +7,6 @@ namespace AMJNReportSystem.Application.Models.RequestModels
     {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public ReportTag ReportTag { get; set; }
-        public string Title { get; set; }
         public int Year { get; set; }
-    
     }
 }

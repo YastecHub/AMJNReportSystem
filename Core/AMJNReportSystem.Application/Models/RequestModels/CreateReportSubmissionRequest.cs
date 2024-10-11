@@ -13,7 +13,6 @@ namespace AMJNReportSystem.Application.Models.RequestModels
         public int Month { get; set; }
         public int Year { get; set; }
         public Guid ReportTypeId { get; set; }
-        public string JammatEmailAddress { get; set; }
         public ReportSubmissionStatus ReportSubmissionStatus { get; set; }
         public ReportTag ReportTag { get; set; }
         public string CreatedBy { get; set; }

@@ -13,7 +13,6 @@ namespace AMJNReportSystem.Persistence.EntityConfigurations
 	{
 		public void Configure(EntityTypeBuilder<SubmissionWindow> builder)
 		{
-			builder.ToTable("SubmissionWindows");
 
 			builder.HasKey(sw => sw.Id);
 
@@ -32,13 +31,6 @@ namespace AMJNReportSystem.Persistence.EntityConfigurations
 			builder.Property(sw => sw.IsLocked)
 				   .IsRequired();
 			builder.HasQueryFilter(rs => !rs.IsDeleted);
-
-			builder.HasOne(sw => sw.ReportType)
-				   .WithMany()
-				   .HasForeignKey(sw => sw.ReportTypeId)
-				   .OnDelete(DeleteBehavior.Restrict);
-
-			builder.HasQueryFilter(sw => !sw.IsDeleted);
 		}
 	}
 

@@ -13,26 +13,8 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.Property(e => e.JamaatId)
                 .IsRequired();
 
-            builder.Property(e => e.ReportTypeId)
-                .IsRequired();
-
             builder.Property(e => e.JammatEmailAddress)
                 .IsRequired();
-
-            builder.HasOne(e => e.ReportType)
-                .WithMany()
-                .HasForeignKey(e => e.ReportTypeId)
-                .OnDelete(DeleteBehavior.Restrict); 
-
-            builder.HasOne(e => e.SubmissionWindow)
-                .WithMany()
-                .HasForeignKey(e => e.SubmissionWindowId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasMany(e => e.Answers)
-                .WithOne()
-                .HasForeignKey("ReportSubmissionId")
-                .OnDelete(DeleteBehavior.Restrict); 
 
             builder.Property(e => e.ReportSubmissionStatus)
                 .IsRequired();
