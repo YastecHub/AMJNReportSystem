@@ -19,29 +19,37 @@ namespace AMJNReportSystem.Application.Services
         }
         public async Task<Result<bool>> CreateReportSubmissionWindow<T>(CreateSubmissionWindowRequest request)
         {
-            if (request is null)
-                return await Result<bool>.FailAsync("Question can't be null.");
-
-            var reportTypeEsist = _submissionWindowRepository.GetReportTypeExist(request.ReportTypeId);
-            if (reportTypeEsist != null)
+            try
             {
-                return await Result<bool>.FailAsync("Report Type already exist");
+                if (request is null)
+                    return await Result<bool>.FailAsync("Question can't be null.");
+
+                var reportTypeExist = await _submissionWindowRepository.GetReportTypeExist(request.ReportTypeId);
+                if (reportTypeExist)
+                {
+                    return await Result<bool>.FailAsync("Report Type already exists");
+                }
+
+
+                var submissionWindow = new SubmissionWindow
+                {
+                    Id = Guid.NewGuid(),
+                    EndingDate = request.EndingDate,
+                    StartingDate = request.StartingDate,
+                    IsLocked = false,
+                    IsDeleted = false,
+                    Month = request.Month,
+                    Year = request.Year,
+                    ReportTypeId = request.ReportTypeId
+                };
+                var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
+
+                return await Result<bool>.SuccessAsync(true, "Submission Window created successfully");
             }
-
-            var submissionWindow = new SubmissionWindow
+            catch (Exception ex)
             {
-                Id = Guid.NewGuid(),
-                EndingDate = request.EndingDate,
-                StartingDate = request.StartingDate,
-                IsLocked = false,
-                IsDeleted = false,
-                Month = request.Month,
-                Year = request.Year,
-                ReportTypeId = request.ReportTypeId
-            };
-            var result = await _submissionWindowRepository.AddSubmissionWindow(submissionWindow);
-
-            return await Result<bool>.SuccessAsync(true, "Submission Window created successfully");
+                return await Result<bool>.FailAsync("An error occured");
+            }
 
         }
 
