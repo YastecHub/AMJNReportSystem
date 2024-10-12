@@ -52,6 +52,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportType = new ReportType
                 {
+                    Id = Guid.NewGuid(),
                     Name = request.Name,
                     Description = request.Description,
                     Year = request.Year,
