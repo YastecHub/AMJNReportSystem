@@ -47,7 +47,7 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissionWindow;
         }
          
-        public async Task<SubmissionWindow> GetReportTypeExist(Guid reportTypeId)   
+        public async Task<SubmissionWindow?> GetReportTypeExist(Guid reportTypeId)   
         {
             var submissionWindow = await _context.SubmissionWindows
                 .Include(x => x.ReportType)
