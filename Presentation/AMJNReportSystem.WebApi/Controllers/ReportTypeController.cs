@@ -1,5 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.RequestModels;
+using AMJNReportSystem.Application.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class ReportTypeController : BaseSecuredController
@@ -66,5 +67,22 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
+
+        [HttpDelete("delete-report-type/{reportSectionId}")]
+        [OpenApiOperation("Delete a report type.", "Deletes a specific Report type")]
+        public async Task<IActionResult> DeleteReportType([FromRoute] Guid reportSectionId)
+        {
+            if (reportSectionId == Guid.Empty)
+                return BadRequest(new { message = "ID cannot be empty" });
+
+            var result = await _reportTypeService.DeleteReportType(reportSectionId);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { message = result.Messages });
+            }
+
+            return BadRequest(new { message = result.Messages });
+        }
     }
 }

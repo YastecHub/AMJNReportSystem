@@ -36,6 +36,7 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
+
                 var reportTypeExists = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
                 if (reportTypeExists == null)
                 {
@@ -59,7 +60,6 @@ namespace AMJNReportSystem.Application.Services
                 var id = Guid.NewGuid();
                 var reportSection = new ReportSection
                 {
-                    Id = id,
                     ReportSectionName = request.ReportSectionName,
                     ReportSectionValue = request.ReportSectionValue,
                     Description = request.Description,

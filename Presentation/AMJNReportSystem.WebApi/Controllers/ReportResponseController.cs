@@ -7,7 +7,7 @@ using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize]
     public class ReportResponseController : ControllerBase

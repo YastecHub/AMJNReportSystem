@@ -50,19 +50,16 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
 
       
-        public async Task<ReportType> GetReportTypeById(Guid id)
+        public async Task<ReportType?> GetReportTypeById(Guid id)
         {
 
             return await _context.ReportTypes.FindAsync(id);
         }
 
-        public async Task<ReportType> UpdateReportType(ReportType reportType)
+        public async Task<bool> UpdateReportType(ReportType reportType)
         {
             var report = _context.ReportTypes.Update(reportType);
-            await _context.SaveChangesAsync();
-            return reportType;
+            return await _context.SaveChangesAsync() > 0;
         }
-
-
     }
 }

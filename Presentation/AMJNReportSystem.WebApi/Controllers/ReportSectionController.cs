@@ -52,7 +52,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
-        [HttpPut("update-report-section{reportSectionId}")]
+        [HttpPut("update-report-section/{reportSectionId}")]
         [OpenApiOperation("Update the details of a report section.", "Updates an existing Report Section")]
         public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model, [FromServices] IValidator<UpdateReportSectionRequest> validator)
         {
@@ -72,7 +72,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
 
-        [HttpGet("get-report-section-by-id{reportSectionId}")]
+        [HttpGet("get-report-section-by-id/{reportSectionId}")]
         [OpenApiOperation("Get a report section by ID.", "Retrieves a specific Report Section by its ID")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<ReportSectionDto>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<ReportSectionDto>))]
@@ -86,7 +86,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return NotFound(result);
         }
 
-        [HttpGet("get-report-section-by-report-type{reportTypeId}")]
+        [HttpGet("get-report-section-by-report-type/{reportTypeId}")]
         [OpenApiOperation("Get all report sections for a specific report type.", "")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<IEnumerable<ReportSectionDto>>))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<IEnumerable<ReportSectionDto>>))]
@@ -119,7 +119,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             return BadRequest(new { message = result.Message });
         }
 
-        [HttpDelete("delete-report-section{reportSectionId}")]
+        [HttpDelete("delete-report-section/{reportSectionId}")]
         [OpenApiOperation("Delete a report section.", "Deletes a specific Report Section")]
         public async Task<IActionResult> DeleteReportSection([FromRoute] Guid reportSectionId)
         {

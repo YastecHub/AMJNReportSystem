@@ -13,7 +13,6 @@ namespace AMJNReportSystem.Domain.EntityConfigurations
             builder.HasKey(t => t.Id);
 
             builder.HasIndex(u => u.ReportSectionName).IsUnique();
-            builder.HasIndex(u => u.ReportSectionValue).IsUnique();
 
 
             builder.Property(t => t.ReportSectionName)

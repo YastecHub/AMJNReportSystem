@@ -134,7 +134,7 @@ namespace AMJNReportSystem.Application.Services
             try
             {
                 var report = await _reportTypeRepository.GetAllReportTypes();
-                var reportTypeDtos = report.Select(r => new ReportTypeDto
+                var reportTypeDtos = report.Where(x => !x.IsDeleted).Select(r => new ReportTypeDto
                 {
                     Id = r.Id,
                     Name = r.Name,
@@ -211,6 +211,41 @@ namespace AMJNReportSystem.Application.Services
                     Message = $"Failed to update report type: {ex.Message}",
                     Status = false
                 };
+            }
+        }
+
+
+
+        public async Task<Result<bool>> DeleteReportType(Guid reportTypeId)
+        {
+            try
+            {
+                var reportSection = await _reportTypeRepository.GetReportTypeById(reportTypeId);
+                if (reportSection == null)
+                {
+                    _logger.LogWarning($"Report section with Id {reportTypeId} not found.");
+                    return Result<bool>.Fail("Report section not found.");
+                }
+              
+                reportSection.IsDeleted = true;
+
+                var result = await _reportTypeRepository.UpdateReportType(reportSection);
+
+                if (result)
+                {
+                    _logger.LogInformation($"Report section with Id {reportTypeId} deleted successfully.");
+                    return Result<bool>.Success(true, "Report section deleted successfully.");
+                }
+                else
+                {
+                    _logger.LogError($"Failed to delete report section with Id {reportTypeId}.");
+                    return Result<bool>.Fail("Failed to delete report section.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting report section with Id {reportSectionId}.", reportTypeId);
+                return Result<bool>.Fail($"An error occurred: {ex.Message}");
             }
         }
     }
