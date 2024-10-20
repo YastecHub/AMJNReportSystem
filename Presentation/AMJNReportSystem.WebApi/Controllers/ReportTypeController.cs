@@ -70,7 +70,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [HttpDelete("delete-report-type/{reportSectionId}")]
         [OpenApiOperation("Delete a report type.", "Deletes a specific Report type")]
-        public async Task<IActionResult> DeleteReportSection([FromRoute] Guid reportSectionId)
+        public async Task<IActionResult> DeleteReportType([FromRoute] Guid reportSectionId)
         {
             if (reportSectionId == Guid.Empty)
                 return BadRequest(new { message = "ID cannot be empty" });

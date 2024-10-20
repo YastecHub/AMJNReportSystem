@@ -32,9 +32,5 @@ namespace AMJNReportSystem.Application.Abstractions.Services
 
 
         Task<Result<bool>> DeleteReportType(Guid reportTypeId);
-
-
-
-
     }
 }
