@@ -51,7 +51,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpDelete("delete-question")]
+		[HttpDelete("delete-question/{id}")]
 		[OpenApiOperation("delete-question", "Delet question")]
 		public async Task<IActionResult> DeleteQuestion([FromRoute]Guid id)
 		{
