@@ -29,7 +29,11 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// Method that get all report types
         /// </summary>
         Task<BaseResponse<IEnumerable<ReportTypeDto>>> GetReportTypes();
-      
+
+
+        Task<Result<bool>> DeleteReportType(Guid reportTypeId);
+
+
 
 
     }
