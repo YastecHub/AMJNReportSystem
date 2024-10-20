@@ -37,9 +37,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status409Conflict)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpPut("update-question")]
+		[HttpPut("update-question/{id}")]
 		[OpenApiOperation("update-question", "")]
-		public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionRequest model ,Guid id, [FromServices] IValidator<UpdateQuestionRequest> validator)
+		public async Task<IActionResult> UpdateQuestion([FromBody] UpdateQuestionRequest model ,[FromRoute] Guid id, [FromServices] IValidator<UpdateQuestionRequest> validator)
 		{
 			var validationResult = await validator.ValidateAsync(model);
 			if (!validationResult.IsValid)
@@ -63,7 +63,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)] 
-		[HttpGet("{id}")]
+		[HttpGet("get-question-by-id/{id}")]
 		[OpenApiOperation("get-question-by-id", "Get a specific question by id.")]
 		public async Task<IActionResult> GetQuestion(Guid id)
 		{
@@ -83,9 +83,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 		}
 
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpGet("get-question-by-section-id")]
+		[HttpGet("get-question-by-section-id/{sectionId}")]
 		[OpenApiOperation("get-question-by-section-id", "Get list of all question by section")]
-		public async Task<IActionResult> GetQuestionsBySection(Guid sectionId)
+		public async Task<IActionResult> GetQuestionsBySection([FromRoute]Guid sectionId)
 		{
 			var questionSection = await _questionService.GetQuestionsBySection(sectionId);
 			return Ok(questionSection);
@@ -93,9 +93,9 @@ namespace AMJNReportSystem.WebApi.Controllers
 
 
 		[ProducesResponseType(StatusCodes.Status200OK)]
-		[HttpGet("get-question-options-by-question-id")]
+		[HttpGet("get-question-options-by-question-id/{questionId}")]
 		[OpenApiOperation("get-question-options-by-question-id", "Get list of all question option")]
-		public async Task<IActionResult> GetQuestionOptions(Guid questionId)
+		public async Task<IActionResult> GetQuestionOptions([FromRoute] Guid questionId)
 		{
 			var questionOption = await _questionService.GetQuestionOptions(questionId);
 			return Ok(questionOption);
