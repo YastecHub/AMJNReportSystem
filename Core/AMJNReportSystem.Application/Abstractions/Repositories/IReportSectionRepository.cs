@@ -14,5 +14,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<ReportSection> GetReportSection(Expression<Func<ReportSection, bool>> expression);
         Task<bool> ReportTypeExistsAsync(Guid reportTypeId);
         List<ReportSection> GetAllReportSection();
+        Task<bool> ReportSectionExist(string reportSectionName, int reportSectionValue);
     }
 }
