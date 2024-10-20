@@ -47,17 +47,30 @@ namespace AMJNReportSystem.Application.Services
                         Message = $"Report type Id {request.ReportTypeId} not found."
                     };
                 }
-                var reportSectionExist = await _reportSectionRepository.ReportSectionExist(request.ReportSectionName, request.ReportSectionValue);
-                if (reportSectionExist)
+                _logger.LogInformation("Checking if report section value {ReportSectionValue} exists.", request.ReportSectionValue);
+                var sectionValueExists = await _reportSectionRepository.ExistByValueAsync(request.ReportTypeId, request.ReportSectionValue);
+
+                if (sectionValueExists)
                 {
-                    _logger.LogWarning($"Report section with name '{request.ReportSectionName}' and value '{request.ReportSectionValue}' already exists.");
+                    _logger.LogWarning("Report section value {ReportSectionValue} already exists.", request.ReportSectionValue);
                     return new BaseResponse<ReportSectionDto>
                     {
                         Status = false,
-                        Message = $"Report section with name '{request.ReportSectionName}' and value '{request.ReportSectionValue}' already exists."
+                        Message = "Report Section Value already exists"
                     };
                 }
-                var id = Guid.NewGuid();
+
+                var reportSectionExist = await _reportSectionRepository.ReportSectionExist(request.ReportSectionName);
+                if (reportSectionExist)
+                {
+                    _logger.LogWarning($"Report section with name '{request.ReportSectionName} already exists.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = $"Report section with name {request.ReportSectionName} already exists."
+                    };
+                }
+               
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.ReportSectionName,

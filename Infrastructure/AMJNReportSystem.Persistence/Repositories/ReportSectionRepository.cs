@@ -61,10 +61,10 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
 
 
-        public async Task<bool> ReportSectionExist(string reportSectionName, int reportSectionValue)
+        public async Task<bool> ReportSectionExist(string reportSectionName)
         {
             return await _context.ReportSections
-            .AnyAsync(rt => rt.ReportSectionName == reportSectionName && rt.ReportSectionValue == reportSectionValue);
+            .AnyAsync(rt => rt.ReportSectionName == reportSectionName);
         }
 
 
