@@ -13,5 +13,7 @@ namespace AMJNReportSystem.Application.Models.DTOs
         public DateTime CreatedOn { get; }
         public string LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public bool SubmissionWindowIsActive { get; set; }
+        public Guid? SubmissionWindowId { get; set; }
     }
 }

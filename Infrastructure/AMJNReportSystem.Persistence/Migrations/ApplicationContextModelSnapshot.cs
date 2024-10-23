@@ -73,7 +73,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportSectionId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.QuestionOption", b =>
@@ -114,7 +114,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("QuestionOptions");
+                    b.ToTable("QuestionOptions", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.RefreshToken", b =>
@@ -139,7 +139,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportResponse", b =>
@@ -195,7 +195,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportSubmissionId");
 
-                    b.ToTable("ReportResponses");
+                    b.ToTable("ReportResponses", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSection", b =>
@@ -252,7 +252,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportTypeId");
 
-                    b.ToTable("ReportSections");
+                    b.ToTable("ReportSections", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSubmission", b =>
@@ -305,7 +305,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("SubmissionWindowId");
 
-                    b.ToTable("ReportSubmissions");
+                    b.ToTable("ReportSubmissions", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportType", b =>
@@ -350,7 +350,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReportTypes");
+                    b.ToTable("ReportTypes", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.SubmissionWindow", b =>
@@ -402,7 +402,7 @@ namespace AMJNReportSystem.Persistence.Migrations
 
                     b.HasIndex("ReportTypeId");
 
-                    b.ToTable("SubmissionWindows");
+                    b.ToTable("SubmissionWindows", (string)null);
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.Question", b =>

@@ -43,6 +43,7 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<IList<ReportType>> GetQaidReports(string reportTypeName)
         {
             var reports = await _context.ReportTypes
+                .Include(f => f.SubmissionWindows)
                 .Where(r => r.Name == reportTypeName)
                 .ToListAsync();
 

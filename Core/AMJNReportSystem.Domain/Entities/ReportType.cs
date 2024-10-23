@@ -10,5 +10,6 @@ namespace AMJNReportSystem.Domain.Entities
         public string Description { get; set; }
         public int Year { get; set; }
         public ICollection<ReportSection> ReportSections { get; set; } = new HashSet<ReportSection>();
+        public ICollection<SubmissionWindow> SubmissionWindows { get; set; } = new HashSet<SubmissionWindow>();
     }
 }

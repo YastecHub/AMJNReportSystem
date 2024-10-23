@@ -133,6 +133,7 @@ namespace AMJNReportSystem.Application.Services
             _logger.LogInformation("Starting GetReportTypes method.");
             try
             {
+                var currentDate = DateTime.Now;
                 var report = await _reportTypeRepository.GetAllReportTypes();
                 var reportTypeDtos = report.Where(x => !x.IsDeleted).Select(r => new ReportTypeDto
                 {
@@ -142,7 +143,9 @@ namespace AMJNReportSystem.Application.Services
                     Year = r.Year,
                     CreatedBy = _currentUser.Name,
                     LastModifiedBy = r.LastModifiedBy,
-                    LastModifiedOn = r.LastModifiedOn
+                    LastModifiedOn = r.LastModifiedOn,
+                    SubmissionWindowId = r.SubmissionWindows.FirstOrDefault(x => x.EndingDate <= currentDate).Id,
+                    SubmissionWindowIsActive = r.SubmissionWindows.Any(x => x.EndingDate <= currentDate),
                 }).OrderByDescending(x => x.CreatedOn)
                   .ToList();
 
@@ -226,7 +229,7 @@ namespace AMJNReportSystem.Application.Services
                     _logger.LogWarning($"Report section with Id {reportTypeId} not found.");
                     return Result<bool>.Fail("Report section not found.");
                 }
-              
+
                 reportSection.IsDeleted = true;
 
                 var result = await _reportTypeRepository.UpdateReportType(reportSection);
