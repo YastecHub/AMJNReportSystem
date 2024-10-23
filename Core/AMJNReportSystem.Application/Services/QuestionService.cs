@@ -237,9 +237,10 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = question.IsActive,
                 QuestionType = question.QuestionType,
                 ResponseType = question.ResponseType,
-                Options = question.Options.Select(o => new QuestionOption
+                Options = question?.Options?.Select(o => new ReportQuestionOptionDto
                 {
-                    Text = o.Text
+                    OptionText = o.Text,
+                    Id = o.Id
                 }).ToList()
             };
 
@@ -263,9 +264,10 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
                 ResponseType = q.ResponseType,
-                Options = q.Options.Select(o => new QuestionOption
+                Options = q?.Options?.Select(o => new ReportQuestionOptionDto
                 {
-                    Text = o.Text
+                    OptionText = o.Text,
+                    Id = o.Id
                 }).ToList()
             }).ToList();
 
@@ -288,9 +290,12 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
                 ResponseType = q.ResponseType,
-                Options = q.Options.Select(o => new QuestionOption
+                QuestionTypeText = q.QuestionType.ToString(),
+                ResponseTypeText = q.ResponseType.ToString(),
+                Options = q?.Options?.Select(o => new ReportQuestionOptionDto
                 {
-                    Text = o.Text
+                    OptionText = o.Text,
+                    Id = o.Id,
                 }).ToList()
             }).ToList();
 
@@ -348,9 +353,10 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
                 ResponseType = q.ResponseType,
-                Options = q.Options.Select(o => new QuestionOption
+                Options = q?.Options?.Select(o => new ReportQuestionOptionDto
                 {
-                    Text = o.Text
+                    OptionText = o.Text,
+                    Id = o.Id
                 }).ToList()
             }).ToList();
 
@@ -378,7 +384,7 @@ namespace AMJNReportSystem.Application.Services
 
             return new BaseResponse<List<ReportTypeSectionQuestionSlim>> { Data = new List<ReportTypeSectionQuestionSlim>(), Message = "Retrieved Failed", Status = false };
         }
-       
+
 
     }
 }

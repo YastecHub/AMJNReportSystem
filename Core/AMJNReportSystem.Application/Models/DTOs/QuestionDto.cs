@@ -14,7 +14,9 @@ namespace AMJNReportSystem.Application.Models.DTOs
 		public bool IsActive { get; set; }
 		public QuestionType QuestionType { get; set; }
 		public ResponseType ResponseType { get; set; }
-		public List<QuestionOption>? Options { get; set; } = new List<QuestionOption>();
+		public string? QuestionTypeText { get; set; }
+		public string? ResponseTypeText { get; set; }
+		public List<ReportQuestionOptionDto>? Options { get; set; } = new List<ReportQuestionOptionDto>();
 	}
 
     public class ReportTypeQuestionDto
