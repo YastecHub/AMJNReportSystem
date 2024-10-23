@@ -13,5 +13,10 @@ public interface IQuestionService
 	Task<Result<IList<QuestionDto>>> GetQuestionsBySection(Guid sectionId);
 	Task<Result<IList<QuestionOptionDto>>> GetQuestionOptions(Guid questionId);
 	Task<Result<IList<QuestionDto>>> GetQuestions();
-	
+	Task<Result<IList<QuestionDto>>> GetQuestionsByReportTypeId(Guid reportTypeId);
+
+    Task<BaseResponse<List<ReportTypeSectionQuestion>>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId);
+    Task<BaseResponse<List<ReportTypeSectionQuestionSlim>>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId);
+
+
 }

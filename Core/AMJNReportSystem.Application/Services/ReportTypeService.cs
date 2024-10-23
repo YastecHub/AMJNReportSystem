@@ -144,7 +144,9 @@ namespace AMJNReportSystem.Application.Services
                     CreatedBy = _currentUser.Name,
                     LastModifiedBy = r.LastModifiedBy,
                     LastModifiedOn = r.LastModifiedOn,
-                    SubmissionWindowId = r.SubmissionWindows.FirstOrDefault(x => x.EndingDate <= currentDate).Id,
+                    SubmissionWindowId = r.SubmissionWindows.Count() > 0 ?
+                    r.SubmissionWindows.Where(x => x.EndingDate <= currentDate).Select(x => x.Id)
+                    .FirstOrDefault() : null,
                     SubmissionWindowIsActive = r.SubmissionWindows.Any(x => x.EndingDate <= currentDate),
                 }).OrderByDescending(x => x.CreatedOn)
                   .ToList();

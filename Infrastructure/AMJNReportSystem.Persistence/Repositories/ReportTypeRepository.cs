@@ -35,6 +35,7 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<IList<ReportType>> GetAllReportTypes()
         {
             var reportTypes = await _context.ReportTypes
+                 .Include(f => f.SubmissionWindows)
                 .Where(f => f.Id == f.Id)
                 .ToListAsync();
             return reportTypes;

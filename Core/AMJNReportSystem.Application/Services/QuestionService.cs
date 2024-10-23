@@ -288,10 +288,10 @@ namespace AMJNReportSystem.Application.Services
                 IsActive = q.IsActive,
                 QuestionType = q.QuestionType,
                 ResponseType = q.ResponseType,
-                 Options = q.Options.Select(o => new QuestionOption
-                 {
-                     Text = o.Text
-                 }).ToList()
+                Options = q.Options.Select(o => new QuestionOption
+                {
+                    Text = o.Text
+                }).ToList()
             }).ToList();
 
             _logger.LogInformation($"Questions retrieved successfully for section ID: {sectionId}");
@@ -329,6 +329,56 @@ namespace AMJNReportSystem.Application.Services
                 return Result<IList<QuestionOptionDto>>.Fail($"An error occurred: {ex.Message}");
             }
         }
+
+
+
+        public async Task<Result<IList<QuestionDto>>> GetQuestionsByReportTypeId(Guid reportTypeId)
+        {
+            _logger.LogInformation("Fetching all active questions...");
+
+            var questions = await _questionRepository.GetQuestions(q => q.IsActive && !q.IsDeleted);
+
+            var questionDtos = questions.Select(q => new QuestionDto
+            {
+                Id = q.Id,
+                ReportSectionId = q.ReportSectionId,
+                SectionName = q.ReportSection.ReportSectionName,
+                QuestionName = q.QuestionName,
+                IsRequired = q.IsRequired,
+                IsActive = q.IsActive,
+                QuestionType = q.QuestionType,
+                ResponseType = q.ResponseType,
+                Options = q.Options.Select(o => new QuestionOption
+                {
+                    Text = o.Text
+                }).ToList()
+            }).ToList();
+
+            _logger.LogInformation("Questions retrieved successfully.");
+            return Result<IList<QuestionDto>>.Success(questionDtos, "Questions retrieved successfully");
+        }
+
+
+        public async Task<BaseResponse<List<ReportTypeSectionQuestion>>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId)
+        {
+            var data = await _questionRepository.GetQuestionReportSectionByReportTypeId(reportTypeId);
+
+            if (data.Count > 0)
+                return new BaseResponse<List<ReportTypeSectionQuestion>> { Data = data, Message = "Retrieved Succesful", Status = true };
+
+            return new BaseResponse<List<ReportTypeSectionQuestion>> { Data = new List<ReportTypeSectionQuestion>(), Message = "Retrieved Failed", Status = false };
+        }
+
+        public async Task<BaseResponse<List<ReportTypeSectionQuestionSlim>>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId)
+        {
+            var data = await _questionRepository.GetQuestionReportSectionByReportTypeIdSlim(reportTypeId);
+
+            if (data.Count > 0)
+                return new BaseResponse<List<ReportTypeSectionQuestionSlim>> { Data = data, Message = "Retrieved Succesful", Status = true };
+
+            return new BaseResponse<List<ReportTypeSectionQuestionSlim>> { Data = new List<ReportTypeSectionQuestionSlim>(), Message = "Retrieved Failed", Status = false };
+        }
+       
 
     }
 }
