@@ -47,9 +47,8 @@ namespace AMJNReportSystem.Application.Services
                         Message = $"Report type Id {request.ReportTypeId} not found."
                     };
                 }
-
                 _logger.LogInformation("Checking if report section value {ReportSectionValue} exists.", request.ReportSectionValue);
-                var sectionValueExists = await _reportSectionRepository.ExistByValueAsync(request.ReportTypeId,request.ReportSectionValue);
+                var sectionValueExists = await _reportSectionRepository.ExistByValueAsync(request.ReportTypeId, request.ReportSectionValue);
 
                 if (sectionValueExists)
                 {
@@ -61,7 +60,17 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-
+                var reportSectionExist = await _reportSectionRepository.ReportSectionExist(request.ReportSectionName);
+                if (reportSectionExist)
+                {
+                    _logger.LogWarning($"Report section with name '{request.ReportSectionName} already exists.");
+                    return new BaseResponse<ReportSectionDto>
+                    {
+                        Status = false,
+                        Message = $"Report section with name {request.ReportSectionName} already exists."
+                    };
+                }
+               
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.ReportSectionName,
