@@ -1,7 +1,11 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Models.RequestModels.Reports;
+using AMJNReportSystem.Application.Models.ResponseModels;
+using AMJNReportSystem.Application.Wrapper;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -24,15 +28,14 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost("create-new-report-submission")]
         [OpenApiOperation("Create new report submission.", "")]
         public async Task<IActionResult> CreateReportSubmission([FromBody] CreateReportSubmissionRequest request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var reportSubmission = await _reportSubmissionService.CreateReporteubmissionAsync(request);
+            var reportSubmission = await _reportSubmissionService.CreateReportSubmissionAsync(request);
             return !reportSubmission.Status ? Conflict(reportSubmission) : Ok(reportSubmission);
         }
 
@@ -41,8 +44,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="reportTypeSubmissionId"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
         public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
@@ -59,7 +62,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost("get-all-report-type-submissions")]
         [OpenApiOperation("Get list of all report submission.", "")]
         public async Task<IActionResult> GeAlltReportTypeSubmissions(PaginationFilter filter)
@@ -73,7 +77,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// This endpoint returns all report submissions, bypassing any pagination filters.
         /// </summary>
         /// <returns>Returns a list of all report submissions.</returns>
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-all-report-type-submissions")]
         [OpenApiOperation("Get list of all report submissions without pagination.", "")]
         public async Task<IActionResult> GetAllReportTypeSubmissions()
@@ -89,8 +94,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <param name="Id"></param>
         /// <param name="reportSubmission"></param>
         /// <returns></returns>
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
         [HttpPut("update-report-submission{id}")]
         [OpenApiOperation("update a specific report submission.", "")]
         public async Task<IActionResult> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
@@ -105,6 +110,9 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// </summary>
         /// <param name="reportSubmissionId"></param>
         /// <returns></returns>
+        /// [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<Result<bool>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<Result<bool>>), StatusCodes.Status500InternalServerError)]
         [HttpDelete("delete-report-submission{reportSubmissionId}")]
         [OpenApiOperation("Delete a report submission.", "Deletes a specific Report Submission")]
         public async Task<IActionResult> DeleteReportSubmission([FromRoute] Guid reportSubmissionId)
@@ -126,10 +134,11 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// Get a specific report submission by reportType
         /// </summary>
         /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-submission-by-reportType/{reportTypeid}")]
         [OpenApiOperation("Get a specific report submission by reportType.", "")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetReportTypeSubmissionByRportType([FromRoute] Guid reportTypeid)
         {
             if (reportTypeid == Guid.Empty) return BadRequest("id cannot be empty");
@@ -141,11 +150,11 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// Get all report submissions by  circuit ID
         /// </summary>
         /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-submission-by-circuit-id")]
         [OpenApiOperation("Get all report submissions by  circuit ID.", "")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetReportSubmissionsByCircuitId()
         {
             var response = await _reportSubmissionService.GetReportSubmissionsByCircuitIdAsync();
@@ -157,11 +166,11 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// Get all report submissions by  jammat ID
         /// </summary>
         /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-submission-by-jammat-id")]
-        [OpenApiOperation("Get all report submissions by  jammat ID." , "")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [OpenApiOperation("Get all report submissions by  jammat ID.", "")]
+        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetReportSubmissionsByJammatId()
         {
             var response = await _reportSubmissionService.GetReportSubmissionsByJamaatIdAsync();

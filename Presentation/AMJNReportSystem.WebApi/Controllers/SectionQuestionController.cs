@@ -1,6 +1,7 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
-using AMJNReportSystem.Application.Services;
+using AMJNReportSystem.Application.Wrapper;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
@@ -17,9 +18,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             _sectionQuestionService = sectionQuestionService;
         }
 
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<QuestionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<QuestionDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost]
         public async Task<IActionResult> AddQuestion([FromBody] ReportQuestionRequest request)
         {
@@ -29,7 +29,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(reportQuestion);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<QuestionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<QuestionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("GetQuestion/{questionId}")]
         public async Task<IActionResult> GetQuestion(Guid questionId)
         {
@@ -38,8 +39,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(question);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<QuestionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<QuestionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("GetSectionQuestionsBySectionId/{sectionId}")]
         public async Task<IActionResult> GetSectionQuestionsBySectionId(Guid sectionId)
         {
@@ -48,8 +49,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<ReportQuestionOptionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<ReportQuestionOptionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("{reportTypeId}/questions")]
         public async Task<IActionResult> GetReportTypeQuestions(Guid reportTypeId)
         {
@@ -58,8 +59,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpPatch("UpdateQuestionPoint/{questionId}")]
         public async Task<IActionResult> UpdateQuestionPoint([FromRoute] Guid questionId, [FromQuery] double point)
         {
@@ -68,8 +69,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpPatch("UpdateQuestionText/{questionId}")]
         public async Task<IActionResult> UpdateQuestionText([FromRoute] Guid questionId, [FromQuery] string text)
         {
@@ -78,8 +79,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpPut("{questionId}/{state}")]
         [OpenApiOperation("update a question Activeness State.", "")]
         public async Task<IActionResult> SetReportTypeState([FromRoute] Guid questionId, bool state)

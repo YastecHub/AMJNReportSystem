@@ -1,6 +1,8 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Services;
+using AMJNReportSystem.Application.Wrapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,9 +22,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             _reportTypeService = reportTypeService;
         }
 
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost("create-report-type")]
         [OpenApiOperation("Create new report type.", "")]
         public async Task<IActionResult> CreateReportType([FromBody] CreateReportTypeRequest request, [FromServices] IValidator<CreateReportTypeRequest> validator)
@@ -35,8 +36,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-type{id}")]
         [OpenApiOperation("Get a specific report type by id.", "")]
         public async Task<IActionResult> GetReportType(Guid id)
@@ -46,7 +47,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-types")]
         [OpenApiOperation("Get list of all report types.", "")]
         public async Task<IActionResult> GetReportTypes()
@@ -55,9 +57,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportTypeDto>), StatusCodes.Status500InternalServerError)]
         [HttpPut("update-report-type{id}")]
         [OpenApiOperation("update a specific report type.", "")]
         public async Task<IActionResult> UpdateReportType(Guid id, [FromBody] UpdateReportTypeRequest request)
@@ -67,7 +68,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpDelete("delete-report-type/{reportSectionId}")]
         [OpenApiOperation("Delete a report type.", "Deletes a specific Report type")]
         public async Task<IActionResult> DeleteReportType([FromRoute] Guid reportSectionId)
@@ -76,13 +78,11 @@ namespace AMJNReportSystem.WebApi.Controllers
                 return BadRequest(new { message = "ID cannot be empty" });
 
             var result = await _reportTypeService.DeleteReportType(reportSectionId);
-
             if (result.Succeeded)
             {
-                return Ok(new { message = result.Messages });
+                return Ok(result);
             }
-
-            return BadRequest(new { message = result.Messages });
+            return BadRequest(result);
         }
     }
 }

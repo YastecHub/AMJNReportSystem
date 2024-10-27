@@ -23,8 +23,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(object))]
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost("create-new-report-section")]
         [OpenApiOperation("Create a new report section.", "Creates a new Report Section")]
         public async Task<IActionResult> CreateReportSection(
@@ -41,17 +41,15 @@ namespace AMJNReportSystem.WebApi.Controllers
             var result = await _reportSectionService.CreateReportSection(model);
             if (!result.Status)
             {
-                return Conflict(new { message = result.Message });
+                return Conflict(result);
             }
 
-            return CreatedAtAction(nameof(GetReportSection),
-                   new { reportSectionId = result.Data.Id },
-                   new { id = result.Data.Id, message = "Report section created successfully" });
+            return Ok(result);
         }
 
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+        [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status500InternalServerError)]
         [HttpPut("update-report-section/{reportSectionId}")]
         [OpenApiOperation("Update the details of a report section.", "Updates an existing Report Section")]
         public async Task<IActionResult> UpdateReportSection([FromRoute] Guid reportSectionId, [FromBody] UpdateReportSectionRequest model, [FromServices] IValidator<UpdateReportSectionRequest> validator)
@@ -66,16 +64,15 @@ namespace AMJNReportSystem.WebApi.Controllers
             var result = await _reportSectionService.UpdateReportSection(reportSectionId, model);
 
             if (!result.Status)
-                return BadRequest(new { message = result.Message });
+                return BadRequest(result);
 
-            return Ok(new { message = "Report section updated successfully" });
+            return Ok(result);
         }
 
-
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-section-by-id/{reportSectionId}")]
         [OpenApiOperation("Get a report section by ID.", "Retrieves a specific Report Section by its ID")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<ReportSectionDto>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<ReportSectionDto>))]
         public async Task<IActionResult> GetReportSection([FromRoute] Guid reportSectionId)
         {
             var result = await _reportSectionService.GetReportSection(reportSectionId);
@@ -86,10 +83,10 @@ namespace AMJNReportSystem.WebApi.Controllers
             return NotFound(result);
         }
 
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-section-by-report-type/{reportTypeId}")]
         [OpenApiOperation("Get all report sections for a specific report type.", "")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(BaseResponse<IEnumerable<ReportSectionDto>>))]
-        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(BaseResponse<IEnumerable<ReportSectionDto>>))]
         public async Task<IActionResult> GetReportSectionsByReportType([FromRoute] Guid reportTypeId)
         {
             var result = await _reportSectionService.GetReportSections(reportTypeId);
@@ -101,8 +98,8 @@ namespace AMJNReportSystem.WebApi.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(object))]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(object))]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpPut("update-reportsection-activeness/{reportSectionId}/{state}")]
         [OpenApiOperation("Update the activeness state of a report section.", "Sets the activeness state of a specific Report Section")]
         public async Task<IActionResult> SetReportSectionActiveness([FromRoute] Guid reportSectionId, [FromRoute] bool state)
@@ -113,12 +110,14 @@ namespace AMJNReportSystem.WebApi.Controllers
             var result = await _reportSectionService.SetReportSectionActiveness(reportSectionId, state);
             if (result.Status)
             {
-                return Ok(new { message = result.Message });
+                return Ok(result);
             }
 
-            return BadRequest(new { message = result.Message });
+            return BadRequest(result);
         }
 
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<bool>), StatusCodes.Status500InternalServerError)]
         [HttpDelete("delete-report-section/{reportSectionId}")]
         [OpenApiOperation("Delete a report section.", "Deletes a specific Report Section")]
         public async Task<IActionResult> DeleteReportSection([FromRoute] Guid reportSectionId)
@@ -130,10 +129,10 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             if (result.Succeeded)
             {
-                return Ok(new { message = result.Messages });
+                return Ok(result);
             }
 
-            return BadRequest(new { message = result.Messages });
+            return BadRequest(result);
         }
     }
 }
