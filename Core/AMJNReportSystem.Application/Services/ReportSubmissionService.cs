@@ -37,11 +37,11 @@ namespace AMJNReportSystem.Application.Services
             _submissionWindowService = submissionWindowService;
         }
 
-        public async Task<BaseResponse<bool>> CreateReporteubmissionAsync(CreateReportSubmissionRequest request)
+        public async Task<BaseResponse<bool>> CreateReportSubmissionAsync(CreateReportSubmissionRequest request)
         {
             try
             {
-                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateReporteubmissionAsync), JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateReportSubmissionAsync), JsonConvert.SerializeObject(request));
 
 
                 if (request == null)
