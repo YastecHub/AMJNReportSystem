@@ -133,7 +133,7 @@ namespace AMJNReportSystem.Application.Services
             _logger.LogInformation("Starting GetReportTypes method.");
             try
             {
-                var currentDate = DateTime.Now;
+                var currentDate = DateTime.Today;
                 var report = await _reportTypeRepository.GetAllReportTypes();
                 var reportTypeDtos = report.Where(x => !x.IsDeleted).Select(r => new ReportTypeDto
                 {
@@ -145,9 +145,9 @@ namespace AMJNReportSystem.Application.Services
                     LastModifiedBy = r.LastModifiedBy,
                     LastModifiedOn = r.LastModifiedOn,
                     SubmissionWindowId = r.SubmissionWindows.Count() > 0 ?
-                    r.SubmissionWindows.Where(x => x.EndingDate <= currentDate).Select(x => x.Id)
+                    r.SubmissionWindows.Where(x => currentDate >= x.StartingDate && currentDate <= x.EndingDate).Select(x => x.Id)
                     .FirstOrDefault() : null,
-                    SubmissionWindowIsActive = r.SubmissionWindows.Any(x => x.EndingDate <= currentDate),
+                    SubmissionWindowIsActive = r.SubmissionWindows.Any(x => currentDate >= x.StartingDate && currentDate <= x.EndingDate),
                 }).OrderByDescending(x => x.CreatedOn)
                   .ToList();
 

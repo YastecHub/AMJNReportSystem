@@ -11,8 +11,7 @@ namespace AMJNReportSystem.Application.Validation
                 .NotEmpty().WithMessage("Report Type Id is required.");
 
             RuleFor(x => x.StartingDate)
-                .NotEmpty().WithMessage("Starting date is required.")
-                .Must(BeAValidStartingDate).WithMessage("Starting date must be today or in the future and the hour must not be in the past.");
+                .NotEmpty().WithMessage("Starting date is required.");
 
             RuleFor(x => x.EndingDate)
                 .GreaterThan(x => x.StartingDate).WithMessage("Ending date must be after the starting date.");
@@ -27,12 +26,12 @@ namespace AMJNReportSystem.Application.Validation
                 .NotNull().WithMessage("IsLocked status must be provided.");
         }
 
-        private bool BeAValidStartingDate(DateTime startingDate)
-        {
-            if (startingDate.Date > DateTime.Now.Date)
-                return true;
-            return startingDate.TimeOfDay >= DateTime.Now.TimeOfDay;
-        }
+        //private bool BeAValidStartingDate(DateTime startingDate)
+        //{
+        //    if (startingDate.Date > DateTime.Now.Date)
+        //        return true;
+        //    return startingDate.TimeOfDay >= DateTime.Now.TimeOfDay;
+        //}
     }
 }
  
