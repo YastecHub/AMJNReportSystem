@@ -228,8 +228,8 @@ namespace AMJNReportSystem.Application.Services
                 var reportSection = await _reportTypeRepository.GetReportTypeById(reportTypeId);
                 if (reportSection == null)
                 {
-                    _logger.LogWarning($"Report section with Id {reportTypeId} not found.");
-                    return Result<bool>.Fail("Report section not found.");
+                    _logger.LogWarning($"Report Type with Id {reportTypeId} not found.");
+                    return Result<bool>.Fail("Report Type not found.");
                 }
 
                 reportSection.IsDeleted = true;
@@ -238,18 +238,18 @@ namespace AMJNReportSystem.Application.Services
 
                 if (result)
                 {
-                    _logger.LogInformation($"Report section with Id {reportTypeId} deleted successfully.");
-                    return Result<bool>.Success(true, "Report section deleted successfully.");
+                    _logger.LogInformation($"Report Type with Id {reportTypeId} deleted successfully.");
+                    return Result<bool>.Success(true, "Report Type deleted successfully.");
                 }
                 else
                 {
-                    _logger.LogError($"Failed to delete report section with Id {reportTypeId}.");
-                    return Result<bool>.Fail("Failed to delete report section.");
+                    _logger.LogError($"Failed to delete report type with Id {reportTypeId}.");
+                    return Result<bool>.Fail("Failed to delete report Type.");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred while deleting report section with Id {reportSectionId}.", reportTypeId);
+                _logger.LogError(ex, "An error occurred while deleting report Type with Id {reportSectionId}.", reportTypeId);
                 return Result<bool>.Fail($"An error occurred: {ex.Message}");
             }
         }
