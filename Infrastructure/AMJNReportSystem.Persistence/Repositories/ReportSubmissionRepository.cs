@@ -144,5 +144,8 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             return _dbcontext.ReportSubmissions.ToList();
         }
+
+       
+
     }
 }

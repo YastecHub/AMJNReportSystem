@@ -35,7 +35,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> CreateReportSubmission([FromBody] CreateReportSubmissionRequest request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var reportSubmission = await _reportSubmissionService.CreateReportSubmissionAsync(request);
+            var reportSubmission = await _reportSubmissionService.CreateAndUpdateReportSubmissionAsync(request);
             return !reportSubmission.Status ? Conflict(reportSubmission) : Ok(reportSubmission);
         }
 

@@ -8,6 +8,7 @@ using AMJNReportSystem.Application.Models.RequestModels.Reports;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
+using AMJNReportSystem.Domain.Enums;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -37,11 +38,11 @@ namespace AMJNReportSystem.Application.Services
             _submissionWindowService = submissionWindowService;
         }
 
-        public async Task<BaseResponse<bool>> CreateReportSubmissionAsync(CreateReportSubmissionRequest request)
+        public async Task<BaseResponse<bool>> CreateAndUpdateReportSubmissionAsync(CreateReportSubmissionRequest request)
         {
             try
             {
-                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateReportSubmissionAsync), JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateAndUpdateReportSubmissionAsync), JsonConvert.SerializeObject(request));
 
 
                 if (request == null)
@@ -54,16 +55,6 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-                var reportType = await _reportTypeRepository.GetReportTypeById(request.ReportTypeId);
-                if (reportType == null)
-                {
-                    _logger.LogWarning($"ReportType with ID {request.ReportTypeId} not found.", request.ReportTypeId);
-                    return new BaseResponse<bool>
-                    {
-                        Message = "Report Type not found.",
-                        Status = false
-                    };
-                }
 
                 var submissionWindow = await _submissionWindowRepository.GetSubmissionWindowsById(request.SubmissionWindowId);
                 if (submissionWindow == null)
@@ -76,6 +67,20 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
+
+                var reportType = await _reportTypeRepository.GetReportTypeById(submissionWindow.ReportTypeId);
+                if (reportType == null)
+                {
+                    _logger.LogWarning($"ReportType with ID {submissionWindow.ReportTypeId} not found.", submissionWindow.ReportTypeId);
+                    return new BaseResponse<bool>
+                    {
+                        Message = "Report Type not found.",
+                        Status = false
+                    };
+                }
+
+
+
                 var getsubwinactiveness = await _submissionWindowService.GetActiveSubmissionWindows(request.SubmissionWindowId);
                 if (getsubwinactiveness.Data.IsLocked)
                 {
@@ -87,76 +92,106 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
+                var jammatId = _currentUser.GetJamaatId();
 
-                var reportSubmissionName = $"{reportType.Name}_{request.Year}_{request.Month}";
-                _logger.LogInformation($"Generated report submission name: {reportSubmissionName}");
+                var reportSubmissionCheckerExist = await _submissionWindowRepository.CheckIfReportHasBeenSubmittedByJammatPresident(submissionWindow.Id, jammatId);
 
-                var reportSubmissionCheckerExist = await _reportSubmissionRepository.Exist(reportSubmissionName);
-                if (reportSubmissionCheckerExist)
+                if (reportSubmissionCheckerExist == null)
                 {
-                    _logger.LogWarning($"Report submission with name {reportSubmissionName} already exists.");
+
+                    var answers = request.ReportResponses
+                          .Select(x => new ReportResponse
+                          {
+                              QuestionId = x.QuestionId,
+                              TextAnswer = x.TextAnswer,
+                              Id = Guid.NewGuid(),
+                              QuestionOptionId = x.QuestionOptionId,
+                              Report = x.Report,
+                              CreatedOn = DateTime.Now
+
+                          }).ToList();
+
+                    var submission = new ReportSubmission
+                    {
+                        JamaatId = _currentUser.GetJamaatId(),
+                        CircuitId = _currentUser.GetCircuit(),
+                        JammatEmailAddress = _currentUser.GetUserEmail(),
+                        ReportSubmissionStatus = ReportSubmissionStatus.Pending,
+                        ReportTag = ReportTag.MuqamReportType,
+                        SubmissionWindowId = request.SubmissionWindowId,
+                        Answers = answers,
+                        CreatedBy = _currentUser.Name,
+                        CreatedOn = DateTime.Now,
+                    };
+
+                    _logger.LogInformation($"Saving report submission to the database.");
+                    await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
+
+                    _logger.LogInformation("Report submission successfully added.");
                     return new BaseResponse<bool>
                     {
-                        Message = "Submission already exists.",
-                        Status = false
+                        Message = "Report submission successfully added.",
+                        Status = true,
+                        Data = true,
                     };
                 }
-
-                var submission = new ReportSubmission
+                else
                 {
-                    JamaatId = _currentUser.GetJamaatId(),
-                    CircuitId = _currentUser.GetCircuit(),
-                    JammatEmailAddress = _currentUser.GetUserEmail(),
-                    ReportSubmissionStatus = request.ReportSubmissionStatus,
-                    ReportTag = request.ReportTag,
-                    SubmissionWindowId = request.SubmissionWindowId,
-                    Answers = new List<ReportResponse>(),
-                    CreatedBy = request.CreatedBy,
-                    CreatedOn = DateTime.Now,
-                };
 
-                if (request.ReportResponses != null && request.ReportResponses.Count > 0)
-                {
-                    _logger.LogInformation($"Processing {request.ReportResponses.Count} report responses.");
-                    foreach (var response in request.ReportResponses)
+                    _logger.LogInformation($"Updating report submission with ID: {submissionWindow.Id}");
+
+                    reportSubmissionCheckerExist.JammatEmailAddress = _currentUser.GetUserEmail() ?? string.Empty;
+                    reportSubmissionCheckerExist.SubmissionWindow.Year = submissionWindow.Year;
+                    reportSubmissionCheckerExist.SubmissionWindow.Month = submissionWindow.Month;
+                    reportSubmissionCheckerExist.LastModifiedOn = DateTime.Now;
+                    reportSubmissionCheckerExist.LastModifiedBy = _currentUser.Name;
+
+
+                    //delete all answers
+                    var result = new ReportSubmission();
+
+                    var answers = reportSubmissionCheckerExist.Answers.ToList();
+
+                    var deleteResponseAnswer = await _submissionWindowRepository.DeleteReportSubmissionAnswer(answers);
+
+                    if (deleteResponseAnswer == true)
                     {
-                        var question = await _questionRepository.GetQuestionById(response.QuestionId);
-                        if (question == null)
+                        var reportResponse = request.ReportResponses
+                        .Select(x => new ReportResponse
                         {
-                            _logger.LogWarning($"Question with ID {response.QuestionId} not found.");
-                            return new BaseResponse<bool>
-                            {
-                                Message = $"Question with ID {response.QuestionId} not found.",
-                                Status = false
-                            };
-                        }
+                            QuestionId = x.QuestionId,
+                            TextAnswer = x.TextAnswer,
+                            Id = Guid.NewGuid(),
+                            QuestionOptionId = x.QuestionOptionId,
+                            Report = x.Report,
+                            CreatedOn = DateTime.Now
 
-                        var reportResponse = new ReportResponse
+                        }).ToList();
+
+                        reportSubmissionCheckerExist.Answers = reportResponse;
+
+                        result = await _reportSubmissionRepository.UpdateReportSubmission(reportSubmissionCheckerExist);
+
+                        _logger.LogInformation($"Report submission DTO mapped successfully for submission ID: {submissionWindow.Id}");
+
+                        return new BaseResponse<bool>
                         {
-                            QuestionId = response.QuestionId,
-                            TextAnswer = response.TextAnswer,
-                            QuestionOptionId = response.QuestionOptionId,
-                            CreatedBy = request.CreatedBy,
-                            CreatedOn = DateTime.Now,
-                            Report = response.Report
+                            Status = true,
+                            Data = result != null ? true : false,
+                            Message = "Report submission updated successfully."
                         };
-
-                        submission.Answers.Add(reportResponse);
                     }
+                    else
+                    {
+                        return new BaseResponse<bool>
+                        {
+                            Status = true,
+                            Data = result != null ? true : false,
+                            Message = "Report submission updated successfully."
+                        };
+                    }
+
                 }
-
-                submission.SubmissionWindow.ReportType.Name = reportSubmissionName;
-
-                _logger.LogInformation($"Saving report submission to the database.");
-                await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
-
-                _logger.LogInformation("Report submission successfully added.");
-                return new BaseResponse<bool>
-                {
-                    Message = "Report submission successfully added.",
-                    Status = true,
-                    Data = true,
-                };
             }
             catch (Exception ex)
             {

@@ -20,13 +20,13 @@ namespace AMJNReportSystem.Persistence.Repositories
             return true;
 
         }
-      
+
         public async Task<IList<SubmissionWindow>> GetAllSubmissionWindowsAsync(Expression<Func<SubmissionWindow, bool>> expression)
         {
             var submissionWindow = await _context.SubmissionWindows
                .Include(x => x.ReportType)
                .Where(expression)
-               .ToListAsync(); 
+               .ToListAsync();
             return submissionWindow;
         }
         public async Task<SubmissionWindow> GetActiveSubmissionWindows(Guid id)
@@ -34,12 +34,12 @@ namespace AMJNReportSystem.Persistence.Repositories
             var submissionWindow = await _context.SubmissionWindows
                 .Include(x => x.ReportType)
                 .SingleOrDefaultAsync(q => q.Id == id);
-            return submissionWindow; 
+            return submissionWindow;
         }
 
-    
-          
-        public async Task<SubmissionWindow> GetSubmissionWindowsById(Guid id) 
+
+
+        public async Task<SubmissionWindow> GetSubmissionWindowsById(Guid id)
         {
             var submissionWindow = await _context.SubmissionWindows
                 .Include(x => x.ReportType)
@@ -53,7 +53,7 @@ namespace AMJNReportSystem.Persistence.Repositories
                 .Include(x => x.ReportType)
                 .SingleOrDefaultAsync(q => q.ReportTypeId == reportTypeId);
 
-            return submissionWindow != null; 
+            return submissionWindow != null;
         }
 
 
@@ -62,6 +62,26 @@ namespace AMJNReportSystem.Persistence.Repositories
             var submission = _context.Update(submissionWindow);
             _context.SaveChanges();
             return true;
+        }
+
+
+        public async Task<ReportSubmission?> CheckIfReportHasBeenSubmittedByJammatPresident(Guid submissionWindowId, int JamaatId)
+        {
+            var submissionWindow = await _context.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .FirstOrDefaultAsync(q => q.SubmissionWindowId == submissionWindowId && q.JamaatId == JamaatId);
+            return submissionWindow;
+        }
+
+        public async Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers)
+        {
+            _context.ReportResponses.RemoveRange(answers);
+
+            if (await _context.SaveChangesAsync() > 0)
+                return true;
+
+            return false;
         }
     }
 }

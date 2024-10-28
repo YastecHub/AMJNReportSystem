@@ -11,5 +11,8 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<IList<SubmissionWindow>> GetAllSubmissionWindowsAsync(Expression<Func<SubmissionWindow, bool>> expression);
         Task<SubmissionWindow> GetActiveSubmissionWindows(Guid id);
         Task<bool> GetReportTypeExist(Guid reportTypeId);
+        Task<ReportSubmission?> CheckIfReportHasBeenSubmittedByJammatPresident(Guid submissionWindowId, int JamaatId);
+
+        Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers);
     }
 }
