@@ -14,7 +14,7 @@ namespace AMJNReportSystem.Application.Validation
 		{
 			RuleFor(x => x.Text)
 				.NotEmpty().WithMessage("Option text is required.")
-				.MinimumLength(5).WithMessage("Option text must be at least 2 characters long.");
+				.MinimumLength(2).WithMessage("Option text must be at least 2 characters long.");
 		}
 	}
 }

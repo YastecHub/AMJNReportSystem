@@ -9,14 +9,14 @@ namespace AMJNReportSystem.Application.Validators
         {
             RuleFor(x => x.ReportSectionName)
                 .NotEmpty().WithMessage("Report section name is required.")
-                .MaximumLength(50).WithMessage("Report section name cannot exceed 50 characters.");
+                .MaximumLength(100).WithMessage("Report section name cannot exceed 100 characters.");
 
             RuleFor(x => x.ReportSectionValue)
                 .GreaterThan(0).WithMessage("Report section value must be greater than 0.")
-                .LessThanOrEqualTo(100).WithMessage("Report section value must be less than or equal to 100.");
+                .LessThanOrEqualTo(1000).WithMessage("Report section value must be less than or equal to 1000.");
 
             RuleFor(x => x.Description)
-               .MaximumLength(250).WithMessage("Description cannot exceed 250 characters.");
+               .MaximumLength(500).WithMessage("Description cannot exceed 500 characters.");
         }
     }
 }

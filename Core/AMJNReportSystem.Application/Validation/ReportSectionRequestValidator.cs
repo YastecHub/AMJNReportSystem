@@ -16,10 +16,10 @@ namespace AMJNReportSystem.Application.Validators
             RuleFor(x => x.ReportSectionValue)
                 .NotEmpty().WithMessage("Report Section Value is required.")
                 .GreaterThan(0).WithMessage("Report Section Value must be greater than 0.")
-                .LessThanOrEqualTo(100).WithMessage("Report Section Value must be less than or equal to 100.");
+                .LessThanOrEqualTo(1000).WithMessage("Report Section Value must be less than or equal to 1000.");
 
             RuleFor(x => x.Description)
-                .MaximumLength(250).WithMessage("Description cannot exceed 250 characters.");
+                .MaximumLength(500).WithMessage("Description cannot exceed 500 characters.");
 
             RuleFor(x => x.ReportTypeId)
                 .NotEmpty().WithMessage("Report Type Id is required.");

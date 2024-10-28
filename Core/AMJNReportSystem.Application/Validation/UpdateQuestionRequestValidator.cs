@@ -10,7 +10,7 @@ namespace AMJNReportSystem.Application.Validation
 
 			RuleFor(x => x.QuestionName)
 				.NotEmpty().WithMessage("Question Name is required.")
-				.MinimumLength(7).WithMessage("Question Name must be at least 7 characters long.");
+				.MinimumLength(4).WithMessage("Question Name must be at least 4 characters long.");
 
 			RuleFor(x => x.ReportSectionId)
 				.NotEqual(Guid.Empty).WithMessage("Report Section Id must be a valid non-empty GUID.");
