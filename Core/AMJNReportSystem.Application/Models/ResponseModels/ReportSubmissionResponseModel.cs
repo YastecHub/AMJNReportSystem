@@ -23,5 +23,6 @@ namespace AMJNReportSystem.Application.Models.ResponseModels
         public bool Status { get; set; }
         public int NumberOfQuestion { get; set; }
         public int NumberOfQuestionSections { get; set; }
+        public List<ReportResponseDto>? Answers { get; set; } = new List<ReportResponseDto>(); 
     }
 }
