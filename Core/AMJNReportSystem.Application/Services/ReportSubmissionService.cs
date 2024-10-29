@@ -9,8 +9,12 @@ using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Enums;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Globalization;
+using System.Net.Http.Headers;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -23,11 +27,13 @@ namespace AMJNReportSystem.Application.Services
         private readonly IQuestionRepository _questionRepository;
         private readonly ILogger<ReportSubmissionService> _logger;
         private readonly ISubmissionWindowService _submissionWindowService;
+        private readonly IGatewayHandler _gatewayHandler;
 
         public ReportSubmissionService(IReportSubmissionRepository reportSubmission,
             IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository
             submissionWindowRepository, ICurrentUser currentUser, IQuestionRepository questionRepository,
-            ILogger<ReportSubmissionService> logger, ISubmissionWindowService submissionWindowService)
+            ILogger<ReportSubmissionService> logger, ISubmissionWindowService submissionWindowService,
+            IGatewayHandler gatewayHandler)
         {
             _reportSubmissionRepository = reportSubmission;
             _reportTypeRepository = reportTypeRepository;
@@ -36,6 +42,7 @@ namespace AMJNReportSystem.Application.Services
             _questionRepository = questionRepository;
             _logger = logger;
             _submissionWindowService = submissionWindowService;
+            _gatewayHandler = gatewayHandler;
         }
 
         public async Task<BaseResponse<bool>> CreateAndUpdateReportSubmissionAsync(CreateReportSubmissionRequest request)
@@ -628,6 +635,19 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
+                var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+                if (getJamaat == null)
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = true,
+                        Message = "Unable to retive Muqam",
+                        Data = new List<ReportSubmissionResponseDto>()
+                    };
+                }
+
+
                 _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.Name}");
 
                 var jamaatId = _currentUser.GetJamaatId();
@@ -658,14 +678,18 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
-                    JamaatId = _currentUser.GetJamaatId(),
-                    CircuitId = _currentUser.GetCircuit(),
+                    JamaatId = reportSubmission.JamaatId,
+                    CircuitId = reportSubmission.CircuitId,
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
                     ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
+                    ReportTag = reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
+                    JamaatName = GetMuqamiDetailByJamaatId(getJamaat, reportSubmission.JamaatId).JamaatName,
+                    CircuitName = GetMuqamiDetailByJamaatId(getJamaat, reportSubmission.JamaatId).CircuitName,
+                    Month = GetMonthName(reportSubmission.SubmissionWindow.Month),
+                    Year = reportSubmission.SubmissionWindow.Year,
                     Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
                     {
                         Id = x.Id,
@@ -694,6 +718,34 @@ namespace AMJNReportSystem.Application.Services
                     Message = $"An error occurred while retrieving the report submissions by Jamaat ID: {ex.Message}"
                 };
             }
+        }
+
+
+        private static (string? JamaatName, string? CircuitName) GetMuqamiDetailByJamaatId(List<Muqam> getJamaat, int jamaatId)
+        {
+
+            if (getJamaat == null || !getJamaat.Any())
+            {
+                return (null, null);
+            }
+
+            var detail = getJamaat.FirstOrDefault(x => x.JamaatId == jamaatId);
+
+            return detail != null
+                ? (detail.JamaatName, detail.CircuitName)
+                : (null, null);
+        }
+
+        public static string GetMonthName(int monthNumber)
+        {
+            // Validate the month number
+            if (monthNumber < 1 || monthNumber > 12)
+            {
+                throw new ArgumentOutOfRangeException(nameof(monthNumber), "Month must be between 1 and 12.");
+            }
+
+            // Use DateTime to get the month name
+            return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber);
         }
 
     }
