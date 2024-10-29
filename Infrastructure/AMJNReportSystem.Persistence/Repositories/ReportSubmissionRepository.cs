@@ -18,7 +18,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
         public async Task<ReportSubmission> CreateReportSubmissionAsync(ReportSubmission reportSubmission)
         {
-            await _dbcontext.AddAsync(reportSubmission);
+            await _dbcontext.ReportSubmissions.AddAsync(reportSubmission);
             await _dbcontext.SaveChangesAsync();
             return reportSubmission;
         }
