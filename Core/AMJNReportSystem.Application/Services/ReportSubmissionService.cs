@@ -675,6 +675,7 @@ namespace AMJNReportSystem.Application.Services
                         Message = "No report submissions found for the given Jamaat ID."
                     };
                 }
+                var currentDate = DateTime.Today;
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
@@ -690,14 +691,12 @@ namespace AMJNReportSystem.Application.Services
                     CircuitName = GetMuqamiDetailByJamaatId(getJamaat, reportSubmission.JamaatId).CircuitName,
                     Month = GetMonthName(reportSubmission.SubmissionWindow.Month),
                     Year = reportSubmission.SubmissionWindow.Year,
-                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
-                    {
-                        Id = x.Id,
-                        QuestionId = x.QuestionId,
-                        TextAnswer = x.TextAnswer,
-                        QuestionOptionId = x.QuestionOptionId,
-                        Report = x.Report,
-                    }).ToList()
+                    StartDate = reportSubmission.SubmissionWindow.StartingDate.ToString("dddd-MMM-yyyy"),
+                    EndDate = reportSubmission.SubmissionWindow.EndingDate.ToString("dddd-MMM-yyyy"),
+                    Status = (currentDate >= reportSubmission.SubmissionWindow.StartingDate && currentDate <= reportSubmission.SubmissionWindow.EndingDate) ? true : false,
+                    CreatedOn = reportSubmission.CreatedOn,
+                    NumberOfQuestion = reportSubmission.Answers.Count(),
+                    NumberOfQuestionSections = reportSubmission.SubmissionWindow.ReportType.ReportSections.Count()
                 }).ToList();
 
                 _logger.LogInformation($"Successfully retrieved report submissions for Jamaat ID: {jamaatId}");

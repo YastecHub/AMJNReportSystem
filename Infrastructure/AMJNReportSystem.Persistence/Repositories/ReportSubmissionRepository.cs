@@ -129,6 +129,7 @@ namespace AMJNReportSystem.Persistence.Repositories
             var submissions = await _dbcontext.ReportSubmissions
                     .Include(x => x.SubmissionWindow)
                 .ThenInclude(x => x.ReportType)
+                .ThenInclude(x => x.ReportSections)
                 .Include(x => x.SubmissionWindow)
                 .Include(x => x.Answers)
                     .ThenInclude(x => x.Question)
