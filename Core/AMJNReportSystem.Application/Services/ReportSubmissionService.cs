@@ -628,14 +628,14 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
-                _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.GetUserId()}");
+                _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.Name}");
 
                 var jamaatId = _currentUser.GetJamaatId();
-                _logger.LogInformation($"Retrieved Jamaat ID: {jamaatId} for user: {_currentUser.GetUserId()}");
+                _logger.LogInformation($"Retrieved Jamaat ID: {jamaatId} for user: {_currentUser.Name}");
 
                 if (jamaatId <= 0)
                 {
-                    _logger.LogWarning($"Unable to retrieve a valid Jamaat ID for user: {_currentUser.GetUserId()}");
+                    _logger.LogWarning($"Unable to retrieve a valid Jamaat ID for user: {_currentUser.Name}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
