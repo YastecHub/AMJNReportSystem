@@ -14,5 +14,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<ReportSubmission?> CheckIfReportHasBeenSubmittedByJammatPresident(Guid submissionWindowId, int JamaatId);
 
         Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers);
+        Task<ReportSubmission?> CheckIfReportSectionHasBeenSubmitted(Guid submissionWindowId, int JamaatId, Guid reportSectionId);
     }
 }

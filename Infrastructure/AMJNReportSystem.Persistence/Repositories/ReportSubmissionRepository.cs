@@ -4,6 +4,8 @@ using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using AMJNReportSystem.Application.Models.DTOs;
+using System.Collections.Immutable;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -41,6 +43,7 @@ namespace AMJNReportSystem.Persistence.Repositories
                 .ThenInclude(x => x.ReportType)
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.Question)
+                .ThenInclude(x => x.Options)
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.QuestionOption)
                 .SingleOrDefaultAsync(x => x.Id == id);
@@ -146,7 +149,39 @@ namespace AMJNReportSystem.Persistence.Repositories
             return _dbcontext.ReportSubmissions.ToList();
         }
 
-       
+
+
+        //public async Task<List<ReportTypeSectionQuestion>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId)
+        //{
+        //    var questions = await _dbcontext.ReportSubmissions
+        //        .Include(x => x.SubmissionWindow)
+        //        .ThenInclude(x => x.ReportType)
+        //        .ThenInclude(x => x.ReportSections)
+        //        .ThenInclude(x => x.Questions)
+        //        .ThenInclude(x => x.Options)
+        //        .Where(q => q.SubmissionWindow.ReportTypeId == reportTypeId)
+        //        .Select(x => new ReportTypeSectionQuestion
+        //        {
+        //            SectionId = x.Id,
+        //            SectionName = x.ReportSectionName,
+        //            ReportSectionQuestions = x.Questions.Select(q => new ReportSectionQuestionDto
+        //            {
+        //                Id = q.Id,
+        //                QuestionText = q.QuestionName,
+        //                IsActive = q.IsActive,
+        //                IsRequired = q.IsRequired,
+        //                Options = q.Options.Select(qo => new ReportQuestionOptionDto
+        //                {
+        //                    Id = qo.Id,
+        //                    OptionText = qo.Text
+        //                }).ToList(),
+
+        //            }).ToList(),
+        //        })
+        //        .ToListAsync();
+        //    return questions;
+        //}
+
 
     }
 }

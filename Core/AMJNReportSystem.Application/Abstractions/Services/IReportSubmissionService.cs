@@ -13,7 +13,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
     /// </summary>
     public interface IReportSubmissionService
     {
-        Task<BaseResponse<ReportSubmissionResponseDto>> GetReportTypeSubmissionByIdAsync(Guid reportTypeSubmissionId);
+        Task<BaseResponse<SubmittedReportDto>> GetSectionReportSubmissionAsync(Guid reportTypeSubmissionId, Guid reportSectionId);
         Task<BaseResponse<bool>> CreateAndUpdateReportSubmissionAsync(CreateReportSubmissionRequest request);
         Task<BaseResponse<ReportSubmissionDto>> UpdateReportSubmission(Guid id, UpdateReportSubmission request);
         Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter);

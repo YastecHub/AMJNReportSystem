@@ -46,12 +46,12 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
-        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}")]
+        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}/{reportSectionId}")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
-        public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
+        public async Task<IActionResult> GetReportTypeSubmission([FromRoute]Guid reportsubmissionid, [FromRoute] Guid reportSectionId)
         {
             if (reportsubmissionid == Guid.Empty) return BadRequest("id can not be empty");
-            var response = await _reportSubmissionService.GetReportTypeSubmissionByIdAsync(reportsubmissionid);
+            var response = await _reportSubmissionService.GetSectionReportSubmissionAsync(reportsubmissionid,reportSectionId);
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
