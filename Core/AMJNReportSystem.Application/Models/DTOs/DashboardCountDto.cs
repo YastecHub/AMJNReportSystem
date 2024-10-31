@@ -14,6 +14,5 @@ namespace AMJNReportSystem.Application.Models.DTOs
         public int? QuestionCounts { get; set; }
         public int? ReportSubmittedByCircuitCounts { get; set; } 
         public int? ReportSubmittedByJamaatCounts { get; set; } 
-        public int? ReportSubmittedByJamaatCount{ get; set; } 
     }
 }
