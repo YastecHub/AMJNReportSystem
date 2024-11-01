@@ -185,7 +185,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-jamaat-report-submission-by-submission-window-id/{submissionWindowId}")]
-        [OpenApiOperation("Get a specific report submission by submissionWindowId.", "")]
+        [OpenApiOperation("Get  jammat report submission by submissionWindowId.", "")]
         public async Task<IActionResult> GetJamaatReportsBySubmissionWindowIdAsync([FromRoute] Guid submissionWindowId)
         {
             if (submissionWindowId == Guid.Empty) return BadRequest("id cannot be empty");
