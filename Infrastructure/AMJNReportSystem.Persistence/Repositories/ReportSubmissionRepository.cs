@@ -4,6 +4,7 @@ using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using AMJNReportSystem.Application.Models.DTOs;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -109,6 +110,17 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissions;
         }
 
+        public async Task<List<ReportSubmission>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId)
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x =>x.ReportType)
+                .Where(x => x.SubmissionWindowId == submissionWindowId)
+                .ToListAsync();
+
+            return submissions;
+        }
+
         public async Task<List<ReportSubmission>> GetReportSubmissionsByCircuitIdAsync(int circuitId)
         {
             var submissions = await _dbcontext.ReportSubmissions
@@ -138,6 +150,25 @@ namespace AMJNReportSystem.Persistence.Repositories
                 .ToListAsync();
 
             return submissions;
+        }
+
+        public  ReportSubmissionResult GetTotalMonthlyReport(int month)
+        {
+            var submissions =  _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                    .ThenInclude(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.SubmissionWindow.Month == month)
+                .ToList();
+
+            return new ReportSubmissionResult
+            {
+                Submissions = submissions
+            };
         }
 
         public List<ReportSubmission> GetAllReportSubmission()

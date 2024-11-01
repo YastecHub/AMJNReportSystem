@@ -696,5 +696,52 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+
+
+        public async Task<BaseResponse<List<JamaatReport>>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId)
+        {
+            try
+            {
+                _logger.LogInformation($"GetJamaatReportsBySubmissionWindowIdAsync called with Submission Window ID: {submissionWindowId}");
+
+                var jamaatReports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
+
+                if (jamaatReports == null || !jamaatReports.Any())
+                {
+                    _logger.LogWarning($"No Jamaat reports found for Submission Window ID: {submissionWindowId}");
+                    return new BaseResponse<List<JamaatReport>>
+                    {
+                        Status = false,
+                        Message = "No Jamaat reports found for the given Submission Window ID."
+                    };
+                }
+
+                var jamaatReportResponses = jamaatReports.Select(report => new JamaatReport
+                {
+                    JamaatId = report.JamaatId,
+                    SubmissionWindowId = report.SubmissionWindowId,
+                    SubmissionWindowName = report.SubmissionWindow.ReportType.Name
+                }).ToList();
+
+                _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
+
+                return new BaseResponse<List<JamaatReport>>
+                {
+                    Status = true,
+                    Message = "Jamaat reports successfully retrieved",
+                    Data = jamaatReportResponses
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving Jamaat reports for Submission Window ID: {submissionWindowId}");
+                return new BaseResponse<List<JamaatReport>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving Jamaat reports: {ex.Message}"
+                };
+            }
+        }
+
     }
 }

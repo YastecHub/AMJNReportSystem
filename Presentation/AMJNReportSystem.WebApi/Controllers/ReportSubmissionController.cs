@@ -176,5 +176,21 @@ namespace AMJNReportSystem.WebApi.Controllers
             var response = await _reportSubmissionService.GetReportSubmissionsByJamaatIdAsync();
             return !response.Status ? NotFound(response) : Ok(response);
         }
+
+
+        /// <summary>
+        /// Get a  report submission by submission window
+        /// </summary>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("get-report-submission-by-reportType-submissionwindow/{submissionWindowId}")]
+        [OpenApiOperation("Get a specific report submission by submissionWindowId.", "")]
+        public async Task<IActionResult> GetJamaatReportsBySubmissionWindowIdAsync([FromRoute] Guid submissionWindowId)
+        {
+            if (submissionWindowId == Guid.Empty) return BadRequest("id cannot be empty");
+            var response = await _reportSubmissionService.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
+            return !response.Status ? NotFound(response) : Ok(response);
+        }
     }
 }
