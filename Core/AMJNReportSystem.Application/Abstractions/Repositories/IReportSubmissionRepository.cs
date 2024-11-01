@@ -1,4 +1,5 @@
 ﻿using AMJNReportSystem.Application.Models;
+using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
@@ -16,5 +17,7 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<List<ReportSubmission>> GetReportSubmissionsByJamaatIdAsync(int jamaatId);
         List<ReportSubmission> GetAllReportSubmission();
         Task<List<ReportSubmission>> GetAllReportTypeSubmissionsAsync();
+        ReportSubmissionResult GetTotalMonthlyReport(int month);
+        Task<List<ReportSubmission>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId);
     }
 }

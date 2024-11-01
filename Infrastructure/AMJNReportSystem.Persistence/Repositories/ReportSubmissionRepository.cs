@@ -151,6 +151,37 @@ namespace AMJNReportSystem.Persistence.Repositories
 
 
 
+        public async Task<List<ReportSubmission>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId)
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .Where(x => x.SubmissionWindowId == submissionWindowId)
+                .ToListAsync();
+
+            return submissions;
+        }
+
+        public ReportSubmissionResult GetTotalMonthlyReport(int month)
+        {
+            var submissions = _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                    .ThenInclude(x => x.ReportType)
+                .Include(x => x.SubmissionWindow)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                    .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.SubmissionWindow.Month == month)
+                .ToList();
+
+            return new ReportSubmissionResult
+            {
+                Submissions = submissions
+            };
+        }
+
+
         //public async Task<List<ReportTypeSectionQuestion>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId)
         //{
         //    var questions = await _dbcontext.ReportSubmissions

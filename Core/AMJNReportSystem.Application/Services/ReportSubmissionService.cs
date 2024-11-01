@@ -282,8 +282,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
-
         public async Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
             try
@@ -398,8 +396,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
-
         public async Task<BaseResponse<ReportSubmissionDto>> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
         {
             try
@@ -470,7 +466,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
         public async Task<Result<bool>> DeleteReportSubmission(Guid reportSubmissionId)
         {
             try
@@ -505,7 +500,6 @@ namespace AMJNReportSystem.Application.Services
                 return Result<bool>.Fail($"An error occurred: {ex.Message}");
             }
         }
-
 
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
         {
@@ -566,7 +560,6 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-
 
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByCircuitIdAsync()
         {
@@ -639,7 +632,6 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-
 
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByJamaatIdAsync()
         {
@@ -729,6 +721,54 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+        public async Task<BaseResponse<List<JamaatReport>>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId)
+        {
+            try
+            {
+                _logger.LogInformation($"GetJamaatReportsBySubmissionWindowIdAsync called with Submission Window ID: {submissionWindowId}");
+
+                var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+                var jamaatReports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
+
+                if (jamaatReports == null || !jamaatReports.Any())
+                {
+                    _logger.LogWarning($"No Jamaat reports found for Submission Window ID: {submissionWindowId}");
+                    return new BaseResponse<List<JamaatReport>>
+                    {
+                        Status = false,
+                        Message = "No Jamaat reports found for the given Submission Window ID."
+                    };
+                }
+
+                var jamaatReportResponses = jamaatReports.Select(report => new JamaatReport
+                {
+                    Id = report.Id,
+                    JamaatId = report.JamaatId,
+                    SubmissionWindowId = report.SubmissionWindowId,
+                    SubmissionWindowName = report.SubmissionWindow.ReportType.Name,
+                    JamaatName = GetMuqamiDetailByJamaatId(getJamaat, report.JamaatId).JamaatName,
+                }).ToList();
+
+                _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
+
+                return new BaseResponse<List<JamaatReport>>
+                {
+                    Status = true,
+                    Message = "Jamaat reports successfully retrieved",
+                    Data = jamaatReportResponses
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving Jamaat reports for Submission Window ID: {submissionWindowId}");
+                return new BaseResponse<List<JamaatReport>>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving Jamaat reports: {ex.Message}"
+                };
+            }
+        }
 
         private static (string? JamaatName, string? CircuitName) GetMuqamiDetailByJamaatId(List<Muqam> getJamaat, int jamaatId)
         {
@@ -756,6 +796,5 @@ namespace AMJNReportSystem.Application.Services
             // Use DateTime to get the month name
             return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber);
         }
-
     }
 }

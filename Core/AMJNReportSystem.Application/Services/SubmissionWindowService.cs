@@ -131,7 +131,7 @@ namespace AMJNReportSystem.Application.Services
 
         public async Task<Result<IList<SubmissionWindowDto>>> GetSubmissionWindows()
         {
-            var subWindow = await _submissionWindowRepository.GetAllSubmissionWindowsAsync(q => !q.IsDeleted);
+            var subWindow = await _submissionWindowRepository.GetAllSubmissionWindowsAsync(q => !q.IsDeleted && !q.ReportType.IsDeleted);
 
             var subWindowDtos = subWindow.Select(q => new SubmissionWindowDto
             {
