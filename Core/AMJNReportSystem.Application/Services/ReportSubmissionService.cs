@@ -9,8 +9,10 @@ using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Enums;
+using AMJNReportSystem.Domain.Repositories;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -23,11 +25,14 @@ namespace AMJNReportSystem.Application.Services
         private readonly IQuestionRepository _questionRepository;
         private readonly ILogger<ReportSubmissionService> _logger;
         private readonly ISubmissionWindowService _submissionWindowService;
+        private readonly IGatewayHandler _gatewayHandler;
+        private readonly IReportResponseRepository _reportResponseRepository;
 
         public ReportSubmissionService(IReportSubmissionRepository reportSubmission,
             IReportTypeRepository reportTypeRepository, ISubmissionWindowRepository
             submissionWindowRepository, ICurrentUser currentUser, IQuestionRepository questionRepository,
-            ILogger<ReportSubmissionService> logger, ISubmissionWindowService submissionWindowService)
+            ILogger<ReportSubmissionService> logger, ISubmissionWindowService submissionWindowService,
+            IGatewayHandler gatewayHandler, IReportResponseRepository reportResponseRepository)
         {
             _reportSubmissionRepository = reportSubmission;
             _reportTypeRepository = reportTypeRepository;
@@ -36,13 +41,16 @@ namespace AMJNReportSystem.Application.Services
             _questionRepository = questionRepository;
             _logger = logger;
             _submissionWindowService = submissionWindowService;
+            _gatewayHandler = gatewayHandler;
+            _reportResponseRepository = reportResponseRepository;
         }
 
         public async Task<BaseResponse<bool>> CreateAndUpdateReportSubmissionAsync(CreateReportSubmissionRequest request)
         {
             try
             {
-                _logger.LogInformation("Called {MethodName} with request: {Request}", nameof(CreateAndUpdateReportSubmissionAsync), JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Called {MethodName} with request: {Request}",
+                    nameof(CreateAndUpdateReportSubmissionAsync), JsonConvert.SerializeObject(request));
 
 
                 if (request == null)
@@ -81,7 +89,8 @@ namespace AMJNReportSystem.Application.Services
 
 
 
-                var getsubwinactiveness = await _submissionWindowService.GetActiveSubmissionWindows(request.SubmissionWindowId);
+                var getsubwinactiveness = await _submissionWindowService
+                    .GetActiveSubmissionWindows(request.SubmissionWindowId);
                 if (getsubwinactiveness.Data.IsLocked)
                 {
                     _logger.LogWarning($"Submission window with ID {request.SubmissionWindowId} is locked.");
@@ -94,22 +103,56 @@ namespace AMJNReportSystem.Application.Services
 
                 var jammatId = _currentUser.GetJamaatId();
 
-                var reportSubmissionCheckerExist = await _submissionWindowRepository.CheckIfReportHasBeenSubmittedByJammatPresident(submissionWindow.Id, jammatId);
+                var reportSubmissionCheckerExist = await _submissionWindowRepository
+                    .CheckIfReportHasBeenSubmittedByJammatPresident(submissionWindow.Id, jammatId);
 
-                if (reportSubmissionCheckerExist == null)
+                if (reportSubmissionCheckerExist != null)
                 {
+                    var checkReportSection = await _submissionWindowRepository
+                        .CheckIfReportSectionHasBeenSubmitted(submissionWindow.Id, jammatId, request.reportSectionId);
 
-                    var answers = request.ReportResponses
-                          .Select(x => new ReportResponse
-                          {
-                              QuestionId = x.QuestionId,
-                              TextAnswer = x.TextAnswer,
-                              Id = Guid.NewGuid(),
-                              QuestionOptionId = x.QuestionOptionId,
-                              Report = x.Report,
-                              CreatedOn = DateTime.Now
+                    if (checkReportSection == null)
+                    {
 
-                          }).ToList();
+                        foreach (var item in request.ReportResponses)
+                        {
+
+                            var newAnswer = new ReportResponse
+                            {
+                                QuestionId = item.QuestionId,
+                                TextAnswer = item.TextAnswer,
+                                Id = Guid.NewGuid(),
+                                QuestionOptionId = item.QuestionOptionId,
+                                Report = item.Report,
+                                CreatedOn = DateTime.Now,
+                                ReportSubmissionId = reportSubmissionCheckerExist.Id,
+                            };
+
+                            await _reportResponseRepository.AddReportResponseAsync(newAnswer);
+                        }
+
+                        return new BaseResponse<bool>
+                        {
+                            Status = true,
+                            Data = false,
+                            Message = $"Report Section Submitted successfully "
+
+                        };
+                    }
+                    else
+                    {
+
+                        return new BaseResponse<bool>
+                        {
+                            Status = true,
+                            Data = false,
+                            Message = $"Report Section has already been submitted by {reportSubmissionCheckerExist.CreatedBy} " +
+                            $"on {reportSubmissionCheckerExist.CreatedOn.ToString("dd-MM-yyyy")}"
+                        };
+                    }
+                }
+                else
+                {
 
                     var submission = new ReportSubmission
                     {
@@ -119,10 +162,28 @@ namespace AMJNReportSystem.Application.Services
                         ReportSubmissionStatus = ReportSubmissionStatus.Pending,
                         ReportTag = ReportTag.MuqamReportType,
                         SubmissionWindowId = request.SubmissionWindowId,
-                        Answers = answers,
                         CreatedBy = _currentUser.Name,
                         CreatedOn = DateTime.Now,
                     };
+
+                    await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
+
+                    foreach (var item in request.ReportResponses)
+                    {
+
+                        var newAnswer = new ReportResponse
+                        {
+                            QuestionId = item.QuestionId,
+                            TextAnswer = item.TextAnswer,
+                            Id = Guid.NewGuid(),
+                            QuestionOptionId = item.QuestionOptionId,
+                            Report = item.Report,
+                            CreatedOn = DateTime.Now,
+                            ReportSubmissionId = submission.Id,
+                        };
+
+                        await _reportResponseRepository.AddReportResponseAsync(newAnswer);
+                    }
 
                     _logger.LogInformation($"Saving report submission to the database.");
                     await _reportSubmissionRepository.CreateReportSubmissionAsync(submission);
@@ -135,63 +196,7 @@ namespace AMJNReportSystem.Application.Services
                         Data = true,
                     };
                 }
-                else
-                {
 
-                    _logger.LogInformation($"Updating report submission with ID: {submissionWindow.Id}");
-
-                    reportSubmissionCheckerExist.JammatEmailAddress = _currentUser.GetUserEmail() ?? string.Empty;
-                    reportSubmissionCheckerExist.SubmissionWindow.Year = submissionWindow.Year;
-                    reportSubmissionCheckerExist.SubmissionWindow.Month = submissionWindow.Month;
-                    reportSubmissionCheckerExist.LastModifiedOn = DateTime.Now;
-                    reportSubmissionCheckerExist.LastModifiedBy = _currentUser.Name;
-
-
-                    //delete all answers
-                    var result = new ReportSubmission();
-
-                    var answers = reportSubmissionCheckerExist.Answers.ToList();
-
-                    var deleteResponseAnswer = await _submissionWindowRepository.DeleteReportSubmissionAnswer(answers);
-
-                    if (deleteResponseAnswer == true)
-                    {
-                        var reportResponse = request.ReportResponses
-                        .Select(x => new ReportResponse
-                        {
-                            QuestionId = x.QuestionId,
-                            TextAnswer = x.TextAnswer,
-                            Id = Guid.NewGuid(),
-                            QuestionOptionId = x.QuestionOptionId,
-                            Report = x.Report,
-                            CreatedOn = DateTime.Now
-
-                        }).ToList();
-
-                        reportSubmissionCheckerExist.Answers = reportResponse;
-
-                        result = await _reportSubmissionRepository.UpdateReportSubmission(reportSubmissionCheckerExist);
-
-                        _logger.LogInformation($"Report submission DTO mapped successfully for submission ID: {submissionWindow.Id}");
-
-                        return new BaseResponse<bool>
-                        {
-                            Status = true,
-                            Data = result != null ? true : false,
-                            Message = "Report submission updated successfully."
-                        };
-                    }
-                    else
-                    {
-                        return new BaseResponse<bool>
-                        {
-                            Status = true,
-                            Data = result != null ? true : false,
-                            Message = "Report submission updated successfully."
-                        };
-                    }
-
-                }
             }
             catch (Exception ex)
             {
@@ -204,7 +209,7 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<BaseResponse<ReportSubmissionResponseDto>> GetReportTypeSubmissionByIdAsync(Guid reportTypeSubmissionId)
+        public async Task<BaseResponse<SubmittedReportDto>> GetSectionReportSubmissionAsync(Guid reportTypeSubmissionId, Guid reportSectionId)
         {
             try
             {
@@ -215,7 +220,7 @@ namespace AMJNReportSystem.Application.Services
                 if (reportSubmission == null)
                 {
                     _logger.LogWarning($"Report submission with ID {reportTypeSubmissionId} not found.");
-                    return new BaseResponse<ReportSubmissionResponseDto>
+                    return new BaseResponse<SubmittedReportDto>
                     {
                         Status = false,
                         Message = "Report submission Type not found"
@@ -224,29 +229,42 @@ namespace AMJNReportSystem.Application.Services
 
                 _logger.LogInformation($"Report submission with ID {reportTypeSubmissionId} found.");
 
-                var reportSubmissionResponse = new ReportSubmissionResponseDto
+                var reportSubmissionResponse = new SubmittedReportDto
                 {
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
                     ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
-                    ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
-                    SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
-                    SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
-                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
+                    Answers = reportSubmission.Answers.Select(x => new SubmittedReportResponseDto
                     {
                         Id = x.Id,
+                        QuestionName = x.Question.QuestionName,
+                        QuestionType = x.Question.QuestionType,
+                        ReportSectionId = x.Question.ReportSectionId,
+                        IsActive = x.Question.IsActive,
+                        IsRequired = x.Question.IsRequired,
                         QuestionId = x.QuestionId,
                         TextAnswer = x.TextAnswer,
+                        ResponseType = x.Question.ResponseType,
                         QuestionOptionId = x.QuestionOptionId,
                         Report = x.Report,
+                        SubmittedQuestionOptions = x.Question.Options.Select(x => new SubmittedQuestionOption
+                        {
+                            Id = x.Id,
+                            QuestionId = x.QuestionId,
+                            Text = x.Text,
+                        }).ToList(),
+
                     }).ToList()
                 };
 
+                var result = reportSubmissionResponse.Answers.Where(x => x.ReportSectionId == reportSectionId).ToList();
+                reportSubmissionResponse.Answers = result;
+
+
                 _logger.LogInformation($"Successfully retrieved and mapped report submission with ID {reportTypeSubmissionId}.");
 
-                return new BaseResponse<ReportSubmissionResponseDto>
+                return new BaseResponse<SubmittedReportDto>
                 {
                     Status = true,
                     Message = "Report submission successfully retrieved",
@@ -256,15 +274,13 @@ namespace AMJNReportSystem.Application.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An error occurred while retrieving report submission with ID {reportTypeSubmissionId}.");
-                return new BaseResponse<ReportSubmissionResponseDto>
+                return new BaseResponse<SubmittedReportDto>
                 {
                     Status = false,
                     Message = "An error occurred while retrieving the report submission."
                 };
             }
         }
-
-
 
         public async Task<BaseResponse<PaginatedResult<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync(PaginationFilter filter)
         {
@@ -380,8 +396,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
-
         public async Task<BaseResponse<ReportSubmissionDto>> UpdateReportSubmission(Guid id, UpdateReportSubmission request)
         {
             try
@@ -402,7 +416,6 @@ namespace AMJNReportSystem.Application.Services
 
                 _logger.LogInformation($"Updating report submission with ID: {id}");
                 existingReportSubmission.JammatEmailAddress = request.JammatEmailAddress;
-                existingReportSubmission.ReportSubmissionStatus = request.ReportSubmissionStatus;
                 existingReportSubmission.SubmissionWindow.Year = request.Year;
                 existingReportSubmission.SubmissionWindow.Month = request.Month;
                 existingReportSubmission.ReportTag = request.ReportTag;
@@ -453,7 +466,6 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
         public async Task<Result<bool>> DeleteReportSubmission(Guid reportSubmissionId)
         {
             try
@@ -488,7 +500,6 @@ namespace AMJNReportSystem.Application.Services
                 return Result<bool>.Fail($"An error occurred: {ex.Message}");
             }
         }
-
 
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByReportTypeAsync(Guid reportTypeId)
         {
@@ -549,7 +560,6 @@ namespace AMJNReportSystem.Application.Services
                 };
             }
         }
-
 
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByCircuitIdAsync()
         {
@@ -623,19 +633,31 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
         public async Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetReportSubmissionsByJamaatIdAsync()
         {
             try
             {
-                _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.GetUserId()}");
+                var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+                if (getJamaat == null)
+                {
+                    return new BaseResponse<List<ReportSubmissionResponseDto>>
+                    {
+                        Status = true,
+                        Message = "Unable to retive Muqam",
+                        Data = new List<ReportSubmissionResponseDto>()
+                    };
+                }
+
+
+                _logger.LogInformation($"GetReportSubmissionsByJamaatIdAsync called for user: {_currentUser.Name}");
 
                 var jamaatId = _currentUser.GetJamaatId();
-                _logger.LogInformation($"Retrieved Jamaat ID: {jamaatId} for user: {_currentUser.GetUserId()}");
+                _logger.LogInformation($"Retrieved Jamaat ID: {jamaatId} for user: {_currentUser.Name}");
 
                 if (jamaatId <= 0)
                 {
-                    _logger.LogWarning($"Unable to retrieve a valid Jamaat ID for user: {_currentUser.GetUserId()}");
+                    _logger.LogWarning($"Unable to retrieve a valid Jamaat ID for user: {_currentUser.Name}");
                     return new BaseResponse<List<ReportSubmissionResponseDto>>
                     {
                         Status = false,
@@ -655,25 +677,28 @@ namespace AMJNReportSystem.Application.Services
                         Message = "No report submissions found for the given Jamaat ID."
                     };
                 }
+                var currentDate = DateTime.Today;
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
-                    JamaatId = _currentUser.GetJamaatId(),
-                    CircuitId = _currentUser.GetCircuit(),
+                    JamaatId = reportSubmission.JamaatId,
+                    CircuitId = reportSubmission.CircuitId,
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
                     ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
                     ReportSubmissionStatus = reportSubmission.ReportSubmissionStatus,
-                    ReportTag = (Domain.Enums.ReportTag)reportSubmission.ReportTag,
+                    ReportTag = reportSubmission.ReportTag,
                     SubmissionWindowMonth = reportSubmission.SubmissionWindow.Month,
                     SubmissionWindowYear = reportSubmission.SubmissionWindow.Year,
-                    Answers = reportSubmission.Answers.Select(x => new ReportResponseDto
-                    {
-                        Id = x.Id,
-                        QuestionId = x.QuestionId,
-                        TextAnswer = x.TextAnswer,
-                        QuestionOptionId = x.QuestionOptionId,
-                        Report = x.Report,
-                    }).ToList()
+                    JamaatName = GetMuqamiDetailByJamaatId(getJamaat, reportSubmission.JamaatId).JamaatName,
+                    CircuitName = GetMuqamiDetailByJamaatId(getJamaat, reportSubmission.JamaatId).CircuitName,
+                    Month = GetMonthName(reportSubmission.SubmissionWindow.Month),
+                    Year = reportSubmission.SubmissionWindow.Year,
+                    StartDate = reportSubmission.SubmissionWindow.StartingDate.ToString("dd-MMM-yyyy"),
+                    EndDate = reportSubmission.SubmissionWindow.EndingDate.ToString("dd-MMM-yyyy"),
+                    Status = (currentDate >= reportSubmission.SubmissionWindow.StartingDate && currentDate <= reportSubmission.SubmissionWindow.EndingDate) ? true : false,
+                    CreatedOn = reportSubmission.CreatedOn,
+                    NumberOfQuestion = reportSubmission.Answers.Count(),
+                    NumberOfQuestionSections = reportSubmission.SubmissionWindow.ReportType.ReportSections.Count()
                 }).ToList();
 
                 _logger.LogInformation($"Successfully retrieved report submissions for Jamaat ID: {jamaatId}");
@@ -696,13 +721,13 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-
-
         public async Task<BaseResponse<List<JamaatReport>>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId)
         {
             try
             {
                 _logger.LogInformation($"GetJamaatReportsBySubmissionWindowIdAsync called with Submission Window ID: {submissionWindowId}");
+
+                var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
 
                 var jamaatReports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
 
@@ -718,9 +743,11 @@ namespace AMJNReportSystem.Application.Services
 
                 var jamaatReportResponses = jamaatReports.Select(report => new JamaatReport
                 {
+                    Id = report.Id,
                     JamaatId = report.JamaatId,
                     SubmissionWindowId = report.SubmissionWindowId,
-                    SubmissionWindowName = report.SubmissionWindow.ReportType.Name
+                    SubmissionWindowName = report.SubmissionWindow.ReportType.Name,
+                    JamaatName = GetMuqamiDetailByJamaatId(getJamaat, report.JamaatId).JamaatName,
                 }).ToList();
 
                 _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
@@ -743,5 +770,31 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+        private static (string? JamaatName, string? CircuitName) GetMuqamiDetailByJamaatId(List<Muqam> getJamaat, int jamaatId)
+        {
+
+            if (getJamaat == null || !getJamaat.Any())
+            {
+                return (null, null);
+            }
+
+            var detail = getJamaat.FirstOrDefault(x => x.JamaatId == jamaatId);
+
+            return detail != null
+                ? (detail.JamaatName, detail.CircuitName)
+                : (null, null);
+        }
+
+        public static string GetMonthName(int monthNumber)
+        {
+            // Validate the month number
+            if (monthNumber < 1 || monthNumber > 12)
+            {
+                throw new ArgumentOutOfRangeException(nameof(monthNumber), "Month must be between 1 and 12.");
+            }
+
+            // Use DateTime to get the month name
+            return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber);
+        }
     }
 }

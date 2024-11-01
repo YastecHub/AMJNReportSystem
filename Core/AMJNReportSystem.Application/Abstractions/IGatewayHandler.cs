@@ -1,5 +1,4 @@
 ﻿using AMJNReportSystem.Application.Identity.Tokens;
-using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Models;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
@@ -14,5 +13,6 @@ namespace AMJNReportSystem.Application
         Task<string[]> GetMemberRoleAsync(int chandaNo); 
         Task<User> GetMemberByChandaNoAsync(int chandaNo); 
         Task<MemberApiLoginResponse> GenerateToken(TokenRequest request);
+        Task<List<Muqam>?> GetListOfMuqamAsync();
     }
 }

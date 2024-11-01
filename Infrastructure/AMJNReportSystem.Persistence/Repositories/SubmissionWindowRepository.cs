@@ -74,6 +74,16 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissionWindow;
         }
 
+        public async Task<ReportSubmission?> CheckIfReportSectionHasBeenSubmitted(Guid submissionWindowId, int JamaatId, Guid reportSectionId)
+        {
+            var submissionWindow = await _context.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .ThenInclude(x => x.ReportSections)
+                .FirstOrDefaultAsync(q => q.SubmissionWindowId == submissionWindowId && q.JamaatId == JamaatId && q.SubmissionWindow.ReportType.ReportSections.Any(r=> r.Id == reportSectionId));
+            return submissionWindow;
+        }
+
         public async Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers)
         {
             _context.ReportResponses.RemoveRange(answers);
