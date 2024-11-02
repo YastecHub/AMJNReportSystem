@@ -5,6 +5,7 @@ namespace AMJNReportSystem.Application.Models.ResponseModels
 {
     public class ReportSubmissionResponseDto
     {
+        public Guid Id { get; set; }
         public int JamaatId { get; set; }
         public string? JamaatName { get; set; }
         public int CircuitId { get; set; }
