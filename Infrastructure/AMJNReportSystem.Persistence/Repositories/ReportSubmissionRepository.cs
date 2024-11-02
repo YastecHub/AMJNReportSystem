@@ -47,7 +47,7 @@ namespace AMJNReportSystem.Persistence.Repositories
                 .Include(x => x.Answers)
                 .ThenInclude(x => x.QuestionOption)
                 .SingleOrDefaultAsync(x => x.Id == id);
-
+            
             return reportSubmission;
         }
 
@@ -214,5 +214,19 @@ namespace AMJNReportSystem.Persistence.Repositories
         //}
 
 
+        public async Task<List<ReportSubmission>> GetJamaatMonthlyReport(int jamaatId,int month)  
+        {
+            var submissions = await _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.Question)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.QuestionOption)
+                .Where(x => x.JamaatId == jamaatId || x.SubmissionWindow.Month == month  )
+                .ToListAsync();
+
+            return submissions;
+        }
     }
 }

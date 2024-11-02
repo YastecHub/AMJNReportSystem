@@ -796,5 +796,7 @@ namespace AMJNReportSystem.Application.Services
             // Use DateTime to get the month name
             return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber);
         }
+
+
     }
 }

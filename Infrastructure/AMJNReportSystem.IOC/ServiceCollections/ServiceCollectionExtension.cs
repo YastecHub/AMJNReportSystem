@@ -65,7 +65,8 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IQuestionService, QuestionService>()
                 .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>()
-                .AddScoped<IDashboardService, DashboardService>();
+                .AddScoped<IDashboardService, DashboardService>()
+                .AddScoped<IGenerateReportService, GenerateJamaatReportService>();
 
         }
 
