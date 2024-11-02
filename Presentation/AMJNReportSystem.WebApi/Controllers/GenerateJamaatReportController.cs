@@ -16,15 +16,11 @@ namespace AMJNReportSystem.WebApi.Controllers
             _generateReportService = generateReportService;
         }
 
-        [HttpGet("generate/{jamaatId}/{month}")]
-        public async Task<IActionResult> GenerateJamaatReport(int jamaatId, int month)
+        [HttpGet("generate/{jamaatId}")]
+        public async Task<IActionResult> GenerateJamaatReport(Guid jamaatSubmissionId)
         {
-            if (jamaatId <= 0 || month < 1 || month > 12)
-            {
-                return BadRequest("Invalid Jamaat ID or month.");
-            }
 
-            BaseResponse<string> response = await _generateReportService.GenerateJamaatReportSubmissionsAsync(jamaatId, month);
+            BaseResponse<string> response = await _generateReportService.GenerateJamaatReportSubmissionsAsync(jamaatSubmissionId);
 
             if (!response.Status)
             {

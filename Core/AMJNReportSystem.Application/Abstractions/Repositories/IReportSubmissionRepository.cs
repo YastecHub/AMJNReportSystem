@@ -20,5 +20,7 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         ReportSubmissionResult GetTotalMonthlyReport(int month);
         Task<List<ReportSubmission>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId);
         Task<List<ReportSubmission>> GetJamaatMonthlyReport(int jamaatId, int month);
+
+        Task<PdfResponse> GetReportSubmission(Guid jamaatSubmissionId);
     }
 }

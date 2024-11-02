@@ -16,6 +16,7 @@ namespace AMJNReportSystem.Domain.Entities
         public bool IsRequired { get; set; }
         public bool IsActive { get; set; }
         public Guid ReportSectionId { get; set; }
+        public string ReportSectionName { get; set; }
 
         public List<SubmittedQuestionOption> SubmittedQuestionOptions { get; set; }
     }
