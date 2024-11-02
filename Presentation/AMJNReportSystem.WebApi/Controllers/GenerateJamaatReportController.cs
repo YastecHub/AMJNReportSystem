@@ -16,7 +16,7 @@ namespace AMJNReportSystem.WebApi.Controllers
             _generateReportService = generateReportService;
         }
 
-        [HttpGet("generate/{jamaatId}")]
+        [HttpGet("generate/{jamaatSubmissionId}")]
         public async Task<IActionResult> GenerateJamaatReport(Guid jamaatSubmissionId)
         {
 

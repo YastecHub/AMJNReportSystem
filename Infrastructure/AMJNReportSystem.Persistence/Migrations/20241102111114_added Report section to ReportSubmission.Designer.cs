@@ -4,6 +4,7 @@ using AMJNReportSystem.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMJNReportSystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20241102111114_added Report section to ReportSubmission")]
+    partial class addedReportsectiontoReportSubmission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,9 +185,6 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Property<Guid>("ReportSubmissionId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ReportSubmissionSectionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("TextAnswer")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -197,8 +197,6 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.HasIndex("QuestionOptionId");
 
                     b.HasIndex("ReportSubmissionId");
-
-                    b.HasIndex("ReportSubmissionSectionId");
 
                     b.ToTable("ReportResponses");
                 });
@@ -297,6 +295,9 @@ namespace AMJNReportSystem.Persistence.Migrations
                     b.Property<DateTime?>("LastModifiedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("ReportSubmissionSectionId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("ReportSubmissionStatus")
                         .HasColumnType("int");
 
@@ -307,6 +308,8 @@ namespace AMJNReportSystem.Persistence.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReportSubmissionSectionId");
 
                     b.HasIndex("SubmissionWindowId");
 
@@ -450,19 +453,11 @@ namespace AMJNReportSystem.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportSection", "ReportSubmissionSection")
-                        .WithMany("ReportSubmissions")
-                        .HasForeignKey("ReportSubmissionSectionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Question");
 
                     b.Navigation("QuestionOption");
 
                     b.Navigation("ReportSubmission");
-
-                    b.Navigation("ReportSubmissionSection");
                 });
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSection", b =>
@@ -478,11 +473,19 @@ namespace AMJNReportSystem.Persistence.Migrations
 
             modelBuilder.Entity("AMJNReportSystem.Domain.Entities.ReportSubmission", b =>
                 {
+                    b.HasOne("AMJNReportSystem.Domain.Entities.ReportSection", "ReportSubmissionSection")
+                        .WithMany("ReportSubmissions")
+                        .HasForeignKey("ReportSubmissionSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AMJNReportSystem.Domain.Entities.SubmissionWindow", "SubmissionWindow")
                         .WithMany()
                         .HasForeignKey("SubmissionWindowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ReportSubmissionSection");
 
                     b.Navigation("SubmissionWindow");
                 });

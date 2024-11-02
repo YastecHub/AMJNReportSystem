@@ -126,6 +126,7 @@ namespace AMJNReportSystem.Application.Services
                                 Report = item.Report,
                                 CreatedOn = DateTime.Now,
                                 ReportSubmissionId = reportSubmissionCheckerExist.Id,
+                                ReportSubmissionSectionId = request.reportSectionId
                             };
 
                             await _reportResponseRepository.AddReportResponseAsync(newAnswer);
@@ -180,6 +181,7 @@ namespace AMJNReportSystem.Application.Services
                             Report = item.Report,
                             CreatedOn = DateTime.Now,
                             ReportSubmissionId = submission.Id,
+                            ReportSubmissionSectionId = request.reportSectionId
                         };
 
                         await _reportResponseRepository.AddReportResponseAsync(newAnswer);
@@ -230,7 +232,8 @@ namespace AMJNReportSystem.Application.Services
                 _logger.LogInformation($"Report submission with ID {reportTypeSubmissionId} found.");
 
                 var reportSubmissionResponse = new SubmittedReportDto
-                {
+                {  
+                     Id = reportSubmission.Id,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
@@ -358,6 +361,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var dtos = submissions.Select(submission => new ReportSubmissionResponseDto
                 {
+                     Id = submission.Id,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,

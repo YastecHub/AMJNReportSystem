@@ -12,5 +12,7 @@ namespace AMJNReportSystem.Domain.Entities
         public string? Report { get; set; }
         public Guid ReportSubmissionId { get; set; }
         public ReportSubmission ReportSubmission { get; set; }
+        public Guid ReportSubmissionSectionId { get; set; }
+        public ReportSection ReportSubmissionSection { get; set; }
     }
 }
