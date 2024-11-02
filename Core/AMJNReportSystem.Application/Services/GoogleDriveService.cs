@@ -1,96 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
+using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Application.Services
 {
-    using Google.Apis.Auth.OAuth2;
-    using Google.Apis.Drive.v3;
-    using Google.Apis.Services;
-    using Google.Apis.Upload;
-    using Microsoft.Extensions.Configuration;
-    using System;
-    using System.IO;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    public class GoogleDriveService
+    public class CloudinaryService
     {
-        private readonly DriveService _driveService;
+        private readonly Cloudinary _cloudinary;
 
-        public GoogleDriveService(IConfiguration configuration)
+        public CloudinaryService()
         {
-            var clientId = configuration["GoogleDrive:ClientId"];
-            var clientSecret = configuration["GoogleDrive:ClientSecret"];
-            var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                new ClientSecrets
-                {
-                    ClientId = clientId,
-                    ClientSecret = clientSecret
-                },
-                new[] { DriveService.Scope.DriveFile },
-                "user",
-                CancellationToken.None).Result;
+            // Replace these with your Cloudinary account details
+            var account = new Account(
+                "hamiid137",
+                "c667058e2c57edb64e873f81a77634",
+                "abulhamiideeee");
 
-            _driveService = new DriveService(new BaseClientService.Initializer
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = "YourAppName"
-            });
+            _cloudinary = new Cloudinary(account);
         }
 
-        public async Task<string> UploadFileAsync(string path)
+        public async Task<string> UploadPdfAsync(string filePath)
         {
-            var fileMetadata = new Google.Apis.Drive.v3.Data.File
+            if (!File.Exists(filePath))
             {
-                Name = Path.GetFileName(path)
+                throw new FileNotFoundException("The specified file does not exist.", filePath);
+            }
+
+            var uploadParams = new RawUploadParams()
+            {
+                File = new FileDescription(filePath),
+
+                Folder = "pdf_uploads"           
             };
 
-            using (var stream = new FileStream(path, FileMode.Open))
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+
+            if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var request = _driveService.Files.Create(fileMetadata, stream, GetMimeType(path));
-                request.Fields = "id";
-                var result = await request.UploadAsync();
-
-                if (result.Status == UploadStatus.Failed)
-                {
-                    throw new Exception($"Error uploading file: {result.Exception.Message}");
-                }
-
-                return request.ResponseBody.Id;
+                Console.WriteLine("Upload successful!");
+                return uploadResult.SecureUrl.ToString(); // Returns the URL of the uploaded file
             }
-        }
-
-        public string GetFileLink(string fileId)
-        {
-            return $"https://drive.google.com/file/d/{fileId}/view";
-        }
-
-        private string GetMimeType(string fileName)
-        {
-            var mimeType = "application/octet-stream";
-            var ext = Path.GetExtension(fileName).ToLowerInvariant();
-            switch (ext)
+            else
             {
-                case ".pdf":
-                    mimeType = "application/pdf";
-                    break;
-                case ".doc":
-                case ".docx":
-                    mimeType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                    break;
-                case ".xls":
-                case ".xlsx":
-                    mimeType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    break;
-                case ".ppt":
-                case ".pptx":
-                    mimeType = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                    break;
+               return string.Empty;
+                //throw new Exception($"Cloudinary upload error: {uploadResult.Error.Message}");
             }
-            return mimeType;
         }
     }
 }

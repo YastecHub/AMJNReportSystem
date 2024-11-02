@@ -15,10 +15,10 @@ namespace AMJNReportSystem.Application.Services
         private readonly IReportSubmissionRepository _reportSubmissionRepository;
         private readonly ILogger<GenerateJamaatReportService> _logger;
         private readonly IConfiguration _configuration;
-        private readonly GoogleDriveService _googleDriveService;
+        private readonly CloudinaryService _googleDriveService;
         private readonly DriveService _driveService;
 
-        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository, ILogger<GenerateJamaatReportService> logger, IConfiguration configuration, GoogleDriveService googleDriveService)
+        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository, ILogger<GenerateJamaatReportService> logger, IConfiguration configuration, CloudinaryService googleDriveService)
         {
             _reportSubmissionRepository = reportSubmissionRepository;
             _logger = logger;
@@ -63,8 +63,8 @@ namespace AMJNReportSystem.Application.Services
                 CreateMonthlyReportForm(filePath, reportSubmissions);
 
 
-                var fileId = await _googleDriveService.UploadFileAsync(filePath);
-                var link = _googleDriveService.GetFileLink(fileId);
+                var fileId = await _googleDriveService.UploadPdfAsync(filePath);
+                //var link = _googleDriveService.GetFileLink(fileId);
 
 
 
@@ -74,7 +74,7 @@ namespace AMJNReportSystem.Application.Services
                 {
                     Status = true,
                     Message = "Report submissions successfully retrieved and PDF generated.",
-                    Data = link // Return the file path for reference
+                    Data = filePath // Return the file path for reference
                 };
             }
             catch (Exception ex)
