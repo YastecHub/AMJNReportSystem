@@ -19,5 +19,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<List<ReportSubmission>> GetAllReportTypeSubmissionsAsync();
         ReportSubmissionResult GetTotalMonthlyReport(int month);
         Task<List<ReportSubmission>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId);
+        Task<List<ReportSubmission>> GetJamaatMonthlyReport(int jamaatId, int month);
     }
 }
