@@ -9,6 +9,9 @@ using Newtonsoft.Json;
 using System.Text;
 using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Identity.Tokens;
+using Microsoft.Extensions.Caching.Memory;
+using System.Net.Http.Headers;
+using static System.Net.WebRequestMethods;
 
 namespace AMJNReportSystem.Gateway.Implementations
 {
@@ -17,12 +20,14 @@ namespace AMJNReportSystem.Gateway.Implementations
         private readonly HttpClient _client;
         private readonly string _baseApiPath;
         private readonly IConfigurationSection _config;
+        private readonly IMemoryCache _cache;
 
-        public GatewayHandler(IConfiguration configuration)
+        public GatewayHandler(IConfiguration configuration, IMemoryCache cache)
         {
             _client = new HttpClient();
             _config = configuration.GetSection("Api");
             _baseApiPath = _config.GetSection("Url").Value;
+            _cache = cache;
         }
 
         public async Task<PaginatedResult<Muqam>> GeMuqamatAsync(PaginationFilter filter)
@@ -151,6 +156,48 @@ namespace AMJNReportSystem.Gateway.Implementations
                 return null;
             }
             throw new Exception(response.StatusCode.ToString());
+        }
+
+
+        public async Task<List<Muqam>?> GetListOfMuqamAsync()
+        {
+            var muqamis = new List<Muqam>();
+            try
+            {
+                var cacheKey = $"AhmadiyyaMuslimJamaat_001";
+                muqamis = _cache.Get<List<Muqam>>(cacheKey);
+                if (muqamis == null || muqamis.Count < 0)
+                {
+                    var apiUrl  = $"{_config.Value}jamaats"; ;
+                    using (var httpClient = new HttpClient())
+                    {
+                        httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                        
+                        HttpResponseMessage response = await httpClient.GetAsync(apiUrl);
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            string jsonContent = await response.Content.ReadAsStringAsync();
+                            muqamis = JsonConvert.DeserializeObject<List<Muqam>>(jsonContent);
+
+                            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                                      .SetSlidingExpiration(TimeSpan.FromSeconds(120))
+                                      .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
+                                      .SetPriority(CacheItemPriority.Normal);
+
+                            _cache.Set(cacheKey, muqamis, cacheEntryOptions);
+                            return muqamis;
+                        }
+                    }
+                }
+
+                return muqamis;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

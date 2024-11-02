@@ -46,12 +46,12 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
-        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}")]
+        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}/{reportSectionId}")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
-        public async Task<IActionResult> GetReportTypeSubmission(Guid reportsubmissionid)
+        public async Task<IActionResult> GetReportTypeSubmission([FromRoute]Guid reportsubmissionid, [FromRoute] Guid reportSectionId)
         {
             if (reportsubmissionid == Guid.Empty) return BadRequest("id can not be empty");
-            var response = await _reportSubmissionService.GetReportTypeSubmissionByIdAsync(reportsubmissionid);
+            var response = await _reportSubmissionService.GetSectionReportSubmissionAsync(reportsubmissionid,reportSectionId);
             return !response.Status ? NotFound(response) : Ok(response);
         }
 
@@ -174,6 +174,22 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> GetReportSubmissionsByJammatId()
         {
             var response = await _reportSubmissionService.GetReportSubmissionsByJamaatIdAsync();
+            return !response.Status ? NotFound(response) : Ok(response);
+        }
+
+
+        /// <summary>
+        /// Get a  report submission by submission window
+        /// </summary>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<JamaatReport>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("get-jamaat-report-submission-by-submission-window-id/{submissionWindowId}")]
+        [OpenApiOperation("Get  jammat report submission by submissionWindowId.", "")]
+        public async Task<IActionResult> GetJamaatReportsBySubmissionWindowIdAsync([FromRoute] Guid submissionWindowId)
+        {
+            if (submissionWindowId == Guid.Empty) return BadRequest("id cannot be empty");
+            var response = await _reportSubmissionService.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
             return !response.Status ? NotFound(response) : Ok(response);
         }
     }

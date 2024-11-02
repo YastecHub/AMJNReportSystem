@@ -27,7 +27,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(typeof(BaseResponse<ReportSectionDto>), StatusCodes.Status500InternalServerError)]
         [HttpPost("create-new-report-section")]
         [OpenApiOperation("Create a new report section.", "Creates a new Report Section")]
-        public async Task<IActionResult> CreateReportSection(
+        public async Task<IActionResult> CreateReportSection( 
              [FromBody] CreateReportSectionRequest model,
              [FromServices] IValidator<CreateReportSectionRequest> validator)
         {

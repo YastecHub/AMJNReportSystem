@@ -1,12 +1,6 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
-using AMJNReportSystem.Application.Identity.Users;
 using AMJNReportSystem.Application.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -28,12 +22,13 @@ namespace AMJNReportSystem.Application.Services
 
 
         }
-        public DashboardCountDto DashBoardCount()
+        public DashboardCountDto DashBoardCount(int month)
         {
             var reportTypeCount = _reportTypeRepository.GetAllReportType();
             var reportSectionCount = _reportSectionRepository.GetAllReportSection();
             var reportSubmissionCount = _reportSubmissionRepository.GetAllReportSubmission();
             var questionCount = _questionRepository.GetAllQuestion();
+            var totalReport =  _reportSubmissionRepository.GetTotalMonthlyReport(month);
 
 
 
@@ -44,6 +39,7 @@ namespace AMJNReportSystem.Application.Services
             data.ReportSubmittedByJamaatCounts = reportSubmissionCount.Count();
             data.ReportSubmittedByCircuitCounts = reportSubmissionCount.Count();
             data.QuestionCounts = questionCount.Count();
+            data.TotalReportSubmittedForTheWholeMonth = totalReport.Count;
             return data;
 
         }

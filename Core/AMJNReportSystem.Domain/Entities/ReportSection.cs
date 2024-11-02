@@ -12,5 +12,6 @@ namespace AMJNReportSystem.Domain.Entities
         public bool IsActive { get; set; } = true;
 
         public ICollection<Question> Questions { get; set; } = new HashSet<Question>();
+        public ICollection<ReportResponse> ReportSubmissions { get; set; } = new HashSet<ReportResponse>();
     }
 }

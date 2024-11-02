@@ -13,5 +13,6 @@ namespace AMJNReportSystem.Domain.Entities
         public Guid SubmissionWindowId { get; set; }
         public SubmissionWindow SubmissionWindow { get; set; }
         public ICollection<ReportResponse> Answers { get; set; } = new HashSet<ReportResponse>();
+
     }
 }

@@ -3,9 +3,8 @@ using AMJNReportSystem.Domain.Enums;
 
 namespace AMJNReportSystem.Application.Models.ResponseModels
 {
-    public class ReportSubmissionResponseDto
+    public class PdfReportSubmissionResponseDto
     {
-        public Guid Id { get; set; }
         public int JamaatId { get; set; }
         public string? JamaatName { get; set; }
         public int CircuitId { get; set; }
@@ -14,7 +13,7 @@ namespace AMJNReportSystem.Application.Models.ResponseModels
         public string? ReportTypeName { get; set; }
         public ReportSubmissionStatus? ReportSubmissionStatus { get; set; }
         public ReportTag? ReportTag { get; set; }
-        public int  SubmissionWindowYear { get; set; }
+        public int SubmissionWindowYear { get; set; }
         public int SubmissionWindowMonth { get; set; }
         public string Month { get; set; }
         public int Year { get; set; }
@@ -24,6 +23,6 @@ namespace AMJNReportSystem.Application.Models.ResponseModels
         public bool Status { get; set; }
         public int NumberOfQuestion { get; set; }
         public int NumberOfQuestionSections { get; set; }
-        public List<ReportResponseDto>? Answers { get; set; } = new List<ReportResponseDto>(); 
+        public List<ReportResponseDto>? Answers { get; set; } = new List<ReportResponseDto>();
     }
 }
