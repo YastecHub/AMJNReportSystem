@@ -66,7 +66,9 @@ namespace AMJNReportSystem.IOC.ServiceCollections
                 .AddScoped<IReportResponseService, ReportResponseService>()
                 .AddScoped<IReportTypeService, ReportTypeService>()
                 .AddScoped<IDashboardService, DashboardService>()
+                 .AddScoped<GoogleDriveService>()
                 .AddScoped<IGenerateReportService, GenerateJamaatReportService>();
+
 
         }
 

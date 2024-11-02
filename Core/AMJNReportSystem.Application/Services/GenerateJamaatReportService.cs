@@ -5,7 +5,8 @@ using AMJNReportSystem.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using AMJNReportSystem.Application.Models.DTOs;
+using Google.Apis.Drive.v3;
+using Microsoft.Extensions.Configuration;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -13,11 +14,15 @@ namespace AMJNReportSystem.Application.Services
     {
         private readonly IReportSubmissionRepository _reportSubmissionRepository;
         private readonly ILogger<GenerateJamaatReportService> _logger;
+        private readonly IConfiguration _configuration;
+        private readonly GoogleDriveService _googleDriveService;
+        private readonly DriveService _driveService;
 
-        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository, ILogger<GenerateJamaatReportService> logger)
+        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository, ILogger<GenerateJamaatReportService> logger, IConfiguration configuration, GoogleDriveService googleDriveService)
         {
             _reportSubmissionRepository = reportSubmissionRepository;
             _logger = logger;
+            _googleDriveService = googleDriveService;
         }
 
 
@@ -25,6 +30,8 @@ namespace AMJNReportSystem.Application.Services
         {
             try
             {
+
+
                 _logger.LogInformation("GenerateJamaatReportSubmissionsAsync called for JamaatId: {jamaatId}", jamaatSubmissionId);
 
                 // Fetch report submissions from the repository
@@ -39,7 +46,7 @@ namespace AMJNReportSystem.Application.Services
                     };
                 }
 
-               
+
 
                 // Ensure the Reports directory exists
                 string projectFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "GeneratedReports");
@@ -53,7 +60,12 @@ namespace AMJNReportSystem.Application.Services
                 string filePath = Path.Combine(projectFolderPath, $"CircuitMonthlyReportForm_{reportSubmissions.Jamaat}_{reportSubmissions.Month}.pdf");
 
 
-                 CreateMonthlyReportForm(filePath, reportSubmissions);
+                CreateMonthlyReportForm(filePath, reportSubmissions);
+
+
+                var fileId = await _googleDriveService.UploadFileAsync(filePath);
+                var link = _googleDriveService.GetFileLink(fileId);
+
 
 
                 _logger.LogInformation("PDF report generated successfully for JamaatId: {jamaatId}", jamaatSubmissionId);
@@ -62,7 +74,7 @@ namespace AMJNReportSystem.Application.Services
                 {
                     Status = true,
                     Message = "Report submissions successfully retrieved and PDF generated.",
-                    Data = filePath // Return the file path for reference
+                    Data = link // Return the file path for reference
                 };
             }
             catch (Exception ex)
@@ -136,6 +148,7 @@ namespace AMJNReportSystem.Application.Services
             // Close the document
             document.Close();
         }
+
     }
 
 }

@@ -40,5 +40,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             return File(fileBytes, "application/pdf", fileName);
         }
+
+
     }
 }
