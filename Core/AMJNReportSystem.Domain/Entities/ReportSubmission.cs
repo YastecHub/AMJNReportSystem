@@ -12,8 +12,6 @@ namespace AMJNReportSystem.Domain.Entities
         public ReportTag? ReportTag { get; set; }
         public Guid SubmissionWindowId { get; set; }
         public SubmissionWindow SubmissionWindow { get; set; }
-        public Guid ReportSectionId { get; set; }
-        public ReportSection ReportSection { get; set; }
         public ICollection<ReportResponse> Answers { get; set; } = new HashSet<ReportResponse>();
 
     }

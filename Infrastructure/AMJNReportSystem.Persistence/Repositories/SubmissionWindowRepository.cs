@@ -3,6 +3,7 @@ using AMJNReportSystem.Persistence.Context;
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using Org.BouncyCastle.Ocsp;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -77,10 +78,11 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<ReportSubmission?> CheckIfReportSectionHasBeenSubmitted(Guid submissionWindowId, int JamaatId, Guid reportSectionId)
         {
             var submissionWindow = await _context.ReportSubmissions
+                .Include(x => x.Answers)
                 .Include(x => x.SubmissionWindow)
                 .ThenInclude(x => x.ReportType)
                 .ThenInclude(x => x.ReportSections)
-                .FirstOrDefaultAsync(q => q.SubmissionWindowId == submissionWindowId && q.JamaatId == JamaatId && q.SubmissionWindow.ReportType.ReportSections.Any(r=> r.Id == reportSectionId));
+                .FirstOrDefaultAsync(q => q.SubmissionWindowId == submissionWindowId && q.JamaatId == JamaatId && q.Answers.Any(x => x.ReportSubmissionSectionId == reportSectionId));
             return submissionWindow;
         }
 

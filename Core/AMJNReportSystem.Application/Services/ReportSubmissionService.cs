@@ -126,6 +126,7 @@ namespace AMJNReportSystem.Application.Services
                                 Report = item.Report,
                                 CreatedOn = DateTime.Now,
                                 ReportSubmissionId = reportSubmissionCheckerExist.Id,
+                                ReportSubmissionSectionId = request.reportSectionId
                             };
 
                             await _reportResponseRepository.AddReportResponseAsync(newAnswer);
@@ -180,6 +181,7 @@ namespace AMJNReportSystem.Application.Services
                             Report = item.Report,
                             CreatedOn = DateTime.Now,
                             ReportSubmissionId = submission.Id,
+                            ReportSubmissionSectionId = request.reportSectionId
                         };
 
                         await _reportResponseRepository.AddReportResponseAsync(newAnswer);
