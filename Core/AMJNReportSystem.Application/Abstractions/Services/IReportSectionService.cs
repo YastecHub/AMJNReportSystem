@@ -43,7 +43,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         /// </summary>
         /// <param name="reportSectionId"></param>
         /// <returns></returns>
-       Task<Result<bool>> DeleteReportSection(Guid reportSectionId);
+       Task<BaseResponse<bool>> DeleteReportSection(Guid reportSectionId);
     }
 }
 

@@ -70,7 +70,7 @@ namespace AMJNReportSystem.Application.Services
                         Message = $"Report section with name {request.ReportSectionName} already exists."
                     };
                 }
-               
+
                 var reportSection = new ReportSection
                 {
                     ReportSectionName = request.ReportSectionName,
@@ -197,11 +197,12 @@ namespace AMJNReportSystem.Application.Services
                 var reportSectionDto = new ReportSectionDto
                 {
                     Id = reportSection.Id,
+                    ReportTypeName = reportSection.ReportType.Name,
                     ReportSectionName = reportSection.ReportSectionName,
                     ReportSectionValue = reportSection.ReportSectionValue,
                     Description = reportSection.Description,
                     ReportTypeId = reportSection.ReportTypeId,
-                    IsActive = reportSection.IsActive
+                    IsActive = reportSection.IsActive,
                 };
 
                 _logger.LogInformation($"Report section with Id {reportSectionId} retrieved successfully.");
@@ -248,6 +249,7 @@ namespace AMJNReportSystem.Application.Services
                     ReportTypeId = rs.ReportTypeId,
                     ReportTypeName = rs.ReportType.Name,
                     IsActive = rs.IsActive
+                    
                 }).ToList();
 
                 _logger.LogInformation($"{reportSectionDtos.Count} report sections retrieved successfully for ReportTypeId {reportTypeId}.");
@@ -318,7 +320,7 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
-        public async Task<Result<bool>> DeleteReportSection(Guid reportSectionId)
+        public async Task<BaseResponse<bool>> DeleteReportSection(Guid reportSectionId)
         {
             try
             {
@@ -326,7 +328,11 @@ namespace AMJNReportSystem.Application.Services
                 if (reportSection == null)
                 {
                     _logger.LogWarning($"Report section with Id {reportSectionId} not found.");
-                    return Result<bool>.Fail("Report section not found.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Report section not found.",
+                    };
                 }
 
                 reportSection.IsActive = false;
@@ -337,18 +343,30 @@ namespace AMJNReportSystem.Application.Services
                 if (result)
                 {
                     _logger.LogInformation($"Report section with Id {reportSectionId} deleted successfully.");
-                    return Result<bool>.Success(true, "Report section deleted successfully.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Report section deleted successfully."
+                    };
                 }
                 else
                 {
                     _logger.LogError($"Failed to delete report section with Id {reportSectionId}.");
-                    return Result<bool>.Fail("Failed to delete report section.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Failed to delete report section."
+                    };
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "An error occurred while deleting report section with Id {reportSectionId}.", reportSectionId);
-                return Result<bool>.Fail($"An error occurred: {ex.Message}");
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = $"An error occurred: {ex.Message}"
+                };
             }
         }
     }

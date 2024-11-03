@@ -127,7 +127,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             var result = await _reportSectionService.DeleteReportSection(reportSectionId);
 
-            if (result.Succeeded)
+            if (result.Status)
             {
                 return Ok(result);
             }
