@@ -22,7 +22,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(typeof(DashboardCountDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(DashboardCountDto), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-dash-board-count")]
-        [OpenApiOperation("get-list-of-all-dash-board-count", "")]
+        [OpenApiOperation("Get list of all dash board count", "")]
         public ActionResult<DashboardCountDto> GetDashboardCounts(int month)
         {
             var result = _dashboardService.DashBoardCount(month);
