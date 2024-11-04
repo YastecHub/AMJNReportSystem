@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class JamaatReportController : ControllerBase
     {
@@ -40,7 +40,5 @@ namespace AMJNReportSystem.WebApi.Controllers
 
             return File(fileBytes, "application/pdf", fileName);
         }
-
-
     }
 }

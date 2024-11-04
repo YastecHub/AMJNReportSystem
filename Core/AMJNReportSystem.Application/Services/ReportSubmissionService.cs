@@ -116,7 +116,7 @@ namespace AMJNReportSystem.Application.Services
 
                         foreach (var item in request.ReportResponses)
                         {
-
+                                
                             var newAnswer = new ReportResponse
                             {
                                 QuestionId = item.QuestionId,
