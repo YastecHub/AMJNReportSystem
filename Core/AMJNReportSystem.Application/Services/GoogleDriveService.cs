@@ -1,8 +1,5 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace AMJNReportSystem.Application.Services
 {

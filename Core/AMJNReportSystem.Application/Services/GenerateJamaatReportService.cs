@@ -101,13 +101,11 @@ namespace AMJNReportSystem.Application.Services
             Font sectionTitleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
             Font normalFont = FontFactory.GetFont(FontFactory.HELVETICA, 10);
 
-
-
             Paragraph title = new Paragraph($"{sections.ReportTypeName}\n{sections.ReportTypeDescription}\n\n", titleFont);
             title.Alignment = Element.ALIGN_CENTER;
             document.Add(title);
 
-            // Add circuit and date information (static text, can be modified to accept dynamic inputs)
+            // Add circuit and date information
             Paragraph circuitInfo = new Paragraph($"Circuit: {sections.Circuit} Month : {sections.Month} Year: {sections.Year}\nEmail Address: {sections.EmailAddress}\n\n", normalFont);
             circuitInfo.Alignment = Element.ALIGN_CENTER;
             document.Add(circuitInfo);
@@ -119,26 +117,28 @@ namespace AMJNReportSystem.Application.Services
                 Paragraph sectionTitle = new Paragraph(section.SectionName, sectionTitleFont);
                 document.Add(sectionTitle);
 
-                // Create a table for each section
-                PdfPTable table = new PdfPTable(2);
+                // Create a table for each section with 3 columns
+                PdfPTable table = new PdfPTable(3);
                 table.WidthPercentage = 100;
                 table.SpacingBefore = 10;
                 table.SpacingAfter = 10;
 
-                // Set the relative widths of columns (e.g., 1 for S/N. and 5 for ITEMS)
-                float[] columnWidths = { 1f, 5f };
+                // Set the relative widths of columns (e.g., 1 for S/N., 4 for ITEMS, 3 for ANSWERS)
+                float[] columnWidths = { 1f, 4f, 3f };
                 table.SetWidths(columnWidths);
 
                 // Table headers
                 table.AddCell(new PdfPCell(new Phrase("S/N.", sectionTitleFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
                 table.AddCell(new PdfPCell(new Phrase("ITEMS", sectionTitleFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                table.AddCell(new PdfPCell(new Phrase("ANSWER", sectionTitleFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
 
                 // Populate table with questions and answers
                 int serialNumber = 1;
                 foreach (var qa in section.Questions)
                 {
                     table.AddCell(new PdfPCell(new Phrase(serialNumber.ToString(), normalFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
-                    table.AddCell(new PdfPCell(new Phrase(qa.Question + "\n" + "Answer: " + (qa.Answer ?? ""), normalFont)));
+                    table.AddCell(new PdfPCell(new Phrase(qa.Question, normalFont)));
+                    table.AddCell(new PdfPCell(new Phrase(qa.Answer ?? "", normalFont)));
                     serialNumber++;
                 }
 
@@ -148,6 +148,7 @@ namespace AMJNReportSystem.Application.Services
             // Close the document
             document.Close();
         }
+
 
     }
 

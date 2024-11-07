@@ -5,7 +5,6 @@ using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using AMJNReportSystem.Application.Models.DTOs;
-using System.Collections.Immutable;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using System.Globalization;
 using AMJNReportSystem.Application;
@@ -183,10 +182,6 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<PdfResponse> GetReportSubmission(Guid jamaatSubmissionId)
         {
 
-            var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
-
-            if (getJamaat == null)
-                return new PdfResponse();
 
             var data = await _dbcontext.ReportSubmissions
                 .Include(x => x.SubmissionWindow)
@@ -250,6 +245,7 @@ namespace AMJNReportSystem.Persistence.Repositories
 
                 }).ToList();
 
+            var jamattInfo = await GetMuqamiDetailByJamaatId(data.JamaatId);
 
             var result = new PdfResponse()
             {
@@ -259,8 +255,8 @@ namespace AMJNReportSystem.Persistence.Repositories
                 ReportTypeDescription = data.ReportTypDescription,
                 ReportTypeName = data.ReportTypeName,
                 Year = data.Year,
-                Jamaat = GetMuqamiDetailByJamaatId(getJamaat, data.JamaatId).JamaatName,
-                Circuit = GetMuqamiDetailByJamaatId(getJamaat, data.CircuitId).CircuitName
+                Jamaat = jamattInfo != null ? jamattInfo.JamaatName : string.Empty,
+                Circuit = jamattInfo != null ? jamattInfo.CircuitName : string.Empty,
 
             };
 
@@ -301,19 +297,23 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissions;
         }
 
-        private static (string? JamaatName, string? CircuitName) GetMuqamiDetailByJamaatId(List<Muqam> getJamaat, int jamaatId)
+        private async Task<JamaatDto?> GetMuqamiDetailByJamaatId(int jamaatId)
         {
 
-            if (getJamaat == null || !getJamaat.Any())
+            var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+            if (getJamaat == null)
+                return new JamaatDto();
+
+
+
+            var detail = getJamaat.Where(x => x.JamaatId == jamaatId).Select(x => new JamaatDto
             {
-                return (null, null);
-            }
+                CircuitName = x.CircuitName,
+                JamaatName = x.JamaatName,
+            }).FirstOrDefault();
 
-            var detail = getJamaat.FirstOrDefault(x => x.JamaatId == jamaatId);
-
-            return detail != null
-                ? (detail.JamaatName, detail.CircuitName)
-                : (null, null);
+            return detail;
         }
 
         private static string GetMonthName(int monthNumber)
@@ -328,4 +328,6 @@ namespace AMJNReportSystem.Persistence.Repositories
             return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNumber);
         }
     }
+
+
 }

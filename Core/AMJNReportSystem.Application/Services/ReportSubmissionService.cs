@@ -336,7 +336,8 @@ namespace AMJNReportSystem.Application.Services
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
                     ReportTypeName = reportSubmission.SubmissionWindow.ReportType.Name,
-                    Answers = reportSubmission.Answers.Select(x => new SubmittedReportResponseDto
+                    Answers = reportSubmission.Answers.Where(x => x.ReportSubmissionSectionId == reportSectionId)
+                    .Select(x => new SubmittedReportResponseDto
                     {
                         Id = x.Id,
                         QuestionName = x.Question.QuestionName,
@@ -356,12 +357,8 @@ namespace AMJNReportSystem.Application.Services
                             Text = x.Text,
                         }).ToList(),
 
-                    }).ToList()
+                    }).OrderBy(x => x.QuestionName).ToList()
                 };
-
-                var result = reportSubmissionResponse.Answers.Where(x => x.ReportSectionId == reportSectionId).ToList();
-                reportSubmissionResponse.Answers = result;
-
 
                 _logger.LogInformation($"Successfully retrieved and mapped report submission with ID {reportTypeSubmissionId}.");
 
