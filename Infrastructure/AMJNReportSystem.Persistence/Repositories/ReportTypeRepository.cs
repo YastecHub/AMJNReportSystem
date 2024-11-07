@@ -3,19 +3,17 @@ using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using AMJNReportSystem.Application.Models.DTOs;
-using AMJNReportSystem.Application.Interfaces;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
     public class ReportTypeRepository : IReportTypeRepository
     {
         private readonly ApplicationContext _context;
-        private readonly ICurrentUser _currentUser;
 
-        public ReportTypeRepository(ApplicationContext context, ICurrentUser currentUser)
+        public ReportTypeRepository(ApplicationContext context)
         {
             _context = context;
-            _currentUser = currentUser;
+            
         }
 
         public List<ReportType> GetAllReportType()
@@ -69,16 +67,16 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
 
 
-        public async Task<DashboardCountDto> DashBoardDataAsync()
+        public async Task<DashboardCountDto> DashBoardDataAsync(int jamaatId,int circuitId)
         {
            var result = new DashboardCountDto();
 
-            var jamaatId =  _currentUser.GetJamaatId();
-            var circuitId = _currentUser.GetCircuit();
-
-            result.TotalReportSubmittedForTheWholeMonth = await _context.ReportSubmissions.CountAsync();
-            result.ReportSubmittedByCircuitCounts = await _context.ReportSubmissions.CountAsync(x => x.CircuitId == circuitId);
-            result.ReportSubmittedByJamaatCounts = await _context.ReportSubmissions.CountAsync(x => x.JamaatId == jamaatId);
+            result.TotalReportSubmittedForTheWholeMonth = await _context.ReportSubmissions.CountAsync(x => !x.IsDeleted);
+            result.ReportSubmittedByCircuitCounts = await _context.ReportSubmissions.CountAsync(x => x.CircuitId == circuitId && !x.IsDeleted);
+            result.ReportSubmittedByJamaatCounts = await _context.ReportSubmissions.CountAsync(x => x.JamaatId == jamaatId && !x.IsDeleted);
+            result.ReportTypeCounts = await _context.ReportTypes.CountAsync(x => !x.IsDeleted);
+            result.ReportSectionCounts = await _context.ReportSections.CountAsync(x => !x.IsDeleted);
+            result.QuestionCounts = await _context.Questions.CountAsync(x => !x.IsDeleted);
 
             return result;
         }

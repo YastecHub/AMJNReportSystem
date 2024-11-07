@@ -12,6 +12,7 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<bool> UpdateReportType(ReportType reportType);
         Task<bool> Exist(string reportTypeName);
         List<ReportType> GetAllReportType();
-        Task<DashboardCountDto> DashBoardDataAsync();
+        Task<DashboardCountDto> DashBoardDataAsync(int jamaatId, int circuitId);
+
     }
 }

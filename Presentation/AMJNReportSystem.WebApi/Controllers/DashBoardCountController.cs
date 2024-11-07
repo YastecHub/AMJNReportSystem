@@ -23,9 +23,9 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(typeof(DashboardCountDto), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-dash-board-count")]
         [OpenApiOperation("Get list of all dash board count", "")]
-        public ActionResult<DashboardCountDto> GetDashboardCounts(int month)
+        public ActionResult<DashboardCountDto> GetDashboardCounts()
         {
-            var result = _dashboardService.DashBoardCount(month);
+            var result = _dashboardService.DashBoardCount();
             return Ok(result);
         }
 
