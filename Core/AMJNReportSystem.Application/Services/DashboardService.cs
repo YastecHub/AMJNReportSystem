@@ -6,14 +6,15 @@ namespace AMJNReportSystem.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-       
+
         private readonly IReportTypeRepository _reportTypeRepository;
         public DashboardService(IReportTypeRepository reportTypeRepository)
         {
-            
+
             _reportTypeRepository = reportTypeRepository;
         }
-        public async Task<DashboardCountDto> DashBoardCount(int? month = null) =>
-            await _reportTypeRepository.DashBoardDataAsync();
+
+        public async Task<DashboardCountDto> DashBoardCount(int? month = null) 
+            => await _reportTypeRepository.DashBoardDataAsync();
     }
 }
