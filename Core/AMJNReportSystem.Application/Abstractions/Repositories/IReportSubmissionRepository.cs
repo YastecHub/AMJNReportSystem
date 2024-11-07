@@ -3,6 +3,7 @@ using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
+using System.Threading.Tasks;
 namespace AMJNReportSystem.Application.Abstractions.Repositories
 {
     public interface IReportSubmissionRepository
@@ -22,5 +23,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<List<ReportSubmission>> GetJamaatMonthlyReport(int jamaatId, int month);
 
         Task<PdfResponse> GetReportSubmission(Guid jamaatSubmissionId);
+        Task<ReportSubmission?> GetReportSubmissionSectionAsync(Guid reportSubmissionWindowId, Guid reportSectionId, int jamaatId);
     }
 }

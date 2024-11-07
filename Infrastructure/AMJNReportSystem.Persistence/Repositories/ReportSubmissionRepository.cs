@@ -259,13 +259,31 @@ namespace AMJNReportSystem.Persistence.Repositories
                 ReportTypeDescription = data.ReportTypDescription,
                 ReportTypeName = data.ReportTypeName,
                 Year = data.Year,
-                Jamaat = GetMuqamiDetailByJamaatId(getJamaat,data.JamaatId).JamaatName,
-                Circuit = GetMuqamiDetailByJamaatId(getJamaat,data.CircuitId).CircuitName
+                Jamaat = GetMuqamiDetailByJamaatId(getJamaat, data.JamaatId).JamaatName,
+                Circuit = GetMuqamiDetailByJamaatId(getJamaat, data.CircuitId).CircuitName
 
             };
 
 
             return result;
+        }
+
+
+        public async Task<ReportSubmission?> GetReportSubmissionSectionAsync(Guid reportSubmissionWindowId, Guid reportSectionId, int jamaatId)
+        {
+            var reportSubmission = await _dbcontext.ReportSubmissions
+                .Include(x => x.SubmissionWindow)
+                .ThenInclude(x => x.ReportType)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.Question)
+                .ThenInclude(x => x.Options)
+                .Include(x => x.Answers)
+                .ThenInclude(x => x.QuestionOption)
+                .FirstOrDefaultAsync(x => x.SubmissionWindowId == reportSubmissionWindowId
+                && x.JamaatId == jamaatId
+                && x.Answers.Any(x => x.ReportSubmissionSectionId == reportSectionId));
+
+            return reportSubmission;
         }
 
         public async Task<List<ReportSubmission>> GetJamaatMonthlyReport(int jamaatId, int month)

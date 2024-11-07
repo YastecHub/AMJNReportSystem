@@ -217,7 +217,10 @@ namespace AMJNReportSystem.Application.Services
             {
                 _logger.LogInformation($"GetReportTypeSubmissionByIdAsync called with ID: {reportTypeSubmissionId}", reportTypeSubmissionId);
 
-                var reportSubmission = await _reportSubmissionRepository.GetReportTypeSubmissionByIdAsync(reportTypeSubmissionId);
+                var jamaatId = _currentUser.GetJamaatId();
+
+                var reportSubmission = await _reportSubmissionRepository
+                    .GetReportSubmissionSectionAsync(reportTypeSubmissionId, reportSectionId, jamaatId);
 
                 if (reportSubmission == null)
                 {
@@ -232,8 +235,8 @@ namespace AMJNReportSystem.Application.Services
                 _logger.LogInformation($"Report submission with ID {reportTypeSubmissionId} found.");
 
                 var reportSubmissionResponse = new SubmittedReportDto
-                {  
-                     Id = reportSubmission.Id,
+                {
+                    Id = reportSubmission.Id,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
@@ -361,7 +364,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var dtos = submissions.Select(submission => new ReportSubmissionResponseDto
                 {
-                     Id = submission.Id,
+                    Id = submission.Id,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = submission.JammatEmailAddress,

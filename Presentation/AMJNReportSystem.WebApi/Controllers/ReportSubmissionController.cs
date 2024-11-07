@@ -42,11 +42,12 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <summary>
         /// Get a specific report submission by id
         /// </summary>
-        /// <param name="reportTypeSubmissionId"></param>
+        /// <param name="reportsubmissionid"></param>
+        /// <param name="reportSectionId"></param>
         /// <returns></returns>
-        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse<ReportSubmissionDto>), StatusCodes.Status500InternalServerError)]
-        [HttpGet("get-report-submission-by-id/{reportTypeSubmissionId}/{reportSectionId}")]
+        [ProducesResponseType(typeof(BaseResponse<SubmittedReportDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<SubmittedReportDto>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("get-report-submission-by-id/{reportsubmissionid}/{reportSectionId}")]
         [OpenApiOperation("Get a specific report submission by id.", "")]
         public async Task<IActionResult> GetReportTypeSubmission([FromRoute]Guid reportsubmissionid, [FromRoute] Guid reportSectionId)
         {
@@ -64,7 +65,7 @@ namespace AMJNReportSystem.WebApi.Controllers
         /// <returns></returns>
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<ReportSubmissionResponseDto>), StatusCodes.Status500InternalServerError)]
-        [HttpPost("get-all-report-type-submissions")]
+        [HttpGet("get-all-report-type-submissions-paginated")]
         [OpenApiOperation("Get list of all report submission.", "")]
         public async Task<IActionResult> GeAlltReportTypeSubmissions(PaginationFilter filter)
         {
