@@ -2,16 +2,20 @@
 using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using AMJNReportSystem.Application.Models.DTOs;
+using AMJNReportSystem.Application.Interfaces;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
     public class ReportTypeRepository : IReportTypeRepository
     {
         private readonly ApplicationContext _context;
+        private readonly ICurrentUser _currentUser;
 
-        public ReportTypeRepository(ApplicationContext context)
+        public ReportTypeRepository(ApplicationContext context, ICurrentUser currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         public List<ReportType> GetAllReportType()
@@ -62,6 +66,21 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             var report = _context.ReportTypes.Update(reportType);
             return await _context.SaveChangesAsync() > 0;
+        }
+
+
+        public async Task<DashboardCountDto> DashBoardDataAsync()
+        {
+           var result = new DashboardCountDto();
+
+            var jamaatId =  _currentUser.GetJamaatId();
+            var circuitId = _currentUser.GetCircuit();
+
+            result.TotalReportSubmittedForTheWholeMonth = await _context.ReportSubmissions.CountAsync();
+            result.ReportSubmittedByCircuitCounts = await _context.ReportSubmissions.CountAsync(x => x.CircuitId == circuitId);
+            result.ReportSubmittedByJamaatCounts = await _context.ReportSubmissions.CountAsync(x => x.JamaatId == jamaatId);
+
+            return result;
         }
     }
 }

@@ -6,42 +6,14 @@ namespace AMJNReportSystem.Application.Services
 {
     public class DashboardService : IDashboardService
     {
-        private readonly IReportSubmissionRepository _reportSubmissionRepository;
+       
         private readonly IReportTypeRepository _reportTypeRepository;
-        private readonly IReportSectionRepository _reportSectionRepository;
-        private readonly IQuestionRepository _questionRepository;
-        public DashboardService(IReportSubmissionRepository reportSubmissionRepository,
-                IReportTypeRepository reportTypeRepository,
-                IReportSectionRepository reportSectionRepository,
-                IQuestionRepository questionRepository)
+        public DashboardService(IReportTypeRepository reportTypeRepository)
         {
-            _reportSubmissionRepository = reportSubmissionRepository;
+            
             _reportTypeRepository = reportTypeRepository;
-            _reportSectionRepository = reportSectionRepository;
-            _questionRepository = questionRepository;
-
-
         }
-        public DashboardCountDto DashBoardCount(int month)
-        {
-            var reportTypeCount = _reportTypeRepository.GetAllReportType();
-            var reportSectionCount = _reportSectionRepository.GetAllReportSection();
-            var reportSubmissionCount = _reportSubmissionRepository.GetAllReportSubmission();
-            var questionCount = _questionRepository.GetAllQuestion();
-            var totalReport =  _reportSubmissionRepository.GetTotalMonthlyReport(month);
-
-
-
-            var data = new DashboardCountDto();
-
-            data.ReportTypeCounts = reportTypeCount.Count();
-            data.ReportSectionCounts = reportSectionCount.Count();
-            data.ReportSubmittedByJamaatCounts = reportSubmissionCount.Count();
-            data.ReportSubmittedByCircuitCounts = reportSubmissionCount.Count();
-            data.QuestionCounts = questionCount.Count();
-            data.TotalReportSubmittedForTheWholeMonth = totalReport.Count;
-            return data;
-
-        }
+        public async Task<DashboardCountDto> DashBoardCount(int? month = null) =>
+            await _reportTypeRepository.DashBoardDataAsync();
     }
 }

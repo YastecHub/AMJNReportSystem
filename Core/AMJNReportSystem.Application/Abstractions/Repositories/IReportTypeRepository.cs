@@ -1,4 +1,5 @@
-﻿using AMJNReportSystem.Domain.Entities;
+﻿using AMJNReportSystem.Application.Models.DTOs;
+using AMJNReportSystem.Domain.Entities;
 
 namespace AMJNReportSystem.Application.Abstractions.Repositories
 {
@@ -11,5 +12,6 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<bool> UpdateReportType(ReportType reportType);
         Task<bool> Exist(string reportTypeName);
         List<ReportType> GetAllReportType();
+        Task<DashboardCountDto> DashBoardDataAsync();
     }
 }
