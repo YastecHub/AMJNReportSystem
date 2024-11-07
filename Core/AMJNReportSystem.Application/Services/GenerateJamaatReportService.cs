@@ -89,6 +89,47 @@ namespace AMJNReportSystem.Application.Services
         }
 
 
+        public async Task<BaseResponse<PdfResponse>> ReportSubmissionsAsync(Guid jamaatSubmissionId)
+        {
+            try
+            {
+
+
+                _logger.LogInformation("GenerateJamaatReportSubmissionsAsync called for JamaatId: {jamaatId}", jamaatSubmissionId);
+
+                // Fetch report submissions from the repository
+                var reportSubmissions = await _reportSubmissionRepository.GetReportSubmission(jamaatSubmissionId);
+
+                if (reportSubmissions == null)
+                {
+                    return new BaseResponse<PdfResponse>
+                    {
+                        Status = false,
+                        Message = "No report submissions found for the given jamaat for the month."
+                    };
+                }
+
+                _logger.LogInformation("PDF report generated successfully for JamaatId: {jamaatId}", jamaatSubmissionId);
+
+                return new BaseResponse<PdfResponse>
+                {
+                    Status = true,
+                    Message = "Report submissions successfully retrieved and PDF generated.",
+                    Data = reportSubmissions // Return the file path for reference
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving report submissions for JamaatId: {jamaatSubmissionId}");
+                return new BaseResponse<PdfResponse>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving the report submissions: {ex.Message}"
+                };
+            }
+        }
+
+
 
         private void CreateMonthlyReportForm(string filePath, PdfResponse sections)
         {

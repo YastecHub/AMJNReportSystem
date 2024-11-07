@@ -1,7 +1,8 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Wrapper;
-using Microsoft.AspNetCore.Http;
+using AMJNReportSystem.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace AMJNReportSystem.WebApi.Controllers
 {
@@ -16,11 +17,14 @@ namespace AMJNReportSystem.WebApi.Controllers
             _generateReportService = generateReportService;
         }
 
+        
+        [ProducesResponseType(typeof(BaseResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<string>), StatusCodes.Status500InternalServerError)]
         [HttpGet("generate/{jamaatSubmissionId}")]
         public async Task<IActionResult> GenerateJamaatReport(Guid jamaatSubmissionId)
         {
 
-            BaseResponse<string> response = await _generateReportService.GenerateJamaatReportSubmissionsAsync(jamaatSubmissionId);
+            var response = await _generateReportService.GenerateJamaatReportSubmissionsAsync(jamaatSubmissionId);
 
             if (!response.Status)
             {
@@ -39,6 +43,25 @@ namespace AMJNReportSystem.WebApi.Controllers
             var fileName = Path.GetFileName(filePath);
 
             return File(fileBytes, "application/pdf", fileName);
+        }
+
+
+       
+        [ProducesResponseType(typeof(BaseResponse<PdfResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<PdfResponse>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("generate-report/{jamaatSubmissionId}")]
+        [OpenApiOperation("create-question", "")]
+        public async Task<IActionResult> GenerateJamaatReportSubmission(Guid jamaatSubmissionId)
+        {
+
+            var response = await _generateReportService.ReportSubmissionsAsync(jamaatSubmissionId);
+
+            if (!response.Status)
+            {
+                return StatusCode(500, response.Message);
+            }
+
+            return Ok(response);
         }
     }
 }
