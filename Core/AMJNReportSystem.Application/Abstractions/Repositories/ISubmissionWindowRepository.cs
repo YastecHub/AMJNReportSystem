@@ -13,7 +13,8 @@ namespace AMJNReportSystem.Application.Abstractions.Repositories
         Task<bool> GetReportTypeExist(Guid reportTypeId);
         Task<ReportSubmission?> CheckIfReportHasBeenSubmittedByJammatPresident(Guid submissionWindowId, int JamaatId);
 
-        Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers);
+        Task<bool> DeleteReportSubmissionAnswer(List<ReportResponse> answers);
         Task<ReportSubmission?> CheckIfReportSectionHasBeenSubmitted(Guid submissionWindowId, int JamaatId, Guid reportSectionId);
+        Task<List<ReportResponse>?> GetReportSubmittedResponse(Guid reportSubmissionId, Guid reportSectionId);
     }
 }

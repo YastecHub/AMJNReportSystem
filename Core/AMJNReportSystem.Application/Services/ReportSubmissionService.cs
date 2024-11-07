@@ -116,7 +116,7 @@ namespace AMJNReportSystem.Application.Services
 
                         foreach (var item in request.ReportResponses)
                         {
-                                
+
                             var newAnswer = new ReportResponse
                             {
                                 QuestionId = item.QuestionId,
@@ -142,14 +142,109 @@ namespace AMJNReportSystem.Application.Services
                     }
                     else
                     {
-
-                        return new BaseResponse<bool>
+                        if (request.IsUpdate)
                         {
-                            Status = true,
-                            Data = false,
-                            Message = $"Report Section has already been submitted by {reportSubmissionCheckerExist.CreatedBy} " +
-                            $"on {reportSubmissionCheckerExist.CreatedOn.ToString("dd-MM-yyyy")}"
-                        };
+                            var getAllSubmittedResponses = await _submissionWindowRepository
+                                                    .GetReportSubmittedResponse(reportSubmissionCheckerExist.Id, request.reportSectionId);
+
+                            if (getAllSubmittedResponses != null)
+                            {
+                                if (getAllSubmittedResponses.Count > 0)
+                                {
+                                    var delete = await _submissionWindowRepository.DeleteReportSubmissionAnswer(getAllSubmittedResponses);
+
+                                    if (delete)
+                                    {
+
+                                        foreach (var item in request.ReportResponses)
+                                        {
+
+                                            var newAnswer = new ReportResponse
+                                            {
+                                                QuestionId = item.QuestionId,
+                                                TextAnswer = item.TextAnswer,
+                                                Id = Guid.NewGuid(),
+                                                QuestionOptionId = item.QuestionOptionId,
+                                                Report = item.Report,
+                                                CreatedOn = DateTime.Now,
+                                                ReportSubmissionId = reportSubmissionCheckerExist.Id,
+                                                ReportSubmissionSectionId = request.reportSectionId
+                                            };
+
+                                            await _reportResponseRepository.AddReportResponseAsync(newAnswer);
+                                        }
+
+                                        return new BaseResponse<bool>
+                                        {
+                                            Status = true,
+                                            Data = false,
+                                            Message = $"Report Section Updated successfully "
+
+                                        };
+                                    }
+                                    else
+                                    {
+
+                                        return new BaseResponse<bool>
+                                        {
+                                            Status = true,
+                                            Data = false,
+                                            Message = $"Submited Report Section Failed to delete."
+
+                                        };
+                                    }
+                                }
+                                else
+                                {
+
+                                    foreach (var item in request.ReportResponses)
+                                    {
+
+                                        var newAnswer = new ReportResponse
+                                        {
+                                            QuestionId = item.QuestionId,
+                                            TextAnswer = item.TextAnswer,
+                                            Id = Guid.NewGuid(),
+                                            QuestionOptionId = item.QuestionOptionId,
+                                            Report = item.Report,
+                                            CreatedOn = DateTime.Now,
+                                            ReportSubmissionId = reportSubmissionCheckerExist.Id,
+                                            ReportSubmissionSectionId = request.reportSectionId
+                                        };
+
+                                        await _reportResponseRepository.AddReportResponseAsync(newAnswer);
+                                    }
+
+                                    return new BaseResponse<bool>
+                                    {
+                                        Status = true,
+                                        Data = false,
+                                        Message = $"Report Section Updated successfully "
+
+                                    };
+                                }
+                            }
+                            else
+                            {
+                                return new BaseResponse<bool>
+                                {
+                                    Status = true,
+                                    Data = false,
+                                    Message = $"Submitted Report Section not found."
+
+                                };
+                            }
+                        }
+                        else
+                        {
+                            return new BaseResponse<bool>
+                            {
+                                Status = true,
+                                Data = false,
+                                Message = $"Report Section has already been submitted by {reportSubmissionCheckerExist.CreatedBy} " +
+                           $"on {reportSubmissionCheckerExist.CreatedOn.ToString("dd-MM-yyyy")}"
+                            };
+                        }
                     }
                 }
                 else

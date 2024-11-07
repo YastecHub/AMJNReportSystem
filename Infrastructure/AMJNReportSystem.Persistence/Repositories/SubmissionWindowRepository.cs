@@ -86,7 +86,15 @@ namespace AMJNReportSystem.Persistence.Repositories
             return submissionWindow;
         }
 
-        public async Task<bool?> DeleteReportSubmissionAnswer(List<ReportResponse> answers)
+        public async Task<List<ReportResponse>?> GetReportSubmittedResponse(Guid reportSubmissionId, Guid reportSectionId)
+        {
+            var reportResponse = await _context.ReportResponses
+                .Where(r => r.ReportSubmissionId == reportSubmissionId && r.ReportSubmissionSectionId == reportSectionId)
+                .ToListAsync();
+            return reportResponse;
+        }
+
+        public async Task<bool> DeleteReportSubmissionAnswer(List<ReportResponse> answers)
         {
             _context.ReportResponses.RemoveRange(answers);
 
