@@ -52,7 +52,7 @@ namespace AMJNReportSystem.Persistence.Repositories
         {
             var submissionWindow = await _context.SubmissionWindows
                 .Include(x => x.ReportType)
-                .SingleOrDefaultAsync(q => q.ReportTypeId == reportTypeId);
+                .FirstOrDefaultAsync(q => q.ReportTypeId == reportTypeId);
 
             return submissionWindow != null;
         }
@@ -61,8 +61,11 @@ namespace AMJNReportSystem.Persistence.Repositories
         public async Task<bool> UpdateSubmissionWindow(SubmissionWindow submissionWindow)
         {
             var submission = _context.Update(submissionWindow);
-            _context.SaveChanges();
-            return true;
+
+            if (await _context.SaveChangesAsync() > 0)
+                return true;
+
+            return false;
         }
 
 
@@ -103,5 +106,6 @@ namespace AMJNReportSystem.Persistence.Repositories
 
             return false;
         }
+
     }
 }

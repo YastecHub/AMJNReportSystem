@@ -193,5 +193,23 @@ namespace AMJNReportSystem.WebApi.Controllers
             var response = await _reportSubmissionService.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
             return !response.Status ? NotFound(response) : Ok(response);
         }
+
+
+        /// <summary>
+        /// Get a specific report submission by id
+        /// </summary>
+        /// <param name="reportsubmissionid"></param>
+        /// <param name="reportSectionId"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<bool>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("confirm-report-section-has-been-submitted/{reportsubmissionid}/{reportSectionId}")]
+        [OpenApiOperation("Get a specific report submission by id.", "")]
+        public async Task<IActionResult> ConfirmReportSectionHasBeenSubmittedAsync([FromRoute] Guid reportsubmissionid, [FromRoute] Guid reportSectionId)
+        {
+            if (reportsubmissionid == Guid.Empty) return BadRequest("id can not be empty");
+            var response = await _reportSubmissionService.ConfirmReportSectionHasBeenSubmittedAsync(reportsubmissionid, reportSectionId);
+            return !response.Status ? NotFound(response) : Ok(response);
+        }
     }
 }

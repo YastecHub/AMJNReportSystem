@@ -869,6 +869,49 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+
+        public async Task<BaseResponse<bool>> ConfirmReportSectionHasBeenSubmittedAsync(Guid reportTypeSubmissionId, Guid reportSectionId)
+        {
+            try
+            {
+                _logger.LogInformation($"GetReportTypeSubmissionByIdAsync called with ID: {reportTypeSubmissionId}", reportTypeSubmissionId);
+
+                var jamaatId = _currentUser.GetJamaatId();
+
+                var reportSubmission = await _reportSubmissionRepository
+                    .GetReportSubmissionSectionAsync(reportTypeSubmissionId, reportSectionId, jamaatId);
+
+                if (reportSubmission == null)
+                {
+                    _logger.LogWarning($"Report submission with ID {reportTypeSubmissionId} not found.");
+                    return new BaseResponse<bool>
+                    {
+                        Status = false,
+                        Message = "Report Section not submitted.",
+                        Data = false
+                    };
+                }
+
+                _logger.LogInformation($"Successfully retrieved and mapped report submission with ID {reportTypeSubmissionId}.");
+
+                return new BaseResponse<bool>
+                {
+                    Status = true,
+                    Message = "Report Section has been submitted.",
+                    Data = true
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving report submission with ID {reportTypeSubmissionId}.");
+                return new BaseResponse<bool>
+                {
+                    Status = false,
+                    Message = "An error occurred while retrieving the report submission."
+                };
+            }
+        }
+
         private static (string? JamaatName, string? CircuitName) GetMuqamiDetailByJamaatId(List<Muqam> getJamaat, int jamaatId)
         {
 

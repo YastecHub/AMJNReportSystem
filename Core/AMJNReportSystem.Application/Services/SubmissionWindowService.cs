@@ -24,12 +24,24 @@ namespace AMJNReportSystem.Application.Services
                 if (request is null)
                     return await Result<bool>.FailAsync("Question can't be null.");
 
-                var reportTypeExist = await _submissionWindowRepository.GetReportTypeExist(request.ReportTypeId);
-                if (reportTypeExist)
-                {
-                    return await Result<bool>.FailAsync("Report Type already exists");
-                }
+                var reportTypeExist = await _submissionWindowRepository
+                    .GetAllSubmissionWindowsAsync(x => x.ReportTypeId == request.ReportTypeId);
 
+
+                if (!IsWithinMonth(request.StartingDate, request.EndingDate, request.Month, request.Year)) 
+                    return await Result<bool>.FailAsync($"The start date and end date {request.StartingDate.ToShortDateString()} to {request.EndingDate.ToShortDateString()} are not within the target month.");
+
+                if (reportTypeExist != null)
+                {
+                    foreach (var item in reportTypeExist)
+                    {
+
+                        item.IsLocked = true;
+
+                        await _submissionWindowRepository.UpdateSubmissionWindow(item);
+
+                    }
+                }
 
                 var submissionWindow = new SubmissionWindow
                 {
@@ -169,6 +181,17 @@ namespace AMJNReportSystem.Application.Services
             };
 
             return Result<SubmissionWindowDto>.Success(subWindowDto, "Submission Window retrieved successfully");
+        }
+
+        public static bool IsWithinMonth(DateTime startDate, DateTime endDate, int targetMonth, int targetYear)
+        {
+            // Define the start and end of the target month
+            DateTime targetStart = new DateTime(targetYear, targetMonth, 1);
+            DateTime targetEnd = targetStart.AddMonths(1).AddDays(-1); // Last day of the target month
+
+            // Check if both start and end date are within the target month
+            return startDate >= targetStart && startDate <= targetEnd &&
+                   endDate >= targetStart && endDate <= targetEnd;
         }
     }
 }
