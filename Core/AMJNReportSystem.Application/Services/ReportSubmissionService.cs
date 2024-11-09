@@ -622,6 +622,8 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
+                    Id = reportSubmission.Id,
+                    Year = reportSubmission.SubmissionWindow.Year,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
@@ -694,6 +696,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
+                    Id = reportSubmission.Id,
                     JamaatId = _currentUser.GetJamaatId(),
                     CircuitId = _currentUser.GetCircuit(),
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
@@ -780,6 +783,7 @@ namespace AMJNReportSystem.Application.Services
 
                 var reportSubmissionResponses = reportSubmissions.Select(reportSubmission => new ReportSubmissionResponseDto
                 {
+                    Id = reportSubmission.Id,
                     JamaatId = reportSubmission.JamaatId,
                     CircuitId = reportSubmission.CircuitId,
                     JammatEmailAddress = reportSubmission.JammatEmailAddress,
