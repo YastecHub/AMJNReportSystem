@@ -125,5 +125,16 @@ namespace AMJNReportSystem.WebApi.Controllers
             var questionOption = await _questionService.GetQuestionReportSectionByReportTypeIdSlim(reportTypeId);
             return Ok(questionOption);
         }
+
+        [ProducesResponseType(typeof(BaseResponse<List<ReportTypeSectionQuestionWithStatus>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse<List<ReportTypeSectionQuestionWithStatus>>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("get-report-section-by-report-id/{reportTypeId}")]
+        [OpenApiOperation("get-question-options-by-question-id", "Get list of all section in question")]
+        public async Task<IActionResult> GetQuestionReportSectionByReportTypeIdSlim([FromRoute] Guid reportTypeId, [FromRoute] Guid submissionWindowId)
+        {
+            var questionOption = await _questionService
+                .GetQuestionReportSectionByReportTypeIdSlim(reportTypeId,submissionWindowId);
+            return Ok(questionOption);
+        }
     }
 }

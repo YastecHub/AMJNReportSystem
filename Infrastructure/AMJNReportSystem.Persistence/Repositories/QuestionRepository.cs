@@ -4,6 +4,7 @@ using AMJNReportSystem.Domain.Entities;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using AMJNReportSystem.Application.Models.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AMJNReportSystem.Persistence.Repositories
 {
@@ -115,6 +116,36 @@ namespace AMJNReportSystem.Persistence.Repositories
                 })
                 .ToListAsync();
             return questions;
+        }
+
+        public async Task<List<ReportTypeSectionQuestionWithStatus>> GetQuestionReportSectionByReportTypeIdSlim
+            (Guid reportTypeId, Guid submissionWindowId, int jamaatId)
+        {
+            var reportTypeSection = await _context.ReportSections
+                .Where(q => q.ReportTypeId == reportTypeId)
+                .Select(x => new ReportTypeSectionQuestionWithStatus
+                {
+                    SectionId = x.Id,
+                    SectionName = x.ReportSectionName,
+                    IsSubmitted = false
+                })
+                .ToListAsync();
+
+            foreach (var section in reportTypeSection)
+            {
+
+                var checkReportSectionChecked = await _context.ReportSubmissions
+                       .Include(x => x.Answers)
+                       .Where(x => !x.IsDeleted && x.SubmissionWindowId == submissionWindowId && x.JamaatId == jamaatId && x.Answers
+                       .Any(x => x.ReportSubmissionSectionId == section.SectionId))
+                       .FirstOrDefaultAsync();
+
+                if(checkReportSectionChecked != null)
+                {
+                    section.IsSubmitted = true;
+                }
+            }
+            return reportTypeSection;
         }
     }
 }

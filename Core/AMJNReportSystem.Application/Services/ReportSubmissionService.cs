@@ -532,7 +532,7 @@ namespace AMJNReportSystem.Application.Services
                     JammatEmailAddress = existingReportSubmission.JammatEmailAddress,
                     ReportType = existingReportSubmission.SubmissionWindow.ReportType,
                     ReportSubmissionStatus = existingReportSubmission.ReportSubmissionStatus,
-                    ReportTag = (Domain.Enums.ReportTag)existingReportSubmission.ReportTag,
+                    ReportTag = existingReportSubmission.ReportTag,
                     SubmissionWindowId = existingReportSubmission.SubmissionWindowId,
                     SubmissionWindow = existingReportSubmission.SubmissionWindow,
                     Answers = existingReportSubmission.Answers.Select(a => new ReportResponseDto

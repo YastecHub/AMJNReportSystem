@@ -15,4 +15,5 @@ public interface IQuestionRepository
 	Task<List<Question>> GetQuestionsByReportTypeId(Guid reportTypeId);
 	Task<List<ReportTypeSectionQuestion>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId);
 	Task<List<ReportTypeSectionQuestionSlim>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId);
+	Task<List<ReportTypeSectionQuestionWithStatus>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId, Guid submissionWindowId,int jamaatId);
 }

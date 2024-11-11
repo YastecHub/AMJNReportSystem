@@ -1,9 +1,11 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Repositories;
 using AMJNReportSystem.Application.Abstractions.Services;
+using AMJNReportSystem.Application.Interfaces;
 using AMJNReportSystem.Application.Models.DTOs;
 using AMJNReportSystem.Application.Models.RequestModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace AMJNReportSystem.Application.Services
@@ -14,13 +16,15 @@ namespace AMJNReportSystem.Application.Services
         private readonly IQuestionOptionRepository _questionOptionRepository;
         private readonly IReportSectionRepository _reportSectionRepository;
         private readonly ILogger<QuestionService> _logger;
+        private readonly ICurrentUser _currentUser;
 
-        public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository, IReportSectionRepository reportSectionRepository, ILogger<QuestionService> logger)
+        public QuestionService(IQuestionRepository questionRepository, IQuestionOptionRepository questionOptionRepository, IReportSectionRepository reportSectionRepository, ILogger<QuestionService> logger, ICurrentUser currentUser)
         {
             _questionRepository = questionRepository;
             _questionOptionRepository = questionOptionRepository;
             _reportSectionRepository = reportSectionRepository;
             _logger = logger;
+            _currentUser = currentUser;
         }
 
         public async Task<Result<bool>> CreateQuestion(CreateQuestionRequest request)
@@ -383,6 +387,17 @@ namespace AMJNReportSystem.Application.Services
                 return new BaseResponse<List<ReportTypeSectionQuestionSlim>> { Data = data, Message = "Retrieved Succesful", Status = true };
 
             return new BaseResponse<List<ReportTypeSectionQuestionSlim>> { Data = new List<ReportTypeSectionQuestionSlim>(), Message = "Retrieved Failed", Status = false };
+        }
+
+        public async Task<BaseResponse<List<ReportTypeSectionQuestionWithStatus>>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId, Guid submissionWindowId)
+        {
+            var jamaatId = _currentUser.GetJamaatId();
+            var data = await _questionRepository.GetQuestionReportSectionByReportTypeIdSlim(reportTypeId,submissionWindowId,jamaatId);
+
+            if (data.Count > 0)
+                return new BaseResponse<List<ReportTypeSectionQuestionWithStatus>> { Data = data, Message = "Retrieved Succesful", Status = true };
+
+            return new BaseResponse<List<ReportTypeSectionQuestionWithStatus>> { Data = new List<ReportTypeSectionQuestionWithStatus>(), Message = "Retrieved Failed", Status = false };
         }
 
 
