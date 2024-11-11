@@ -18,5 +18,7 @@ public interface IQuestionService
     Task<BaseResponse<List<ReportTypeSectionQuestion>>> GetQuestionReportSectionByReportTypeId(Guid reportTypeId);
 	Task<BaseResponse<List<ReportTypeSectionQuestionWithStatus>>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId, Guid submissionWindowId);
 
+    Task<BaseResponse<List<ReportTypeSectionQuestionSlim>>> GetQuestionReportSectionByReportTypeIdSlim(Guid reportTypeId);
+
 
 }
