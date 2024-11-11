@@ -128,7 +128,7 @@ namespace AMJNReportSystem.WebApi.Controllers
 
         [ProducesResponseType(typeof(BaseResponse<List<ReportTypeSectionQuestionWithStatus>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<List<ReportTypeSectionQuestionWithStatus>>), StatusCodes.Status500InternalServerError)]
-        [HttpGet("get-report-section-by-report-id/{reportTypeId}")]
+        [HttpGet("get-report-section-by-report-id/{reportTypeId}/{submissionWindowId}")]
         [OpenApiOperation("get-question-options-by-question-id", "Get list of all section in question")]
         public async Task<IActionResult> GetQuestionReportSectionByReportTypeIdSlim([FromRoute] Guid reportTypeId, [FromRoute] Guid submissionWindowId)
         {
