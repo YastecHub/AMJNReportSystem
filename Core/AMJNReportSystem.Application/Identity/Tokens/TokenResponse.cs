@@ -14,7 +14,7 @@ namespace AMJNReportSystem.Application.Identity.Tokens
     public class Data
     {
         public string UserName { get; set; }
-        public List<string> Roles { get; set; }
+        public List<string>? Roles { get; set; }
         public string CircuitName { get; set; }
         public string JamaatName { get; set; }
         public string MemberName { get; set; }

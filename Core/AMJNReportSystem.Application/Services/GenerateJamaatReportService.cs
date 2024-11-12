@@ -18,7 +18,9 @@ namespace AMJNReportSystem.Application.Services
         private readonly CloudinaryService _googleDriveService;
         private readonly DriveService _driveService;
 
-        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository, ILogger<GenerateJamaatReportService> logger, IConfiguration configuration, CloudinaryService googleDriveService)
+        public GenerateJamaatReportService(IReportSubmissionRepository reportSubmissionRepository,
+            ILogger<GenerateJamaatReportService> logger, IConfiguration configuration,
+            CloudinaryService googleDriveService)
         {
             _reportSubmissionRepository = reportSubmissionRepository;
             _logger = logger;
@@ -60,12 +62,7 @@ namespace AMJNReportSystem.Application.Services
                 string filePath = Path.Combine(projectFolderPath, $"CircuitMonthlyReportForm_{reportSubmissions.Jamaat}_{reportSubmissions.Month}.pdf");
 
 
-                CreateMonthlyReportForm(filePath, reportSubmissions);
-
-
-                var fileId = await _googleDriveService.UploadPdfAsync(filePath);
-                //var link = _googleDriveService.GetFileLink(fileId);
-
+                await CreateMonthlyReportFormAsync(filePath, reportSubmissions);
 
 
                 _logger.LogInformation("PDF report generated successfully for JamaatId: {jamaatId}", jamaatSubmissionId);
@@ -100,12 +97,12 @@ namespace AMJNReportSystem.Application.Services
                 // Fetch report submissions from the repository
                 var reportSubmissions = await _reportSubmissionRepository.GetReportSubmission(jamaatSubmissionId);
 
-                if (reportSubmissions == null)
+                if (string.IsNullOrEmpty(reportSubmissions.ReportTypeName))
                 {
                     return new BaseResponse<PdfResponse>
                     {
                         Status = false,
-                        Message = "No report submissions found for the given jamaat for the month."
+                        Message = "No report submissions found for the given jamaat for the month.",
                     };
                 }
 
@@ -131,7 +128,7 @@ namespace AMJNReportSystem.Application.Services
 
 
 
-        private void CreateMonthlyReportForm(string filePath, PdfResponse sections)
+        private async Task CreateMonthlyReportFormAsync(string filePath, PdfResponse sections)
         {
             Document document = new Document(PageSize.A4);
             PdfWriter.GetInstance(document, new FileStream(filePath, FileMode.Create));
