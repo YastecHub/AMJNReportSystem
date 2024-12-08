@@ -4,6 +4,6 @@ namespace AMJNReportSystem.Application.Abstractions.Services
 {
     public interface IDashboardService
     {
-        Task<DashboardCountDto> DashBoardCount(int? month = null);
+        Task<DashboardCountDto> DashBoardCountAsync(int? month = null);
     }
 }

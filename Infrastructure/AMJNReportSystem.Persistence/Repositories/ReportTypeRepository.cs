@@ -13,7 +13,7 @@ namespace AMJNReportSystem.Persistence.Repositories
         public ReportTypeRepository(ApplicationContext context)
         {
             _context = context;
-            
+
         }
 
         public List<ReportType> GetAllReportType()
@@ -53,7 +53,7 @@ namespace AMJNReportSystem.Persistence.Repositories
             return reports;
         }
 
-      
+
         public async Task<ReportType?> GetReportTypeById(Guid id)
         {
 
@@ -67,16 +67,24 @@ namespace AMJNReportSystem.Persistence.Repositories
         }
 
 
-        public async Task<DashboardCountDto> DashBoardDataAsync(int jamaatId,int circuitId)
+        public async Task<DashboardCountDto> DashBoardDataAsync(int jamaatId, int circuitId)
         {
-           var result = new DashboardCountDto();
+            var result = new DashboardCountDto();
 
-            result.TotalReportSubmittedForTheWholeMonth = await _context.ReportSubmissions.CountAsync(x => !x.IsDeleted);
-            result.ReportSubmittedByCircuitCounts = await _context.ReportSubmissions.CountAsync(x => x.CircuitId == circuitId && !x.IsDeleted);
-            result.ReportSubmittedByJamaatCounts = await _context.ReportSubmissions.CountAsync(x => x.JamaatId == jamaatId && !x.IsDeleted);
-            result.ReportTypeCounts = await _context.ReportTypes.CountAsync(x => !x.IsDeleted);
-            result.ReportSectionCounts = await _context.ReportSections.CountAsync(x => !x.IsDeleted);
-            result.QuestionCounts = await _context.Questions.CountAsync(x => !x.IsDeleted);
+            var data = await _context.ReportSubmissions
+                .Where(x => !x.IsDeleted)
+                .ToListAsync();
+            result.TotalReportSubmittedForTheWholeMonth = data.Count;
+            result.ReportSubmittedByCircuitCounts = data
+                .Count(x => x.CircuitId == circuitId && !x.IsDeleted);
+            result.ReportSubmittedByJamaatCounts = data
+                .Count(x => x.JamaatId == jamaatId && !x.IsDeleted);
+            result.ReportTypeCounts = data
+                .Count(x => !x.IsDeleted);
+            result.ReportSectionCounts = data
+                .Count(x => !x.IsDeleted);
+            result.QuestionCounts = data
+                .Count(x => !x.IsDeleted);
 
             return result;
         }

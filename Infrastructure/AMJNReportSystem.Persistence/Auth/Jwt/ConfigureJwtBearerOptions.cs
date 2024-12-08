@@ -1,6 +1,7 @@
 ﻿
 using AMJNReportSystem.Application.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
@@ -43,19 +44,44 @@ namespace AMJNReportSystem.Persistence.Auth.Jwt
                 RoleClaimType = ClaimTypes.Role,
                 ClockSkew = TimeSpan.Zero
             };
+
             options.Events = new JwtBearerEvents
             {
                 OnChallenge = context =>
                 {
+                    // Handle response and set custom error message
                     context.HandleResponse();
                     if (!context.Response.HasStarted)
                     {
-                        throw new UnauthorizedException("Authentication Failed.");
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+
+                        var errorResponse = new
+                        {
+                            error = "unauthorized",
+                            message = "Authentication failed. Please check your credentials."
+                        };
+
+                        var errorJson = System.Text.Json.JsonSerializer.Serialize(errorResponse);
+                        return context.Response.WriteAsync(errorJson);
                     }
 
                     return Task.CompletedTask;
                 },
-                OnForbidden = _ => throw new ForbiddenException("You are not authorized to access this resource."),
+                OnForbidden = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    context.Response.ContentType = "application/json";
+
+                    var errorResponse = new
+                    {
+                        error = "forbidden",
+                        message = "You are not authorized to access this resource."
+                    };
+
+                    var errorJson = System.Text.Json.JsonSerializer.Serialize(errorResponse);
+                    return context.Response.WriteAsync(errorJson);
+                },
                 OnMessageReceived = context =>
                 {
                     var accessToken = context.Request.Query["access_token"];
@@ -72,4 +98,5 @@ namespace AMJNReportSystem.Persistence.Auth.Jwt
             };
         }
     }
+
 }

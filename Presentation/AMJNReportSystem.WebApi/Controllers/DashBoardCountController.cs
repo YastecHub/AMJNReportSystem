@@ -1,9 +1,11 @@
 ﻿using AMJNReportSystem.Application.Abstractions.Services;
 using AMJNReportSystem.Application.Models.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 namespace AMJNReportSystem.WebApi.Controllers
 {
+    [Authorize]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class DashBoardCountController : ControllerBase
@@ -23,12 +25,10 @@ namespace AMJNReportSystem.WebApi.Controllers
         [ProducesResponseType(typeof(DashboardCountDto), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-dash-board-count")]
         [OpenApiOperation("Get list of all dash board count", "")]
-        public ActionResult<DashboardCountDto> GetDashboardCounts()
+        public async Task<ActionResult<DashboardCountDto>> GetDashboardCountsAsync()
         {
-            var result = _dashboardService.DashBoardCount();
+            var result = await _dashboardService.DashBoardCountAsync();
             return Ok(result);
         }
-
-
     }
 }

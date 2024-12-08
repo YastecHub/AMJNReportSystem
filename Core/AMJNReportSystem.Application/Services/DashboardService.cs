@@ -18,12 +18,21 @@ namespace AMJNReportSystem.Application.Services
             _currentUser = currentUser;
         }
 
-        public async Task<DashboardCountDto> DashBoardCount(int? month = null)
+        public async Task<DashboardCountDto> DashBoardCountAsync(int? month = null)
         {
-            var jamaatId = _currentUser.GetJamaatId();
-            var circuitId = _currentUser.GetCircuit();
-            return await _reportTypeRepository.DashBoardDataAsync(jamaatId, circuitId);
+            try
+            {
+                var jamaatId = _currentUser.GetJamaatId();
+                var circuitId = _currentUser.GetCircuit();
+
+                return await _reportTypeRepository.DashBoardDataAsync(jamaatId, circuitId);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("An error occurred while fetching dashboard counts.", ex);
+            }
         }
+
 
     }
 }
