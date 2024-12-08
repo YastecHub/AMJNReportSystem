@@ -8,4 +8,22 @@
         public Guid SubmissionWindowId { get; set; } 
         public string? SubmissionWindowName { get; set; } 
     }
+
+
+    public class AmjnReportByRole
+    {
+        public string TableTitle { get; set; }
+
+        public List<JamaatReportByRole> JamaatReportByRoles { get; set; }
+    }
+    public class JamaatReportByRole
+    {
+        public Guid ReportSumbmissionId { get; set; }
+        public int Id { get; set; }
+        public string? Name { get; set; }
+        public bool HasSubmitted { get; set; }
+        public Guid SubmissionWindowId { get; set; }
+        public string? SubmissionWindowName { get; set; }
+    }
+
 }

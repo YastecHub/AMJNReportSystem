@@ -24,6 +24,7 @@ namespace AMJNReportSystem.Application.Abstractions.Services
         Task<BaseResponse<List<ReportSubmissionResponseDto>>> GetAllReportTypeSubmissionsAsync();
         Task<BaseResponse<List<JamaatReport>>> GetJamaatReportsBySubmissionWindowIdAsync(Guid submissionWindowId);
         Task<BaseResponse<bool>> ConfirmReportSectionHasBeenSubmittedAsync(Guid reportTypeSubmissionId, Guid reportSectionId);
+        Task<BaseResponse<AmjnReportByRole>> GetJamaatReportByRoleAsync(Guid submissionWindowId);
     }
 }
 

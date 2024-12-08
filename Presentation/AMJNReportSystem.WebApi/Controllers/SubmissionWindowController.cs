@@ -16,10 +16,15 @@ namespace AMJNReportSystem.WebApi.Controllers
     public class SubmissionWindowController : ControllerBase
     {
         private readonly ISubmissionWindowService _submissionWindowService;
-        public SubmissionWindowController(ISubmissionWindowService submissionWindowService)
+        private readonly IReportSubmissionService _submissionService;
+
+        public SubmissionWindowController(ISubmissionWindowService submissionWindowService, IReportSubmissionService submissionService)
         {
             _submissionWindowService = submissionWindowService;
+            _submissionService = submissionService;
         }
+
+
         [ProducesResponseType(typeof(BaseResponse<Result<bool>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse<Result<bool>>), StatusCodes.Status500InternalServerError)]
         [HttpPost("create-submission-window")]
@@ -91,6 +96,18 @@ namespace AMJNReportSystem.WebApi.Controllers
         public async Task<IActionResult> GetActiveSubmissionWindows([FromRoute] Guid id)
         {
             var response = await _submissionWindowService.GetActiveSubmissionWindows(id);
+            return Ok(response);
+        }
+
+        [ProducesResponseType(typeof(Result<SubmissionWindowDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<SubmissionWindowDto>), StatusCodes.Status500InternalServerError)]
+        [HttpGet("get-report-submissions-by-role/{submissionWindowId}")]
+        [OpenApiOperation("Get submission window by id", "")]
+        public async Task<IActionResult> GetJamaatReportByRoleAsync([FromRoute] Guid submissionWindowId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var response = await _submissionService.GetJamaatReportByRoleAsync(submissionWindowId);
             return Ok(response);
         }
 

@@ -9,7 +9,9 @@ using AMJNReportSystem.Application.Models.ResponseModels;
 using AMJNReportSystem.Application.Wrapper;
 using AMJNReportSystem.Domain.Entities;
 using AMJNReportSystem.Domain.Enums;
+using AMJNReportSystem.Domain.Extensions;
 using AMJNReportSystem.Domain.Repositories;
+using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Globalization;
@@ -873,6 +875,195 @@ namespace AMJNReportSystem.Application.Services
             }
         }
 
+
+        public async Task<BaseResponse<AmjnReportByRole>> GetJamaatReportByRoleAsync(Guid submissionWindowId)
+        {
+            try
+            {
+                var newResult = new AmjnReportByRole();
+
+
+                string roleCircuitPresident = EnumHelper.GetDescription(Roles.CircuitPresident);
+                int signedInUserCircuit = _currentUser.GetCircuit();
+
+                if (_currentUser.IsInRole(roleCircuitPresident))
+                {
+                    newResult.TableTitle = "Jamaat";
+                    var result = new List<JamaatReportByRole>();
+                    var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+                    if (getJamaat == null)
+                    {
+                        return new BaseResponse<AmjnReportByRole>
+                        {
+                            Status = false,
+                            Message = "No Jamaat reports found for the given Submission Window ID."
+                        };
+                    }
+
+
+                    var getJamaatByCircuit = getJamaat
+                        .GroupBy(x => x.CircuitId).Select(s => new
+                        {
+                            circuitId = s.Key,
+                            circuitName = s.FirstOrDefault().CircuitName
+                        }).ToList();
+
+                    var reports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
+
+                    if (reports == null || !reports.Any())
+                    {
+                        _logger.LogWarning($"No Jamaat reports found for Submission Window ID: {submissionWindowId}");
+                        return new BaseResponse<AmjnReportByRole>
+                        {
+                            Status = false,
+                            Message = "No Jamaat reports found for the given Submission Window ID."
+                        };
+                    }
+
+                    foreach (var item in getJamaatByCircuit)
+                    {
+                        var ckeckIfJammatHasSubmittedReport = reports
+                            .Where(x => x.JamaatId == item.circuitId)
+                            .FirstOrDefault();
+
+                        if (ckeckIfJammatHasSubmittedReport != null)
+                        {
+                            var list = new JamaatReportByRole
+                            {
+                                HasSubmitted = true,
+                                Id = item.circuitId,
+                                ReportSumbmissionId = ckeckIfJammatHasSubmittedReport.Id,
+                                SubmissionWindowId = submissionWindowId,
+                                Name = item.circuitName,
+                            };
+                            newResult.JamaatReportByRoles.Add(list);
+                        }
+                        else
+                        {
+                            var list = new JamaatReportByRole
+                            {
+
+                                HasSubmitted = false,
+                                Id = item.circuitId,
+                                ReportSumbmissionId = Guid.Empty,
+                                SubmissionWindowId = submissionWindowId,
+                                Name = item.circuitName,
+                            };
+                            newResult.JamaatReportByRoles.Add(list);
+                        }
+
+                    }
+
+                    _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
+
+                    return new BaseResponse<AmjnReportByRole>
+                    {
+                        Status = true,
+                        Message = "Jamaat reports successfully retrieved",
+                        Data = newResult
+                    };
+
+                }
+                else if (_currentUser.IsInRole(EnumHelper.GetDescription(Roles.TajneedOfficerNational)))
+                {
+                    newResult.TableTitle = "Circuit";
+                    var result = new List<JamaatReportByRole>();
+                    var getJamaat = await _gatewayHandler.GetListOfMuqamAsync();
+
+                    if (getJamaat == null)
+                    {
+                        return new BaseResponse<AmjnReportByRole>
+                        {
+                            Status = false,
+                            Message = "No Jamaat reports found for the given Submission Window ID."
+                        };
+                    }
+
+
+                    var getJamaatByCircuit = getJamaat
+                        .Where(x => x.CircuitId == signedInUserCircuit)
+                        .ToList();
+
+                    var reports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
+
+                    if (reports == null || !reports.Any())
+                    {
+                        _logger.LogWarning($"No Jamaat reports found for Submission Window ID: {submissionWindowId}");
+                        return new BaseResponse<AmjnReportByRole>
+                        {
+                            Status = false,
+                            Message = "No Jamaat reports found for the given Submission Window ID."
+                        };
+                    }
+
+                    foreach (var item in getJamaatByCircuit)
+                    {
+                        var ckeckIfJammatHasSubmittedReport = reports
+                            .Where(x => x.JamaatId == item.JamaatId)
+                            .FirstOrDefault();
+
+                        if (ckeckIfJammatHasSubmittedReport != null)
+                        {
+                            var list = new JamaatReportByRole
+                            {
+                                HasSubmitted = true,
+                                Id = item.JamaatId,
+                                ReportSumbmissionId = ckeckIfJammatHasSubmittedReport.Id,
+                                SubmissionWindowId = submissionWindowId,
+                                Name = item.JamaatName,
+                            };
+                            newResult.JamaatReportByRoles.Add(list);
+                        }
+                        else
+                        {
+                            var list = new JamaatReportByRole
+                            {
+
+                                HasSubmitted = false,
+                                Id = item.JamaatId,
+                                ReportSumbmissionId = Guid.Empty,
+                                SubmissionWindowId = submissionWindowId,
+                                Name = item.JamaatName,
+                            };
+                            newResult.JamaatReportByRoles.Add(list);
+                        }
+
+                    }
+
+                    _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
+
+                    return new BaseResponse<AmjnReportByRole>
+                    {
+                        Status = true,
+                        Message = "Jamaat reports successfully retrieved",
+                        Data = newResult
+                    };
+
+                }
+                else
+                {
+                    _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
+
+                    return new BaseResponse<AmjnReportByRole>
+                    {
+                        Status = true,
+                        Message = "Jamaat reports successfully retrieved"
+                    };
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred while retrieving Jamaat reports for Submission Window ID: {submissionWindowId}");
+                return new BaseResponse<AmjnReportByRole>
+                {
+                    Status = false,
+                    Message = $"An error occurred while retrieving Jamaat reports: {ex.Message}"
+                };
+            }
+        }
 
         public async Task<BaseResponse<bool>> ConfirmReportSectionHasBeenSubmittedAsync(Guid reportTypeSubmissionId, Guid reportSectionId)
         {
