@@ -39,8 +39,6 @@ namespace AMJNReportSystem.WebApi.Controllers.Identity
         {
             return _userService.GenerateToken(request);
         }
-
-
         private string GetOriginFromRequest() => $"{Request.Scheme}://{Request.Host}{Request.PathBase.Value}";
     }
 }
