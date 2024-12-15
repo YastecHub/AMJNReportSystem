@@ -99,8 +99,8 @@ namespace AMJNReportSystem.WebApi.Controllers
             return Ok(response);
         }
 
-        [ProducesResponseType(typeof(Result<SubmissionWindowDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Result<SubmissionWindowDto>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(Result<AmjnReportByRole>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<AmjnReportByRole>), StatusCodes.Status500InternalServerError)]
         [HttpGet("get-report-submissions-by-role/{submissionWindowId}")]
         [OpenApiOperation("Get submission window by id", "")]
         public async Task<IActionResult> GetJamaatReportByRoleAsync([FromRoute] Guid submissionWindowId)

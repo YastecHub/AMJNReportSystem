@@ -15,6 +15,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace AMJNReportSystem.Application.Services
 {
@@ -881,12 +882,42 @@ namespace AMJNReportSystem.Application.Services
             try
             {
                 var newResult = new AmjnReportByRole();
+                var getUserLoggedInRoles = _currentUser.GetRoles();
 
+                var amilaRolesToSeeReport = new List<string>{
+                        "Ta’leem Secretary",
+                        "Tabligh Secretary",
+                        "Tahrik-i-Jadid Secretary",
+                        "TajneedOfficer-Circuit",
+                        "TajneedOfficer-Jamaat",
+                        "TajneedOfficer-National",
+                        "Tajnid Secretary",
+                        "Talimul Qur’an Secretary",
+                        "Tarbiyya Secretary",
+                        "Umur Aama Secretary",
+                        "Umur Kharijiiyah Secretary",
+                        "Waqar-e-Amal Secretary",
+                        "Waqf-i-Jadid Secretary",
+                        "Wasiyya Secretary"};
 
                 string roleCircuitPresident = EnumHelper.GetDescription(Roles.CircuitPresident);
+                var roleAdministrator = new List<string>();
                 int signedInUserCircuit = _currentUser.GetCircuit();
 
-                if (_currentUser.IsInRole(roleCircuitPresident))
+
+                if (getUserLoggedInRoles == null)
+                {
+                    return new BaseResponse<AmjnReportByRole>
+                    {
+                        Status = true,
+                        Message = "Unauthorized Access",
+                        Data = newResult
+                    };
+                }
+
+
+
+                if (getUserLoggedInRoles.Any(x => x == roleCircuitPresident))
                 {
                     newResult.TableTitle = "Jamaat";
                     var result = new List<JamaatReportByRole>();
@@ -902,12 +933,7 @@ namespace AMJNReportSystem.Application.Services
                     }
 
 
-                    var getJamaatByCircuit = getJamaat
-                        .GroupBy(x => x.CircuitId).Select(s => new
-                        {
-                            circuitId = s.Key,
-                            circuitName = s.FirstOrDefault().CircuitName
-                        }).ToList();
+                    var getJamaatByCircuit = getJamaat.Where(x => x.CircuitId == _currentUser.GetCircuit()).ToList();
 
                     var reports = await _reportSubmissionRepository.GetJamaatReportsBySubmissionWindowIdAsync(submissionWindowId);
 
@@ -924,7 +950,7 @@ namespace AMJNReportSystem.Application.Services
                     foreach (var item in getJamaatByCircuit)
                     {
                         var ckeckIfJammatHasSubmittedReport = reports
-                            .Where(x => x.JamaatId == item.circuitId)
+                            .Where(x => x.JamaatId == item.JamaatId)
                             .FirstOrDefault();
 
                         if (ckeckIfJammatHasSubmittedReport != null)
@@ -932,12 +958,12 @@ namespace AMJNReportSystem.Application.Services
                             var list = new JamaatReportByRole
                             {
                                 HasSubmitted = true,
-                                Id = item.circuitId,
+                                Id = item.JamaatId,
                                 ReportSumbmissionId = ckeckIfJammatHasSubmittedReport.Id,
                                 SubmissionWindowId = submissionWindowId,
-                                Name = item.circuitName,
+                                Name = item.JamaatName,
                             };
-                            newResult.JamaatReportByRoles.Add(list);
+                            result.Add(list);
                         }
                         else
                         {
@@ -945,15 +971,16 @@ namespace AMJNReportSystem.Application.Services
                             {
 
                                 HasSubmitted = false,
-                                Id = item.circuitId,
-                                ReportSumbmissionId = Guid.Empty,
+                                Id = item.JamaatId,
                                 SubmissionWindowId = submissionWindowId,
-                                Name = item.circuitName,
+                                Name = item.JamaatName,
                             };
-                            newResult.JamaatReportByRoles.Add(list);
+                            result.Add(list);
                         }
 
                     }
+
+                    newResult.JamaatReportByRoles = result;
 
                     _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
 
@@ -965,7 +992,7 @@ namespace AMJNReportSystem.Application.Services
                     };
 
                 }
-                else if (_currentUser.IsInRole(EnumHelper.GetDescription(Roles.TajneedOfficerNational)))
+                else if (amilaRolesToSeeReport.Any(description => getUserLoggedInRoles.Any(filter => description.Contains(filter, StringComparison.OrdinalIgnoreCase))))
                 {
                     newResult.TableTitle = "Circuit";
                     var result = new List<JamaatReportByRole>();
@@ -1013,7 +1040,7 @@ namespace AMJNReportSystem.Application.Services
                                 SubmissionWindowId = submissionWindowId,
                                 Name = item.JamaatName,
                             };
-                            newResult.JamaatReportByRoles.Add(list);
+                            result.Add(list);
                         }
                         else
                         {
@@ -1026,11 +1053,12 @@ namespace AMJNReportSystem.Application.Services
                                 SubmissionWindowId = submissionWindowId,
                                 Name = item.JamaatName,
                             };
-                            newResult.JamaatReportByRoles.Add(list);
+                            result.Add(list);
                         }
 
                     }
 
+                    newResult.JamaatReportByRoles = result;
                     _logger.LogInformation($"Successfully retrieved Jamaat reports for Submission Window ID: {submissionWindowId}");
 
                     return new BaseResponse<AmjnReportByRole>

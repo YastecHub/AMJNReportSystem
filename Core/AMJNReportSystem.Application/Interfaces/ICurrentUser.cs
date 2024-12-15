@@ -16,6 +16,8 @@ namespace AMJNReportSystem.Application.Interfaces
 
         bool IsInRole(string role);
 
+        List<string>? GetRoles();
+
         IEnumerable<Claim>? GetUserClaims();
     }
 }
